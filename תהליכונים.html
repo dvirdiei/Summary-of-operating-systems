@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תהליכונים והקבלה - מערכות הפעלה</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* סרגל ניווט צף */
+        .nav-sidebar {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            z-index: 100;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            max-width: 200px;
+            transition: all 0.3s ease;
+        }
+        .nav-sidebar:hover {
+            transform: translateY(-50%) translateX(-5px);
+        }
+        .nav-sidebar-title {
+            color: #60a5fa;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            font-size: 0.9em;
+        }
+        .nav-sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .nav-sidebar li {
+            margin-bottom: 8px;
+        }
+        .nav-sidebar a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.85em;
+            display: block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+        }
+        .nav-sidebar a:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            transform: translateX(-3px);
+        }
+        @media (max-width: 1200px) {
+            .nav-sidebar {
+                right: -180px;
+                transition: right 0.3s ease;
+            }
+            .nav-sidebar:hover {
+                right: 0;
+                transform: translateY(-50%) translateX(0);
+            }
+            .nav-sidebar::before {
+                content: "≡";
+                position: absolute;
+                left: -35px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 30px;
+                height: 30px;
+                background: rgba(15, 23, 42, 0.8);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #60a5fa;
+                border: 1px solid rgba(148, 163, 184, 0.2);
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+                font-size: 1.5em;
+            }
+        }
+        /* איפוס ועיצוב כללי */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%);
+            background-attachment: fixed;
+            color: #f1f5f9;
+            min-height: 100vh;
+            line-height: 1.7;
+        }
+        /* אפקט חלקיקים ברקע */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 200, 255, 0.1) 0%, transparent 50%);
+            z-index: -1;
+            animation: float 20s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        /* כותרת ראשית */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .header h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+        }
+        .subtitle {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.3em;
+            color: #94a3b8;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+        /* תוכן מחולק לחלקים */
+        .content-section {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.6s ease forwards;
+        }
+        
+        /* סגנון לתכנים מתרחבים */
+        .collapsible-content {
+            display: none;
+            padding: 10px 0;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .toggle-btn {
+            background: transparent;
+            border: none;
+            color: #60a5fa;
+            cursor: pointer;
+            font-size: 0.9em;
+            padding: 0 5px;
+            transition: all 0.2s ease;
+        }
+        
+        .toggle-btn:hover {
+            color: #3b82f6;
+            transform: translateY(-2px);
+        }
+        .content-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+        .content-section:nth-child(odd) {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%);
+            border-left: 3px solid rgba(59, 130, 246, 0.5);
+        }
+        .content-section:nth-child(even) {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border-left: 3px solid rgba(236, 72, 153, 0.5);
+        }
+        .content-section h2 {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .content-section:nth-child(3n+1) h2 {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .content-section:nth-child(3n+2) h2 {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .content-section:nth-child(3n+3) h2 {
+            background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .content-section h3 {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+            color: #60a5fa;
+            border-right: 3px solid #3b82f6;
+            padding-right: 15px;
+        }
+        .content-section:nth-child(3n+2) h3 {
+            color: #c084fc;
+            border-right-color: #8b5cf6;
+        }
+        .content-section:nth-child(3n+3) h3 {
+            color: #f472b6;
+            border-right-color: #ec4899;
+        }
+        .content-section p {
+            margin-bottom: 15px;
+            color: #cbd5e1;
+            font-size: 1.1em;
+        }
+        /* רשימות */
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        .feature-list li {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .content-section:nth-child(3n+1) .feature-list li {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+        .content-section:nth-child(3n+2) .feature-list li {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: rgba(139, 92, 246, 0.2);
+        }
+        .content-section:nth-child(3n+3) .feature-list li {
+            background: rgba(236, 72, 153, 0.1);
+            border-color: rgba(236, 72, 153, 0.2);
+        }
+        .feature-list li::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+        }
+        .content-section:nth-child(3n+1) .feature-list li::before {
+            background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+        }
+        .content-section:nth-child(3n+2) .feature-list li::before {
+            background: linear-gradient(to bottom, #8b5cf6, #ec4899);
+        }
+        .content-section:nth-child(3n+3) .feature-list li::before {
+            background: linear-gradient(to bottom, #ec4899, #f59e0b);
+        }
+        .feature-list li:hover {
+            transform: translateX(-5px);
+        }
+        .content-section:nth-child(3n+1) .feature-list li:hover {
+            background: rgba(59, 130, 246, 0.15);
+        }
+        .content-section:nth-child(3n+2) .feature-list li:hover {
+            background: rgba(139, 92, 246, 0.15);
+        }
+        .content-section:nth-child(3n+3) .feature-list li:hover {
+            background: rgba(236, 72, 153, 0.15);
+        }
+        .feature-list li strong {
+            font-weight: 600;
+        }
+        .content-section:nth-child(3n+1) .feature-list li strong {
+            color: #3b82f6;
+        }
+        .content-section:nth-child(3n+2) .feature-list li strong {
+            color: #8b5cf6;
+        }
+        .content-section:nth-child(3n+3) .feature-list li strong {
+            color: #ec4899;
+        }
+        /* גרפיקה ויזואלית */
+        .visual-diagram {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(51, 65, 85, 0.8));
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+        .content-section:nth-child(3n+1) .visual-diagram {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(59, 130, 246, 0.1));
+        }
+        .content-section:nth-child(3n+2) .visual-diagram {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(139, 92, 246, 0.1));
+        }
+        .content-section:nth-child(3n+3) .visual-diagram {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(236, 72, 153, 0.1));
+        }
+        .hierarchy-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .layer {
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            min-width: 200px;
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+        .content-section:nth-child(3n+1) .layer {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        }
+        .content-section:nth-child(3n+2) .layer {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+        }
+        .content-section:nth-child(3n+3) .layer {
+            background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);
+            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.3);
+        }
+        .layer:hover {
+            transform: scale(1.05);
+        }
+        .content-section:nth-child(3n+1) .layer:hover {
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+        .content-section:nth-child(3n+2) .layer:hover {
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+        .content-section:nth-child(3n+3) .layer:hover {
+            box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
+        }
+        .arrow {
+            font-size: 1.5em;
+        }
+        .content-section:nth-child(3n+1) .arrow {
+            color: #60a5fa;
+        }
+        .content-section:nth-child(3n+2) .arrow {
+            color: #c084fc;
+        }
+        .content-section:nth-child(3n+3) .arrow {
+            color: #f472b6;
+        }
+        /* קוד לדוגמה */
+        .code-example {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9em;
+            color: #e2e8f0;
+            overflow-x: auto;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .content-section:nth-child(3n+1) .code-example {
+            border-left: 4px solid #3b82f6;
+        }
+        .content-section:nth-child(3n+2) .code-example {
+            border-left: 4px solid #8b5cf6;
+        }
+        .content-section:nth-child(3n+3) .code-example {
+            border-left: 4px solid #ec4899;
+        }
+        .content-section:nth-child(3n+1) .code-example .keyword {
+            color: #3b82f6;
+        }
+        .content-section:nth-child(3n+2) .code-example .keyword {
+            color: #8b5cf6;
+        }
+        .content-section:nth-child(3n+3) .code-example .keyword {
+            color: #ec4899;
+        }
+        .code-example .comment {
+            color: #64748b;
+            font-style: italic;
+        }
+        /* הדגשה מיוחדת */
+        .highlight-box {
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+        }
+        .content-section:nth-child(3n+1) .highlight-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        .content-section:nth-child(3n+2) .highlight-box {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        .content-section:nth-child(3n+3) .highlight-box {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+        }
+        .highlight-box::before {
+            content: '💡';
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            background: rgba(15, 23, 42, 0.9);
+            padding: 5px 10px;
+            border-radius: 50%;
+            font-size: 1.2em;
+        }
+        /* רספונסיביות */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            .content-section {
+                padding: 20px;
+            }
+            .hierarchy-box {
+                gap: 10px;
+            }
+            .layer {
+                min-width: 150px;
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+        }
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* סגנון עבור התפריט המדורג */
+        .nav-submenu {
+            display: none;
+            padding-right: 15px;
+            margin-top: 5px;
+        }
+        .nav-category {
+            margin-bottom: 10px;
+        }
+        .category-title {
+            font-weight: 600;
+            color: #60a5fa;
+            cursor: pointer;
+            display: block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+        }
+        .category-title:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+        .nav-category.active .nav-submenu {
+            display: block;
+             transform: translateY(-2px);
+        }
+    </style>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // טיפול בקטגוריות בסרגל הניווט
+        const categoryTitles = document.querySelectorAll('.category-title');
+        
+        categoryTitles.forEach(title => {
+            title.addEventListener('click', function(e) {
+                e.preventDefault();
+                const parent = this.parentElement;
+                const isActive = parent.classList.contains('active');
+                
+                // סגור את כל הקטגוריות
+                document.querySelectorAll('.nav-category').forEach(cat => {
+                    cat.classList.remove('active');
+                });
+                
+                // פתח את הקטגוריה הנוכחית אם היא לא הייתה פתוחה
+                if (!isActive) {
+                    parent.classList.add('active');
+                }
+            });
+        });
+        
+        // פתיחת הקטגוריה הראשונה באופן אוטומטי בטעינה
+        if(document.querySelector('.nav-category')) {
+            document.querySelector('.nav-category').classList.add('active');
+        }
+    });
+
+    // פונקציה להצגה/הסתרה של תוכן מתרחב
+        function toggleContent(button) {
+            const content = button.parentElement.nextElementSibling;
+            
+            if (content.style.display === 'none' || content.style.display === '') {
+                content.style.display = 'block';
+                button.textContent = '▲';
+            } else {
+                content.style.display = 'none';
+                button.textContent = '▼';
+            }
+        }
+    </script>
+</head>
+<body>
+    <!-- סרגל ניווט צף -->
+    <div class="nav-sidebar">
+        <div class="nav-sidebar-title">תוכן העניינים</div>
+        <ul class="nav-main-menu">
+            <li class="nav-category">
+                <a href="#" class="category-title">🔗 תהליכונים והקבלה</a>
+                <ul class="nav-submenu">
+                    <li><a href="#what-is-thread">מה זה תהליכון?</a></li>
+                    <li><a href="#multi-threaded-servers">שרתי ריבוי תהליכונים</a></li>
+                    <li><a href="#multi-core-programming">תכנות ריבוי ליבות</a></li>
+                    <li><a href="#amdahl-law">חוק אמדאל</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="back-home">
+            <a href="index.html">🏠 חזרה לדף הבית</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>תהליכונים והקבלה</h1>
+            <div class="subtitle">Threads & Concurrency</div>
+        </div>
+
+        <!-- מה זה תהליכון ומה מובחן מתהליך -->
+        <div class="content-section" id="what-is-thread">
+            <h2>❓ מה זה תהליכון (Thread)?</h2>
+            <p>
+            תהליכון הוא יחידת ביצוע קטנה בתוך תהליך: הוא משתף קוד, נתונים ומשאבים של התהליך, אבל יש לו מחסנית (stack) משלו, רישומי CPU (registers) ו"מונה קוד" נפרד.
+            </p>
+            <ul class="feature-list">
+            <li><strong>משאבים משותפים:</strong> כל התהליכונים חולקים את המרחב הוירטואלי של התהליך, קבצים ומידע גלובלי.</li>
+            <li><strong>משאבים נפרדים:</strong> לכל תהליכון יש סטק ורישומים משלו.</li>
+            <li><strong>הבדל מתהליך:</strong> יצירת תהליכון היא זולה ומהירה יותר מתהליך מלא; שיתוף הזיכרון מאפשר תקשורת קלה.</li>
+            <li><strong>תזמון זמן מעבד:</strong> מערכת ההפעלה מתזמנת תהליכונים על ידי מתזמן (scheduler), מחלקת זמני CPU כתורנות לפי מדיניות (Round Robin, Priority וכו').</li>
+            </ul>
+            
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">למה קוראים לזה תהליכון ולא מקביליות קריאה? <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+            <p>
+                תהליכון (Thread) הוא מונח שמשקף את התפקיד שלו במערכת - "חוט" של ביצוע בתוך תהליך גדול יותר. 
+                בניגוד למקביליות קריאה, תהליכון הוא יחידת ביצוע ממשית שמנוהלת על ידי מערכת ההפעלה ולא רק תבנית תכנותית.
+            </p>
+            <p>
+                המונח "תהליכון" משקף את העובדה שהוא חלק בלתי נפרד מתהליך אב, אך עם זאת הוא יחידה עצמאית מבחינת 
+                ביצוע: יש לו את המסלול הביצוע שלו, המחסנית שלו והקונטקסט הפרטי שלו, אך הוא חולק משאבים עם 
+                התהליכונים האחרים באותו תהליך.
+            </p>
+            </div>
+            
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">למה תהליכון ולא פשוט עוד תהליך? <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+            <ul class="feature-list">
+                <li><strong>יעילות משאבים:</strong> יצירת תהליכון חדש דורשת הרבה פחות משאבים מיצירת תהליך חדש - אין צורך להקצות מרחב זיכרון חדש או להעתיק משאבים.</li>
+                <li><strong>שיתוף זיכרון:</strong> כל התהליכונים של התהליך רצים באותו מרחב זיכרון, מה שמאפשר גישה ישירה למשתנים גלובליים ונתונים משותפים.</li>
+                <li><strong>תקשורת מהירה:</strong> תקשורת בין תהליכונים היא מהירה בהרבה מתקשורת בין תהליכים (IPC) כי אין צורך במנגנוני סנכרון מורכבים.</li>
+                <li><strong>החלפת הקשר קלה:</strong> מערכת ההפעלה יכולה להחליף בין תהליכונים בקלות רבה יותר מאשר בין תהליכים מלאים.</li>
+                <li><strong>חיסכון בזמן אתחול:</strong> אם ניצור תהליך נפרד נצטרך לטעון קוד מהדיסק, להקצות משאבים חדשים ולהעתיק מידע. תהליכון חדש יכול להתחיל כמעט מיידית.</li>
+            </ul>
+            </div>
+            
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">האם תהליכון מקבל עוד זמן מעבד? <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+            <p>
+                כן, מערכת ההפעלה מתזמנת את התהליכונים כיחידות עצמאיות לגמרי. כל תהליכון מקבל זמן CPU משלו והמתזמן (scheduler) מחלק את זמן המעבד בין התהליכונים השונים.
+            </p>
+            <p>
+                קיימות מספר שיטות תזמון נפוצות:
+            </p>
+            <ul class="feature-list">
+                <li><strong>Round Robin:</strong> כל תהליכון מקבל פרק זמן (time slice) קבוע להרצה ואז מוחלף.</li>
+                <li><strong>מבוסס עדיפות (Priority):</strong> תהליכונים עם עדיפות גבוהה יותר מקבלים זמן מעבד רב יותר.</li>
+                <li><strong>FIFO:</strong> תהליכון מקבל זמן מעבד עד שהוא מסתיים או מוותר עליו מרצונו.</li>
+            </ul>
+            <p>
+                ברוב מערכות ההפעלה המודרניות, התזמון הוא preemptive - כלומר מערכת ההפעלה יכולה לקטוע תהליכון באמצע ריצתו כדי לתת זמן לתהליכון אחר.
+            </p>
+            </div>
+            
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">למה לכולם יש מחסניות נפרדות? <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+            <p></p>
+                מחסנית (Stack) נפרדת לכל תהליכון היא הכרחית מכמה סיבות מהותיות:
+            </p>
+            <ul class="feature-list">
+                <li><strong>מניעת התנגשויות:</strong> אם תהליכונים היו חולקים מחסנית, כל קריאה לפונקציה מאחד התהליכונים הייתה משפיעה על המצב של מחסנית התהליכון האחר.</li>
+                <li><strong>רציפות ביצוע:</strong> כשתהליכון מסתיים ומבצע return, הוא צריך מחסנית משלו כדי לשמור את מצב הביצוע שלו ללא תלות בתהליכונים אחרים.</li>
+                <li><strong>הקשר ביצוע עצמאי:</strong> כל תהליכון מבצע רצף פקודות משלו, לכן הוא צריך את משתני הסביבה המקומיים שלו ומצב החזרה.</li>
+            </ul>
+            <p>
+                למרות שיש בזה מעט בזבוז משאבים (בדרך כלל מחסנית בגודל 1MB לכל תהליכון), זהו "מחיר" נמוך יחסית לעומת היתרונות בביצועים והפשטות שזה מספק. גודל מחסנית הוא קטן יחסית למשאבים אחרים כמו ערימה (Heap) משותפת או הקצאת תהליך שלם חדש.
+            </p>
+            </div>
+            
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">ההבדלים בין רכיבי התהליכונים <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+            <ul class="feature-list">
+                <li><strong>רגיסטרים נפרדים:</strong> לכל תהליכון יש העתק של רגיסטרים של המעבד. זה מאפשר למערכת ההפעלה לשמור את מצב הביצוע המדויק של התהליכון בעת החלפתו, ולשחזר אותו כשהתהליכון חוזר לריצה. ללא זה, תהליכונים היו דורסים את המידע של רגיסטרים אחד לשני.</li>
+                <li><strong>מחסניות נפרדות:</strong> מאפשרות לכל תהליכון לנהל את רצף הקריאות לפונקציות והמשתנים המקומיים שלהן באופן עצמאי. המחסנית שומרת את "היסטוריית הביצוע" של התהליכון.</li>
+                <li><strong>מונה קוד שונה (Program Counter):</strong> שומר את מיקום הפקודה הבאה שהתהליכון צריך לבצע. בלעדיו, תהליכונים לא היו יכולים לרוץ בנקודות שונות בקוד במקביל.</li>
+                <li><strong>מצב תהליכון (Thread State):</strong> התהליכון יכול להיות במצבים שונים - מוכן לריצה, רץ, ממתין לאירוע או לסנכרון, או מסתיים, בלי קשר למצב תהליכונים אחרים באותו תהליך.</li>
+            </ul>
+            </div>
+
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">השוואה בין תהליכון בודד למספר תהליכונים <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+            <div class="visual-diagram">
+                <div style="display: flex; justify-content: space-around; width: 100%; margin: 20px 0;"></div>
+                    <!-- Single-threaded Process -->
+                    <div style="width: 100%; border: 1px solid #94a3b8; border-radius: 10px; padding: 15px; background: rgba(30, 41, 59, 0.4); position: relative;">
+
+                        <div style="display: flex; justify-content: space-between; gap: 30px;">
+                            <!-- Single-threaded Process -->
+                            <div style="width: 48%; border: 1px solid #94a3b8; border-radius: 10px; padding: 15px; background: rgba(30, 41, 59, 0.4); position: relative;">
+                                <div style="text-align: center; margin-bottom: 15px;">
+                                    <!-- Shared Resources -->
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                                        <div style="background: white; border: 1px solid #94a3b8; border-radius: 5px; padding: 5px; color: #0f172a; width: 30%;">code</div>
+                                        <div style="background: white; border: 1px solid #94a3b8; border-radius: 5px; padding: 5px; color: #0f172a; width: 30%;">data</div>
+                                        <div style="background: white; border: 1px solid #94a3b8; border-radius: 5px; padding: 5px; color: #0f172a; width: 30%;">files</div>
+                                    </div>
+                                </div>
+                                <!-- Single Thread -->
+                                <div style="width: 100%; text-align: center; background: rgba(59, 130, 246, 0.1); border-radius: 8px; padding: 10px; border: 1px dashed #60a5fa;">
+                                    <!-- Thread resources -->
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                                        <div style="background: white; border: 1px solid #94a3b8; border-radius: 5px; padding: 5px; color: #0f172a; width: 30%;">registers</div>
+                                        <div style="background: white; border: 1px solid #94a3b8; border-radius: 5px; padding: 5px; color: #0f172a; width: 30%;">PC</div>
+                                        <div style="background: white; border: 1px solid #94a3b8; border-radius: 5px; padding: 5px; color: #0f172a; width: 30%;">stack</div>
+                                    </div>
+                                    <!-- Thread wavy line -->
+                                    <div style="height: 40px; display: flex; justify-content: center; align-items: center; margin: 10px 0;">
+                                        <svg width="60" height="40" viewBox="0 0 60 40">
+                                            <path d="M0,20 Q15,5 30,20 Q45,35 60,20" stroke="#60a5fa" stroke-width="3" fill="none" />
+                                        </svg>
+                                    </div>
+                                    <div style="color: #94a3b8;">thread</div>
+                                </div>
+                                <div style="margin-top: 20px; text-align: center; color: #cbd5e1; font-size: 0.9em; font-weight: bold;">
+                                    תהליך עם תהליכון יחיד
+                                </div>
+                            </div>
+                            <!-- Multi-threaded Process -->
+                            <div style="width: 48%; border: 1px solid #94a3b8; border-radius: 10px; padding: 15px; background: rgba(30, 41, 59, 0.4); position: relative;">
+                                <div style="text-align: center; margin-bottom: 15px;">
+                                    <!-- Shared Resources -->
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                                        <div style="background: white; border: 1px solid #94a3b8; border-radius: 5px; padding: 5px; color: #0f172a; width: 30%;">code</div>
+                                        <div style="background: white; border: 1px solid #94a3b8; border-radius: 5px; padding: 5px; color: #0f172a; width: 30%;">data</div>
+                                        <div style="background: white; border: 1px solid #94a3b8; border-radius: 5px; padding: 5px; color: #0f172a; width: 30%;">files</div>
+                                    </div>
+                                </div>
+                                <!-- Multiple Threads -->
+                                <div style="display: flex; justify-content: space-between;">
+                                    <!-- Thread 1 -->
+                                    <div style="width: 31%; text-align: center; background: rgba(59, 130, 246, 0.1); border-radius: 8px; padding: 10px; border: 1px dashed #60a5fa;">
+                                        <div style="background: white; border: 1px solid #94a3b8; border-radius: 5px; padding: 5px; color: #0f172a; margin-bottom: 8px;">registers</div>
+                                        <div style="background: white; border: 1px solid #94a3b8; border-radius: 5px; padding: 5px; color: #0f172a; margin-bottom: 8px;">stack</div>
+                                        <div style="background: white; border: 1px solid #94a3b8; border-radius: 5px; padding: 5px; color: #0f172a; margin-bottom: 8px;">PC</div>
+                                        <!-- Thread wavy line -->
+                                        <div style="height: 40px; display: flex; justify-content: center; align-items: center; margin: 5px 0;">
+                                            <svg width="30" height="40" viewBox="0 0 30 40">
+                                                <path d="M15,0 Q5,20 15,40" stroke="#60a5fa" stroke-width="3" fill="none" />
+                                            </svg>
+                                        </div>
+                                        <div style="color: #94a3b8;">thread</div>
+                                    </div>
+                                    <!-- Thread 2 -->
+                                    <div style="width: 31%; text-align: center; background: rgba(59, 130, 246, 0.1); border-radius: 8px; padding: 10px; border: 1px dashed #60a5fa;">
+                                        <div style="background: white; border: 1px solid #94a3b8; border-radius: 5px; padding: 5px; color: #0f172a; margin-bottom: 8px;">registers</div>
+                                        <div style="background: white; border: 1px solid #94a3b8; border-radius: 5px; padding: 5px; color: #0f172a; margin-bottom: 8px;">stack</div>
+                                        <div style="background: white; border: 1px solid #94a3b8; border-radius: 5px; padding: 5px; color: #0f172a; margin-bottom: 8px;">PC</div>
+                                        <!-- Thread wavy line -->
+                                        <div style="height: 40px; display: flex; justify-content: center; align-items: center; margin: 5px 0;">
+                                            <svg width="30" height="40" viewBox="0 0 30 40">
+                                                <path d="M15,0 Q5,20 15,40" stroke="#60a5fa" stroke-width="3" fill="none" />
+                                            </svg>
+                                        </div>
+                                        <div style="color: #94a3b8;">thread</div>
+                                    </div>
+                                    <!-- Thread 3 -->
+                                    <div style="width: 31%; text-align: center; background: rgba(59, 130, 246, 0.1); border-radius: 8px; padding: 10px; border: 1px dashed #60a5fa;">
+                                        <div style="background: white; border: 1px solid #94a3b8; border-radius: 5px; padding: 5px; color: #0f172a; margin-bottom: 8px;">registers</div>
+                                        <div style="background: white; border: 1px solid #94a3b8; border-radius: 5px; padding: 5px; color: #0f172a; margin-bottom: 8px;">stack</div>
+                                        <div style="background: white; border: 1px solid #94a3b8; border-radius: 5px; padding: 5px; color: #0f172a; margin-bottom: 8px;">PC</div>
+                                        <!-- Thread wavy line -->
+                                        <div style="height: 40px; display: flex; justify-content: center; align-items: center; margin: 5px 0;">
+                                            <svg width="30" height="40" viewBox="0 0 30 40">
+                                                <path d="M15,0 Q5,20 15,40" stroke="#60a5fa" stroke-width="3" fill="none" />
+                                            </svg>
+                                        </div>
+                                        
+                                        <div style="color: #94a3b8;">thread</div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div style="margin-top: 20px; text-align: center; color: #cbd5e1; font-size: 0.9em; font-weight: bold;">
+                            תהליך מרובה תהליכונים
+                        </div>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                <p>גרף זה ממחיש את ההבדל המהותי בין תהליך עם תהליכון יחיד (משמאל) לתהליך עם מספר תהליכונים (מימין). בתהליך מרובה-תהליכונים, כל התהליכונים חולקים את אותו מרחב זיכרון וקבצים, אבל לכל אחד יש רגיסטרים, מחסניות ומוני קוד משלו. זה מאפשר ריצה מקבילית בתוך אותו תהליך.</p>
+            </div>
+            
+        </div>
+
+        <!-- שרתי ריבוי תהליכונים -->
+        <div class="content-section" id="multi-threaded-servers">
+            <h2>🖥️ שרתי ריבוי תהליכונים</h2>
+            <p>
+                שרת יוצר תהליכון לכל בקשה נכנסת. כך ניתן לטפל בבקשות ארוכות וקצרות במקביל בלי לחסום כולן.
+            </p>
+            <ul class="feature-list">
+                <li><strong>יתרונות:</strong> זמני תגובה מהירים, ניצול משאבים טוב יותר, שיתוף נתונים קל.</li>
+                <li><strong>חסרונות:</strong> סינכרון בין תהליכונים מורכב, בעיות race ו־deadlock, ניהול זיכרון מורכב יותר.</li>
+            </ul>
+        </div>
+
+        <!-- תכנות ריבוי ליבות -->
+        <div class="content-section" id="multi-core-programming">
+            <h2>⚙️ תכנות ריבוי ליבות</h2>
+            <p>
+                ניצול מספר ליבות במערכת מאפשר ריצה אמיתית של קוד במקביל (Parallelism). יש שני סוגים עיקריים:
+            </p>
+            <ul class="feature-list">
+                <li><strong>מקביליות נתונים (Data Parallelism):</strong> פיצול מערך נתונים לתת־קבוצות שעובדות על כל אחת ב־core שונה.</li>
+                <li><strong>מקביליות משימות (Task Parallelism):</strong> ריצה במקביל של תהליכונים המבצעים משימות שונות על אותו או על נתונים שונים.</li>
+            </ul>
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">המחשה גרפית: ריצה סידורית מול ריצה מקבילית <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+                <div class="visual-diagram">
+                    <div style="display: flex; flex-direction: column; gap: 30px;">
+                        <!-- Single-core system visualization -->
+                        <div>
+                            <h4 style="margin-bottom: 10px; color: #1a202c;">ריצה מקבילית על מערכת בעלת ליבה יחידה:</h4>
+                            <div style="display: flex; flex-direction: column; align-items: center;">
+                                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                    <div style="color: #1a202c; margin-right: 10px;">single core</div>
+                                    <div style="display: flex;"></div>
+                                        <div style="width: 40px; height: 40px; background-color: #93c5fd; display: flex; justify-content: center; align-items: center; border: 1px solid #60a5fa; color: #1a202c;">T₁</div>
+                                        <div style="width: 40px; height: 40px; background-color: #c084fc; display: flex; justify-content: center; align-items: center; border: 1px solid #a855f7; color: #1a202c;">T₂</div>
+                                        <div style="width: 40px; height: 40px; background-color: #f472b6; display: flex; justify-content: center; align-items: center; border: 1px solid #ec4899; color: #1a202c;">T₃</div>
+                                        <div style="width: 40px; height: 40px; background-color: #fb923c; display: flex; justify-content: center; align-items: center; border: 1px solid #f59e0b; color: #1a202c;">T₄</div>
+                                        <div style="width: 40px; height: 40px; background-color: #93c5fd; display: flex; justify-content: center; align-items: center; border: 1px solid #60a5fa; color: #1a202c;">T₁</div>
+                                        <div style="width: 40px; height: 40px; background-color: #c084fc; display: flex; justify-content: center; align-items: center; border: 1px solid #a855f7; color: #1a202c;">T₂</div>
+                                        <div style="width: 40px; height: 40px; background-color: #f472b6; display: flex; justify-content: center; align-items: center; border: 1px solid #ec4899; color: #1a202c;">T₃</div>
+                                        <div style="width: 40px; height: 40px; background-color: #fb923c; display: flex; justify-content: center; align-items: center; border: 1px solid #f59e0b; color: #1a202c;">T₄</div>
+                                        <div style="width: 40px; height: 40px; background-color: #93c5fd; display: flex; justify-content: center; align-items: center; border: 1px solid #60a5fa; color: #1a202c;">T₁</div>
+                                        <div style="width: 40px; height: 40px; background-color: #e5e7eb; display: flex; justify-content: center; align-items: center; border: 1px solid #d1d5db; color: #1a202c;">...</div>
+                                    </div>
+                                </div>
+                                <div style="width: 60%; height: 1px; background-color: #64748b; margin: 5px 0;">
+                                <div style="color: #1a202c;">time →</div>
+                            </div>
+                        </div>
+
+                        <!-- Multi-core system visualization -->
+                        <div>
+                            <h4 style="margin-bottom: 10px; color: #1a202c;">מקביליות במערכת מרובת ליבות:</h4>
+                            <div style="display: flex; flex-direction: column; align-items: center;">
+                                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                    <div style="color: #1a202c; margin-right: 10px;">core 1</div>
+                                    <div style="display: flex;">
+                                        <div style="width: 40px; height: 40px; background-color: #93c5fd; display: flex; justify-content: center; align-items: center; border: 1px solid #60a5fa; color: #1a202c;">T₁</div>
+                                        <div style="width: 40px; height: 40px; background-color: #f472b6; display: flex; justify-content: center; align-items: center; border: 1px solid #ec4899; color: #1a202c;">T₃</div>
+                                        <div style="width: 40px; height: 40px; background-color: #93c5fd; display: flex; justify-content: center; align-items: center; border: 1px solid #60a5fa; color: #1a202c;">T₁</div>
+                                        <div style="width: 40px; height: 40px; background-color: #f472b6; display: flex; justify-content: center; align-items: center; border: 1px solid #ec4899; color: #1a202c;">T₃</div>
+                                        <div style="width: 40px; height: 40px; background-color: #93c5fd; display: flex; justify-content: center; align-items: center; border: 1px solid #60a5fa; color: #1a202c;">T₁</div>
+                                        <div style="width: 40px; height: 40px; background-color: #e5e7eb; display: flex; justify-content: center; align-items: center; border: 1px solid #d1d5db; color: #1a202c;">...</div>
+                                    </div>
+                                </div>
+                                
+                                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                    <div style="color: #1a202c; margin-right: 10px;">core 2</div>
+                                    <div style="display: flex;">
+                                        <div style="width: 40px; height: 40px; background-color: #c084fc; display: flex; justify-content: center; align-items: center; border: 1px solid #a855f7; color: #1a202c;">T₂</div>
+                                        <div style="width: 40px; height: 40px; background-color: #fb923c; display: flex; justify-content: center; align-items: center; border: 1px solid #f59e0b; color: #1a202c;">T₄</div>
+                                        <div style="width: 40px; height: 40px; background-color: #c084fc; display: flex; justify-content: center; align-items: center; border: 1px solid #a855f7; color: #1a202c;">T₂</div>
+                                        <div style="width: 40px; height: 40px; background-color: #fb923c; display: flex; justify-content: center; align-items: center; border: 1px solid #f59e0b; color: #1a202c;">T₄</div>
+                                        <div style="width: 40px; height: 40px; background-color: #c084fc; display: flex; justify-content: center; align-items: center; border: 1px solid #a855f7; color: #1a202c;">T₂</div>
+                                        <div style="width: 40px; height: 40px; background-color: #e5e7eb; display: flex; justify-content: center; align-items: center; border: 1px solid #d1d5db; color: #1a202c;">...</div>
+                                    </div>
+                                </div>
+                                <div style="width: 60%; height: 1px; background-color: #64748b; margin: 5px 0;"></div>
+                                <div style="color: #1a202c;">time →</div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- חוק אמדאל -->
+        <div class="content-section" id="amdahl-law">
+            <h2>📊 חוק אמדאל (Amdahl's Law)</h2>
+            <p>
+            חוק אמדאל קובע את השיפור המרבי בביצועים שניתן להשיג כאשר מריצים חלק מתוכנית במקביל על N ליבות:
+            </p>
+            <div class="code-example">
+    <pre><code class="language-math">Speedup ≤ 1 / (S + (1 − S)/N)</code></pre>
+            <p>כאשר S הוא החלק הסידורי (שלא ניתן להריץ במקביל) ו-N הוא מספר המעבדים/ליבות.</p>
+            </div>
+            
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">הסבר מעמיק על חוק אמדאל <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+            <p>
+                חוק אמדאל הוא עיקרון יסודי במערכות מקביליות שפותח על ידי ג'ין אמדאל ב-1967. החוק מדגיש את המגבלות הטבועות בהאצת תוכניות באמצעות מקביליות:
+            </p>
+            <ul class="feature-list">
+                <li><strong>מגבלת הקוד הסידורי:</strong> ככל שיש יותר קוד שחייב לרוץ באופן סידורי (ולא במקביל), כך הרווח המרבי מהוספת מעבדים/ליבות קטן יותר.</li>
+                <li><strong>תקרת האצה:</strong> אם 10% מהתוכנית חייבת לרוץ בצורה סידורית, השיפור המקסימלי לא יכול לעבור פי 10 מהמהירות המקורית, גם אם נוסיף אינסוף מעבדים.</li>
+                <li><strong>החשיבות של S:</strong> החלק הסידורי הוא הצוואר בקבוק הביצועים האמיתי במערכות מקביליות.</li>
+            </ul>
+            
+            <h4>דוגמה מספרית:</h4>
+            <p>
+                נניח שיש לנו תוכנית שלוקחת 100 שעות לרוץ על מעבד אחד, ו-95% ממנה ניתן להריץ במקביל (S = 0.05).
+            </p>
+            <ul class="feature-list">
+                <li><strong>עם 2 מעבדים:</strong> המהירות תהיה 1 / (0.05 + 0.95/2) = 1.9x מהמקורית</li>
+                <li><strong>עם 4 מעבדים:</strong> המהירות תהיה 1 / (0.05 + 0.95/4) = 3.5x מהמקורית</li>
+                <li><strong>עם ∞ מעבדים:</strong> המהירות המקסימלית תהיה 1 / 0.05 = 20x מהמקורית, לא משנה כמה מעבדים נוסיף!</li>
+            </ul>
+            
+            <div class="visual-diagram">
+                <h4 style="margin-bottom: 15px; color: #cbd5e1;">המחשה גרפית של חוק אמדאל</h4>
+                <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 30px;">
+                <!-- הדמיית גרף חוק אמדאל -->
+                <div style="width: 500px; height: 300px; position: relative; background: rgba(30, 41, 59, 0.5); border-radius: 10px; padding: 20px;">
+                    <!-- ציר Y - Speedup -->
+                    <div style="position: absolute; top: 0; bottom: 0; left: 40px; width: 1px; background: #94a3b8;"></div>
+                    <div style="position: absolute; left: 10px; top: 10px; transform: rotate(-90deg); transform-origin: left top; color: #cbd5e1; white-space: nowrap;">Speedup Factor</div>
+                    
+                    <!-- ציר X - נתוני מעבדים -->
+                    <div style="position: absolute; left: 40px; right: 20px; bottom: 50px; height: 1px; background: #94a3b8;"></div>
+                    <div style="position: absolute; bottom: 20px; left: 0; right: 0; text-align: center; color: #cbd5e1;">Number of Processors (N)</div>
+                    
+                    <!-- קו 95% parallelizable -->
+                    <svg style="position: absolute; top: 20px; left: 40px; right: 20px; bottom: 50px; overflow: visible;">
+                    <path d="M0,225 Q60,100 120,60 Q180,30 240,20 Q300,15 370,12" 
+                          stroke="#3b82f6" stroke-width="3" fill="none" />
+                    <text x="380" y="12" fill="#3b82f6" font-size="12">S=0.05 (95% מקבילי)</text>
+                    </svg>
+                    
+                    <!-- קו 75% parallelizable -->
+                    <svg style="position: absolute; top: 20px; left: 40px; right: 20px; bottom: 50px; overflow: visible;">
+                    <path d="M0,225 Q60,170 120,140 Q180,120 240,110 Q300,105 370,103" 
+                          stroke="#8b5cf6" stroke-width="3" fill="none" />
+                    <text x="380" y="103" fill="#8b5cf6" font-size="12">S=0.25 (75% מקבילי)</text>
+                    </svg>
+                    
+                    <!-- קו 50% parallelizable -->
+                    <svg style="position: absolute; top: 20px; left: 40px; right: 20px; bottom: 50px; overflow: visible;">
+                    <path d="M0,225 Q60,190 120,175 Q180,165 240,160 Q300,158 370,156" 
+                          stroke="#ec4899" stroke-width="3" fill="none" />
+                    <text x="380" y="156" fill="#ec4899" font-size="12">S=0.5 (50% מקבילי)</text>
+                    </svg>
+                    
+                    <!-- סימון ערכי ציר X -->
+                    <div style="position: absolute; bottom: 30px; left: 40px; color: #94a3b8; font-size: 12px;">1</div>
+                    <div style="position: absolute; bottom: 30px; left: 100px; color: #94a3b8; font-size: 12px;">4</div>
+                    <div style="position: absolute; bottom: 30px; left: 180px; color: #94a3b8; font-size: 12px;">8</div>
+                    <div style="position: absolute; bottom: 30px; left: 260px; color: #94a3b8; font-size: 12px;">16</div>
+                    <div style="position: absolute; bottom: 30px; left: 340px; color: #94a3b8; font-size: 12px;">32</div>
+                    <div style="position: absolute; bottom: 30px; left: 420px; color: #94a3b8; font-size: 12px;">64</div>
+                    
+                    <!-- סימון ערכי ציר Y -->
+                    <div style="position: absolute; left: 25px; top: 225px; color: #94a3b8; font-size: 12px;">1x</div>
+                    <div style="position: absolute; left: 25px; top: 175px; color: #94a3b8; font-size: 12px;">2x</div>
+                    <div style="position: absolute; left: 25px; top: 125px; color: #94a3b8; font-size: 12px;">3x</div>
+                    <div style="position: absolute; left: 25px; top: 75px; color: #94a3b8; font-size: 12px;">4x</div>
+                    <div style="position: absolute; left: 25px; top: 25px; color: #94a3b8; font-size: 12px;">5x</div>
+                </div>
+                </div>
+                <p>
+                הגרף מראה כיצד ככל שמספר המעבדים גדל (ציר X), שיפור הביצועים (ציר Y) מתקרב לגבול קבוע שנקבע 
+                על ידי החלק הסידורי. ניתן לראות כי ככל שהחלק הסידורי (S) קטן יותר, כך ניתן להגיע לשיפור ביצועים גבוה יותר.
+                </p>
+            </div>
+            
+            <h4>השלכות מעשיות:</h4>
+            <ul class="feature-list">
+                <li><strong>השקעה חכמה:</strong> לא תמיד כדאי להוסיף מעבדים/ליבות - מעבר לנקודה מסוימת השיפור שולי מאוד.</li>
+                <li><strong>מיקוד המאמצים:</strong> חשוב יותר להקטין את החלק הסידורי מאשר להגדיל את מספר המעבדים.</li>
+                <li><strong>תכנון מקביליות:</strong> יש לשאוף לכתוב קוד עם אחוז מקביליות גבוה ככל האפשר.</li>
+            </ul>
+            </div>
+            
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">יישום והשפעה של חוק אמדאל <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+            <p>
+                חוק אמדאל משפיע על החלטות תכנון מערכות מחשב והתוכנה שרצה עליהן:
+            </p>
+            <ul class="feature-list">
+                <li><strong>אופטימיזציה נכונה:</strong> במקום להתמקד רק בשיפור החלק המקבילי או הוספת ליבות, חשוב להשקיע גם בייעול החלק הסידורי.</li>
+                <li><strong>תוספת מעבדים:</strong> יש להעריך את התועלת לפני הוספת ליבות/מעבדים - לפעמים אין הצדקה כלכלית מעבר לכמות מסוימת.</li>
+                <li><strong>ארכיטקטורת תוכנה:</strong> חשוב לתכנן אפליקציות כך שכמה שפחות קוד יהיה בחלק הסידורי.</li>
+            </ul>
+            
+            <div class="highlight-box">
+                <p>
+                <strong>אנקדוטה מעניינת:</strong> חוק אמדאל מסביר למה חברות כמו אינטל ו-AMD עברו מהגברת תדר השעון להוספת ליבות. 
+                עם זאת, הן עדיין משקיעות רבות בשיפור הביצועים של כל ליבה בודדת, בדיוק בגלל המגבלות שחוק אמדאל מציב על האצה מקבילית.
+                </p>
+            </div>
+            </div>
+        </div></ul>
+        </div>
+
+    </div>
+
+   
+</body>
+</html>
