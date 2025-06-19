@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>המשך מבוא וסקירה כללית - מערכות הפעלה</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* סרגל ניווט צף */
+        .nav-sidebar {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            z-index: 100;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            max-width: 200px;
+            transition: all 0.3s ease;
+        }
+        .nav-sidebar:hover {
+            transform: translateY(-50%) translateX(-5px);
+        }
+        .nav-sidebar-title {
+            color: #60a5fa;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            font-size: 0.9em;
+        }
+        .nav-sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .nav-sidebar li {
+            margin-bottom: 8px;
+        }
+        .nav-sidebar a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.85em;
+            display: block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+        }
+        .nav-sidebar a:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            transform: translateX(-3px);
+        }
+        @media (max-width: 1200px) {
+            .nav-sidebar {
+                right: -180px;
+                transition: right 0.3s ease;
+            }
+            .nav-sidebar:hover {
+                right: 0;
+                transform: translateY(-50%) translateX(0);
+            }
+            .nav-sidebar::before {
+                content: "≡";
+                position: absolute;
+                left: -35px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 30px;
+                height: 30px;
+                background: rgba(15, 23, 42, 0.8);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #60a5fa;
+                border: 1px solid rgba(148, 163, 184, 0.2);
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+                font-size: 1.5em;
+            }
+        }
+        /* איפוס ועיצוב כללי */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%);
+            background-attachment: fixed;
+            color: #f1f5f9;
+            min-height: 100vh;
+            line-height: 1.7;
+        }
+        /* אפקט חלקיקים ברקע */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 200, 255, 0.1) 0%, transparent 50%);
+            z-index: -1;
+            animation: float 20s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        /* כותרת ראשית */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .header h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+        }
+        .subtitle {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.3em;
+            color: #94a3b8;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+        /* תוכן מחולק לחלקים */
+        .content-section {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.6s ease forwards;
+        }
+        .content-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+        .content-section:nth-child(odd) {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%);
+            border-left: 3px solid rgba(59, 130, 246, 0.5);
+        }
+        .content-section:nth-child(even) {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border-left: 3px solid rgba(236, 72, 153, 0.5);
+        }
+        .content-section h2 {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .content-section:nth-child(3n+1) h2 {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .content-section:nth-child(3n+2) h2 {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .content-section:nth-child(3n+3) h2 {
+            background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .content-section h3 {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+            color: #60a5fa;
+            border-right: 3px solid #3b82f6;
+            padding-right: 15px;
+        }
+        .content-section:nth-child(3n+2) h3 {
+            color: #c084fc;
+            border-right-color: #8b5cf6;
+        }
+        .content-section:nth-child(3n+3) h3 {
+            color: #f472b6;
+            border-right-color: #ec4899;
+        }
+        .content-section p {
+            margin-bottom: 15px;
+            color: #cbd5e1;
+            font-size: 1.1em;
+        }
+        /* רשימות */
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        .feature-list li {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .content-section:nth-child(3n+1) .feature-list li {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+        .content-section:nth-child(3n+2) .feature-list li {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: rgba(139, 92, 246, 0.2);
+        }
+        .content-section:nth-child(3n+3) .feature-list li {
+            background: rgba(236, 72, 153, 0.1);
+            border-color: rgba(236, 72, 153, 0.2);
+        }
+        .feature-list li::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+        }
+        .content-section:nth-child(3n+1) .feature-list li::before {
+            background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+        }
+        .content-section:nth-child(3n+2) .feature-list li::before {
+            background: linear-gradient(to bottom, #8b5cf6, #ec4899);
+        }
+        .content-section:nth-child(3n+3) .feature-list li::before {
+            background: linear-gradient(to bottom, #ec4899, #f59e0b);
+        }
+        .feature-list li:hover {
+            transform: translateX(-5px);
+        }
+        .content-section:nth-child(3n+1) .feature-list li:hover {
+            background: rgba(59, 130, 246, 0.15);
+        }
+        .content-section:nth-child(3n+2) .feature-list li:hover {
+            background: rgba(139, 92, 246, 0.15);
+        }
+        .content-section:nth-child(3n+3) .feature-list li:hover {
+            background: rgba(236, 72, 153, 0.15);
+        }
+        .feature-list li strong {
+            font-weight: 600;
+        }
+        .content-section:nth-child(3n+1) .feature-list li strong {
+            color: #3b82f6;
+        }
+        .content-section:nth-child(3n+2) .feature-list li strong {
+            color: #8b5cf6;
+        }
+        .content-section:nth-child(3n+3) .feature-list li strong {
+            color: #ec4899;
+        }
+        /* גרפיקה ויזואלית */
+        .visual-diagram {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(51, 65, 85, 0.8));
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+        .content-section:nth-child(3n+1) .visual-diagram {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(59, 130, 246, 0.1));
+        }
+        .content-section:nth-child(3n+2) .visual-diagram {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(139, 92, 246, 0.1));
+        }
+        .content-section:nth-child(3n+3) .visual-diagram {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(236, 72, 153, 0.1));
+        }
+        .hierarchy-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .layer {
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            min-width: 200px;
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+        .content-section:nth-child(3n+1) .layer {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        }
+        .content-section:nth-child(3n+2) .layer {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+        }
+        .content-section:nth-child(3n+3) .layer {
+            background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);
+            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.3);
+        }
+        .layer:hover {
+            transform: scale(1.05);
+        }
+        .content-section:nth-child(3n+1) .layer:hover {
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+        .content-section:nth-child(3n+2) .layer:hover {
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+        .content-section:nth-child(3n+3) .layer:hover {
+            box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
+        }
+        .arrow {
+            font-size: 1.5em;
+        }
+        .content-section:nth-child(3n+1) .arrow {
+            color: #60a5fa;
+        }
+        .content-section:nth-child(3n+2) .arrow {
+            color: #c084fc;
+        }
+        .content-section:nth-child(3n+3) .arrow {
+            color: #f472b6;
+        }
+        /* קוד לדוגמה */
+        .code-example {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9em;
+            color: #e2e8f0;
+            overflow-x: auto;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .content-section:nth-child(3n+1) .code-example {
+            border-left: 4px solid #3b82f6;
+        }
+        .content-section:nth-child(3n+2) .code-example {
+            border-left: 4px solid #8b5cf6;
+        }
+        .content-section:nth-child(3n+3) .code-example {
+            border-left: 4px solid #ec4899;
+        }
+        .content-section:nth-child(3n+1) .code-example .keyword {
+            color: #3b82f6;
+        }
+        .content-section:nth-child(3n+2) .code-example .keyword {
+            color: #8b5cf6;
+        }
+        .content-section:nth-child(3n+3) .code-example .keyword {
+            color: #ec4899;
+        }
+        .code-example .comment {
+            color: #64748b;
+            font-style: italic;
+        }
+        /* הדגשה מיוחדת */
+        .highlight-box {
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+        }
+        .content-section:nth-child(3n+1) .highlight-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        .content-section:nth-child(3n+2) .highlight-box {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        .content-section:nth-child(3n+3) .highlight-box {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+        }
+        .highlight-box::before {
+            content: '💡';
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            background: rgba(15, 23, 42, 0.9);
+            padding: 5px 10px;
+            border-radius: 50%;
+            font-size: 1.2em;
+        }
+        /* רספונסיביות */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            .content-section {
+                padding: 20px;
+            }
+            .hierarchy-box {
+                gap: 10px;
+            }
+            .layer {
+                min-width: 150px;
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+        }
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+    <style>
+        /* סגנון עבור התפריט המדורג */
+        .nav-submenu {
+            display: none;
+            padding-right: 15px;
+            margin-top: 5px;
+        }
+        .nav-category {
+            margin-bottom: 10px;
+        }
+        .category-title {
+            font-weight: 600;
+            color: #60a5fa;
+            cursor: pointer;
+            display: block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+        }
+        .category-title:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+        .nav-category.active .nav-submenu {
+            display: block;
+        }
+        .nav-submenu a {
+            font-size: 0.8em;
+            padding: 3px 8px;
+        }
+    </style></li>
+        
+        /* סקריפט להפעלת התפריט */
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const categoryTitles = document.querySelectorAll('.category-title');
+                
+                categoryTitles.forEach(title => {
+                    title.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const parent = this.parentElement;
+                        const isActive = parent.classList.contains('active');
+                        
+                        // סגור את כל הקטגוריות
+                        document.querySelectorAll('.nav-category').forEach(cat => {
+                            cat.classList.remove('active');
+                        });
+                        
+                        // פתח את הקטגוריה הנוכחית אם היא לא הייתה פתוחה
+                        if (!isActive) {
+                            parent.classList.add('active');
+                        }
+                    });
+                });
+            });
+        </script>
+    
+</head>
+<body>
+    <!-- סרגל ניווט צף -->
+    <div class="nav-sidebar">
+        <div class="nav-sidebar-title">תוכן העניינים</div>
+        <ul class="nav-main-menu"></ul>
+            <!-- קטגוריה 1: עקרונות בסיסיים -->
+            <li class="nav-category">
+                <a href="#" class="category-title">🔄 עקרונות בסיסיים</a>
+                <ul class="nav-submenu">
+                    <li><a href="#ribui-tkhnuti">ריבוי תכנותי</a></li>
+                    <li><a href="#ribui-mishimot">ריבוי משימות</a></li>
+                    <li><a href="#peula-ribui">פעולה במצב ריבוי</a></li>
+                    <li><a href="#shaon-atzer">שעון עצר</a></li>
+                </ul>
+            </li>
+            <!-- קטגוריה 2: ניהול משאבים -->
+            <li class="nav-category">
+                <a href="#" class="category-title">🔧 ניהול משאבים</a>
+                <ul class="nav-submenu">
+                    <li><a href="#nihul-tahalichim">ניהול תהליכים</a></li>
+                    <li><a href="#peilut-nihul-tahalichim">פעילות ניהול תהליכים</a></li>
+                    <li><a href="#nihul-zikaron">ניהול זיכרון</a></li>
+                    <li><a href="#metamon">מטמון</a></li>
+                </ul>
+            </li>
+            <!-- קטגוריה 3: מערכות אחסון ותקשורת -->
+            <li class="nav-category">
+                <a href="#" class="category-title">💽 אחסון ותקשורת</a>
+                <ul class="nav-submenu">
+                    <li><a href="#nihul-filesystems">ניהול מערכות קבצים</a></li>
+                    <li><a href="#nihul-akhston-hamoni">ניהול אחסון המוני</a></li>
+                    <li><a href="#io-system">מערכת קלט/פלט</a></li>
+                    <li><a href="#security">אבטחה והגנה</a></li>
+                </ul>
+            </li>
+            <!-- קטגוריה 4: ארכיטקטורות מתקדמות -->
+            <li class="nav-category">
+                <a href="#" class="category-title">🏗️ ארכיטקטורות מתקדמות</a>
+                <ul class="nav-submenu">
+                    <li><a href="#computing-env">סביבת מחשב</a></li>
+                    <li><a href="#architecture">ארכיטקטורות מחשב</a></li>
+                    <li><a href="#multi-vs-multi">רב מעבד מול רב ליבות</a></li>
+                    <li><a href="#numa">גישה לא אחידה לזיכרון</a></li>
+                </ul>
+            </li>
+            <!-- קטגוריה 5: סביבות מחשוב מודרניות -->
+            <li class="nav-category">
+                <a href="#" class="category-title">☁️ סביבות מחשוב </a>
+                <ul class="nav-submenu">
+                    <li><a href="#traditional-env">סביבה מסורתית</a></li>
+                    <li><a href="#mobile-env">סביבה ניידת</a></li>
+                    <li><a href="#client-server-env">סביבה שרת-לקוח</a></li>
+                    <li><a href="#p2p-env">סביבה עמית לעמית</a></li>
+                    <li><a href="#cloud-computing-env">מחשוב ענן</a></li>
+                    <li><a href="#real-time-embedded-env">מערכת משובצת בזמן אמת</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="back-home">
+            <a href="index.html">🏠 חזרה לדף הבית</a>
+        </div>
+    </div>
+
+    
+
+    <div class="container">
+        <div class="header">
+            <h1>🛠️ ניהול תהליכים</h1>
+            <div class="subtitle">Process Management</div>
+        </div>
+
+        <!-- ריבוי תכנותי -->
+        <div class="content-section" id="ribui-tkhnuti">
+            <h2>🔄 ריבוי תכנותי (Multi Programming)</h2>
+            <p>ריבוי תכנותי בגרסאות ישנות של מערכות (Batch Systems) מאפשר לשמור מספר עבודות בזיכרון כך שה-CPU לא יעמוד ללא עבודה. המערכת בוחרת עבודה להפעלה, וכאשר היא ממתינה לקלט/פלט, עוברת להריץ עבודה אחרת.</p>
+            <div class="highlight-box">
+                <strong>נקודות חשובות:</strong>
+                <ul style="list-style-type: disc; margin: 10px 0 0 20px; color: #cbd5e1;">
+                    <li>מדמה ריבוי למרות שבפועל זמן המעבד מתחלק בין עבודות בזמנים גדולים.</li>
+                    <li>מתאים בעיקר למערכות אצווה (Batch).</li>
+                    <li>אם עבודה אחת מחכה לקלט/פלט, המעבד עובר לעבודה אחרת.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ריבוי משימות -->
+        <div class="content-section" id="ribui-mishimot">
+            <h2>⏱️ ריבוי משימות (Multi Tasking / Time Sharing)</h2>
+            <p>ריבוי משימות מאפשר חלוקת זמן המעבד בין תהליכים בצורה דינמית וקצרה, כך שהמשתמש מרגיש תגובה מיידית לאינטראקציה. מתאים למערכות אינטראקטיביות.</p>
+            <div class="feature-list">
+                <li><strong>חלוקת זמן קצרה (Time Slice):</strong> כל תהליך מקבל קצבת זמן קצרה של המעבד.</li>
+                <li><strong>תגובה מהירה:</strong> המשתמש יכול לראות תגובה כמעט מיידית.</li>
+                <li><strong>הקצאת CPU דינמית:</strong> מערכת ההפעלה בוחרת תהליך הבא על בסיס נימוקים שונים (עדיפויות, מעקב זמן ריצה וכדומה).</li>
+            </div>
+        </div>
+
+        <!-- פעולה במצב ריבוי -->
+        <div class="content-section" id="peula-ribui">
+            <h2>⚙️ פעולה במצב ריבוי (Dual-mode Operation)</h2>
+            <p>מצב כפול (User Mode ו-Kernel Mode) הוא חלק מהגנה: קריאות מערכת מאפשרות מעבר ממצב משתמש לגרעין, והרשאה למבצעים רגישים. במצב משתמש פעולות מסוימות נחסמות, ורק דרך system call המעבד מועבר למצב גרעין.</p>
+            <div class="code-example">
+<span class="comment">// דוגמה: מעבר ממצב משתמש לגרעין בקריאת מערכת</span><br>
+<span class="keyword">system_call</span>(…); <span class="comment">// המעבד עובר למצב גרעין לביצוע פעולה רגישת</span><br>
+<span class="comment">// לאחר סיום הפעולה, המעבד חוזר למצב משתמש באופן בטוח.</span>
+            </div>
+            <div class="highlight-box">
+                <strong>הערה:</strong> המעבר נעשה תמיד דרך מנגנון מוגן (trap), לא באמצעות קפיצה ישירה, מה שמונע הזרקת קוד זדוני למצב גרעין.
+            </div>
+        </div>
+
+        <!-- שעון עצר -->
+        <div class="content-section" id="shaon-atzer">
+            <h2>⏲️ שעון עצר (Timer Interrupt)</h2>
+            <p>המערכת מגדירה טיימר שמקטין ערך בכל יחידת זמן. כאשר הטיימר מתאפס, נשלחת פסיקה (Interrupt) לגרעין, המאפשר לו לבצע preemption ולבחור תהליך אחר לריצה.</p>
+            <div class="feature-list">
+                <li><strong>מניעת לולאות אינסופיות:</strong> אם תהליך נהיה תקוע, הטיימר מאפשר למערכת לחזור ולהחליט שלא להמשיך בתהליך הבעייתי.</li>
+                <li><strong>preemption:</strong> מאפשר למערכת לחתוך ריצה של תהליך ולרוץ בתהליך אחר לפי מדיניות התזמון.</li>
+                <li><strong>הגדרת קצבת זמן:</strong> כל תהליך מקבל קצבת CPU קצובה מראש, ושעון העצירה מבטיח חזרה לגרעין בתום הקצבה.
+                </li>
+            </div>
+        </div>
+
+        <!-- ניהול תהליכים -->
+        <div class="content-section" id="nihul-tahalichim">
+            <h2>🔧 ניהול תהליכים (Process Management)</h2>
+            <p>תהליך הוא יישות אקטיבית: מסגרת להרצת תוכנה עם מצבים (state), סגמנטים בזיכרון ומשאבים שונים. מערכת ההפעלה מטפלת ביצירה, השהייה, המשך, והרג של תהליכים.</p>
+            <div class="visual-diagram">
+                <div class="hierarchy-box">
+                    <div class="layer">📦 תהליך</div>
+                    <div class="arrow">↓</div>
+                    <div class="layer">⚙️ קוד + נתונים בזיכרון</div>
+                    <div class="arrow">↓</div>
+                    <div class="layer">🖥️ משאבי מערכת (CPU, I/O)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- פעילות ניהול תהליכים -->
+        <div class="content-section" id="peilut-nihul-tahalichim">
+            <h2>⚙️ פעילות ניהול תהליכים (Process Management Activities)</h2>
+            <ul class="feature-list">
+                <li><strong>יצירה והרס תהליכים:</strong> fork/spawn והקצאת משאבים ראשונית; הריגה ושחרור משאבים.</li>
+                <li><strong>תזמון ותעדוף:</strong> בחירת תהליך לריצה לפי מדיניות (FCFS, Round Robin, Priority וכו').</li>
+                <li><strong>השעיה והמשך:</strong> עצירת תהליך (לדוגמה: המתנה ל-I/O) והמשך ריצה כשהמשאב מוכן.</li>
+                <li><strong>סינכרון:</strong> מנגנונים למניעת תחרות (locks, semaphores) ולטיפול ב-deadlock.</li>
+                <li><strong>תקשורת בין תהליכים (IPC):</strong> העברת הודעות, shared memory, pipes וכו'.</li>
+                <li><strong>טיפול במבוי סתום (Deadlock):</strong> זיהוי, מניעה, טיפול והשבתת תהליכים במידת הצורך.</li>
+            </ul>
+        </div>
+
+        <!-- ניהול זיכרון -->
+        <div class="content-section" id="nihul-zikaron">
+            <h2>🧠 ניהול זיכרון (Memory Management)</h2>
+            <p>מערכת ההפעלה קובעת איזה חלק בזיכרון מוקצה לתהליך ומתי, עוקבת אחרי מיקום וזמינות, תומכת ב-virtual memory ושחלוף (swapping) במידת הצורך.</p>
+            <div class="highlight-box">
+                <strong>נקודות עיקריות:</strong>
+                <ul style="list-style-type: disc; margin: 10px 0 0 20px; color: #cbd5e1;">
+                    <li>מעקב אחר משתמשי הזיכרון: מה תפוס ומה פנוי.</li>
+                    <li>הקצאה דינמית: פרוסת זיכרון לכל תהליך לפי דרישה.</li>
+                    <li>עיבוי ושחרור: שחלוף תהליכים לדיסק (swap) אם אין מקום בזיכרון הראשי.</li>
+                    <li>Virtual Memory: מאפשר להריץ תהליכים חלקית בזיכרון הראשי, עם pages ו-TLB.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ניהול מערכות קבצים -->
+        <div class="content-section" id="nihul-filesystems">
+            <h2>📁 ניהול מערכות קבצים (File System Management)</h2>
+            <p>מערכת ההפעלה מספקת מבנה לוגי אחיד (קבצים, ספריות) מעל אחסון פיזי שונה, מטפלת ביצירת/מחיקה, הקצאה ומיפוי לדיסק, בקרת גישה ובטיחות.</p>
+            <ul class="feature-list">
+                <li><strong>יצירה ומחיקה:</strong> קבצים וספריות עם הרשאות מתאימות.</li>
+                <li><strong>מיפוי לדיסק:</strong> חלוקת בלוקים/inodes ואלגוריתמים לניהול חלל פנוי.</li>
+                <li><strong>תזמון דיסק:</strong> סדר פעולות קריאה/כתיבה לשיפור ביצועים.</li>
+                <li><strong>גיבוי ושחזור:</strong> מנגנונים לשמירת נתונים ארוכי טווח והחלמת תקלות.</li>
+                <li><strong>בקרה והרשאות:</strong> קביעת מי יכול לקרוא/לכתוב/להריץ קבצים.</li>
+            </ul>
+        </div>
+
+        <!-- ניהול אחסון המוני -->
+        <div class="content-section" id="nihul-akhston-hamoni">
+            <h2>💽 ניהול אחסון המוני (Mass-Storage Management)</h2>
+            <p>טיפול בהתקני אחסון שונים (HDD, SSD, רשת). התאמה ליכולות שונות של מדיומים (קיבולת, מהירות, אופן גישה). מערכת ההפעלה מספקת ממשק אחיד ובחירה באלגוריתמים מתאימים.</p>
+            <div class="visual-diagram">
+                <h4>🗄️ היררכיית אחסון</h4>
+                <div class="hierarchy-box">
+                    <div class="layer" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">Cache/Buffer</div>
+                    <div class="arrow">↓</div>
+                    <div class="layer" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">RAM</div>
+                    <div class="arrow">↓</div>
+                    <div class="layer" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">SSD/HDD/Network Storage</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- מטמון -->
+        <div class="content-section" id="metamon">
+            <h2>⚡ מטמון (Caching)</h2>
+            <p>זיכרון מהיר קטן המשמש לאחסון מידע או נתונים שנטענים בתדירות גבוהה, במטרה לקצר זמני גישה ולהפחית תעבורה אל הזיכרון הראשי או אחסון איטי.</p>
+            <div class="feature-list">
+                <li><strong>Cache Levels:</strong> L1, L2, L3 – קרבה ומהירות שונה.</li>
+                <li><strong>מדיניות החלפה:</strong> LRU, FIFO וכדומה.</li>
+                <li><strong>Cache Coherence:</strong> נושא חשוב בסביבות רב-מעבד ורב-ליבות.</li>
+            </div>
+        </div>
+
+        <!-- מערכת קלט/פלט -->
+        <div class="content-section" id="io-system">
+            <h2>🔌 מערכת קלט/פלט (I/O Subsystem)</h2>
+            <p>מערכת ההפעלה מנהלת התקנים בעזרת דרייברים, מפשטת גישה אחידה, מטפלת缓冲 (buffering), מטמון, סלילים (spooling) וטיפול ב-interrupts.</p>
+            <ul class="feature-list">
+                <li><strong>דרייברים:</strong> קוד המתווך בין גרעין להתקן ספציפי.</li>
+                <li><strong>Buffering & Spooling:</strong> אחסון ביניים ושילוב פעולות I/O לשיפור ביצועים.</li>
+                <li><strong>Interrupt Handling:</strong> תגובה מהירה לאירועי חומרה.</li>
+                <li><strong>ממשק אחיד:</strong> API אחיד לתוכנות מעבר לסוג ההתקן.</li>
+            </ul>
+        </div>
+
+        <!-- אבטחה והגנה -->
+        <div class="content-section" id="security">
+            <h2>🔒 אבטחה והגנה (Protection & Security)</h2>
+            <p>מנגנונים למניעת גישה בלתי מורשית למשאבים ולתהליכים, וכן הגנה מפני התקפות פנימיות וחיצוניות.</p>
+            <div class="feature-list">
+                <li><strong>בקרת גישה:</strong> מנגנוני הרשאות, משתמשים וקבוצות.</li>
+                <li><strong>בידוד תהליכים:</strong> מניעת גישה אל זיכרון תהליכים אחרים.</li>
+                <li><strong>הגנת המערכת:</strong> antivirus, firewalls, מניעת DoS.</li>
+                <li><strong>Authentication/Authorization:</strong> אימות וזהוי לפני גישה למשאבים רגישים.</li>
+            </div>
+        </div>
+
+        <!-- סביבת מחשב -->
+        <div class="content-section" id="computing-env">
+            <h2>🌐 סביבת מחשב (Computing Environments)</h2>
+            <p>הקשרים שבהם פועלת מערכת ההפעלה: וירטואליזציה, מערכות מבוזרות, ענן, mobile וכו'. כל סביבה מציבה דרישות משלה לניהול תהליכים ומשאבים.</p>
+            
+            <h3>וירטואליזציה (Virtualization)</h3>
+            <p>טכניקה המאפשרת להריץ מספר מערכות הפעלה על אותה חומרה פיזית, תוך יצירת מכונות וירטואליות (VMs) מבודדות.</p>
+            <ul class="feature-list">
+                <li><strong>מנהל מכונות וירטואלי (VMM/Hypervisor):</strong> מספק שירותי וירטואליזציה ומאפשר למערכות הפעלה לרוץ במקביל, כמו VMware ESX או Citrix Xenserver.</li>
+                <li><strong>וירטואליזציה מלאה:</strong> הרצת מערכת הפעלה שלמה בסביבה מדומה, ללא שינויים בקוד המקורי.</li>
+                <li><strong>וירטואליזציה חלקית:</strong> שינויים קלים במערכת ההפעלה לשיפור ביצועים במכונה הוירטואלית.</li>
+            </ul>
+            
+            <h3>אמולציה (Emulation)</h3>
+            <p>משמשת כאשר מעבד המקור מסוג שונה מהיעד (למשל PowerPC לאינטל x86). זוהי השיטה האיטית ביותר בדרך כלל.</p>
+            <div class="code-example">
+                <span class="comment">// אמולציה מתרגמת כל פקודה בזמן אמת</span><br>
+                <span class="keyword">for each</span> instruction_from_source_architecture:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">translate_and_execute</span>(instruction) <span class="comment">// תרגום ותהליך איטי</span>
+            </div>
+            
+            <h3>פרשנות (Interpretation)</h3>
+            <p>כאשר שפת מחשב לא נערכה לקוד המקורי - כמו מכונות וירטואליות של Java (JVM).</p>
+            
+            <div class="highlight-box">
+                <strong>דוגמאות סביבות מחשוב:</strong>
+                <ul style="list-style-type: disc; margin: 10px 0 0 20px; color: #cbd5e1;">
+                    <li>מארחי VM וקונטיינרים (Docker, Kubernetes)</li>
+                    <li>מחשוב מקבילי ומבוזר (Cluster Computing)</li>
+                    <li>שירותי ענן (AWS, Azure, GCP)</li>
+                    <li>מערכות משובצות (Embedded Systems)</li>
+                    <li>מערכות זמן אמת (Real-time Systems)</li>
+                </ul>
+            </div>
+            
+            <div class="visual-diagram">
+                <h4>🔄 שכבות וירטואליזציה</h4>
+                <div class="hierarchy-box">
+                    <div class="layer">VM 1 (מע' הפעלה אורחת)</div>
+                    <div class="layer">VM 2 (מע' הפעלה אורחת)</div>
+                    <div class="arrow">↓</div>
+                    <div class="layer">Hypervisor</div>
+                    <div class="arrow">↓</div>
+                    <div class="layer">חומרה פיזית</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ארכיטקטורות מחשב -->
+        <div class="content-section" id="architecture">
+            <h2>🏗️ ארכיטקטורות מחשב (Computer Architectures)</h2>
+            <p>מבנה וארגון המעבדים והרכיבים: מעבד יחיד, רב-מעבד (multi-processor), רב-ליבות (multi-core), GPU ועוד. ארכיטקטורה משפיעה על ניהול תהליכים, סינכרוניזציה וזיכרון משותף.</p>
+            <div class="feature-list">
+                <li><strong>Single Processor:</strong> כל תהליך משתף זמן על מעבד אחד.</li>
+                <li><strong>Multi-Processor:</strong> מספר מעבדים נפרדים; דורש סינכרוניזציה ושמירה על קוהרנטיות זיכרון.</li>
+                <li><strong>Multi-Core:</strong> ליבות מרובות במעבד יחיד עם מטמון משותף או נפרד.</li>
+            </div>
+        </div>
+
+        <!-- רב מעבד מול רב ליבות -->
+        <div class="content-section" id="multi-vs-multi">
+            <h2>⚖️ רב מעבד מול רב ליבות (Multi-Processor vs Multi-Core)</h2>
+            <p>בד"כ ההבדל בינהם הוא ברמות המטמון ובקוהרנטיות:</p>
+            <ul class="feature-list">
+                <li><strong>מטמון נפרד לכל יחידה:</strong> עלול לגרום לאי-קוהרנטיות ולתקשורת מרובה.</li>
+                <li><strong>מטמון משותף:</strong> פותר חלק מבעיות הקוהרנטיות אך דורש מנגנוני סנכרון מורכבים.</li>
+                <li><strong>ניהול עומס:</strong> חלוקת תהליכים/threads בין מעבדים או ליבות.</li>
+                <li><strong>יעילות אנרגטית וביצועים:</strong> ליבות בתוך שבב נוטות לחיסכון אנרגיה, אך אתגר בניהול משאבים משותפים.</li>
+            </ul>
+        </div>
+
+        <!-- גישה לא אחידה לזיכרון -->
+        <div class="content-section" id="numa">
+            <h2>🧩 גישה לא אחידה לזיכרון (NUMA - Non-Uniform Memory Access)</h2>
+            <p>במערכות with NUMA, לכל יחידת עיבוד יש גישה מהירה לבלוקים מסוימים של זיכרון וגלויה יותר לאחרים. יתרון: קריאה/כתיבה ל"זיכרון קרוב" מהירה; חסרון: אם תהליך רץ ב"צומת" לא קרוב לזיכרון שלו - ביצועים יורדים.</p>
+            <div class="feature-list">
+                <li><strong>יתרונות:</strong> שיפור ביצועים כשמטפלים בחישובים מקומיים בזיכרון.</li>
+                <li><strong>חסרונות:</strong> 
+                    <ul>
+                        <li>גישה לזיכרון מרוחק היא איטית יותר.</li>
+                        <li>אתגרים בהמשכיות תהליכים.</li>
+                        <li>אי-איזון עומסים בין מעבדים.</li>
+                    </ul>
+                
+            </ul>
+        </div>
+        <!-- סביבות מחשב: המשך תוכן בדף הקיים -->
+        <!-- סביבת מחשב מסורתית -->
+        <div class="content-section" id="traditional-env">
+            <h2>🏛️ סביבה מסורתית (Traditional Environment)</h2>
+            <p>בסביבה מסורתית, מערכת ההפעלה רצה על חומרה ייעודית או שרת מקומי, עם משאבים מוגדרים וגלויים. מרבית התהליכים והשירותים פועלים במכונה יחידה או בשרת פנימי.</p>
+            <ul class="feature-list">
+                <li><strong>משאבים קבועים:</strong> כמות זיכרון, CPU ודיסק ידועים מראש ואינם משתנים בזמן ריצה.</li>
+                <li><strong>ניהול ריכוזי:</strong> כל השירותים והתהליכים מנוהלים על ידי מערכת הפעלה אחת מרכזית.</li>
+                <li><strong>תחזוקה ידנית:</strong> שדרוגים והתקנות מתבצעים באופן ידני או עם כלי ניהול פנימיים.</li>
+            </ul>
+            <div class="highlight-box">
+                <strong>הערה:</strong> נוח לתשתיות קטנות או מערכות פנימיות שאינן דורשות סקלאביליות דינמית.
+            </div>
+        </div>
+
+        <!-- סביבת מחשב נייד -->
+        <div class="content-section" id="mobile-env">
+            <h2>📱 סביבה ניידת (Mobile Environment)</h2>
+            <p>סביבה שבה מערכת ההפעלה מותאמת למכשירים ניידים (טלפונים, טאבלטים). משאבים מוגבלים יותר, דרישות חיסכון באנרגיה, וניהול חיבורים משתנים.</p>
+            <ul class="feature-list">
+                <li><strong>ניהול אנרגיה:</strong> הימנעות מתהליכים כבדים ברקע, שינה (sleep) והתקדמות למצב נמוך כדי לחסוך סוללה.</li>
+                <li><strong>חיבורים דינמיים:</strong> Wi-Fi, סלולרי ושינויים בתנאי רשת המחייבים התאמה דינמית של שירותי רקע.</li>
+                <li><strong>אבטחה מובנית:</strong> sandboxing לאפליקציות, אישורי גישה למשאבים (מצלמה, מיקום), והגנה בפני התקפות נפוצות בסלולרי.</li>
+            </ul>
+            <div class="visual-diagram">
+                <h4>🌀 ניהול תהליכים במובייל</h4>
+                <div class="hierarchy-box">
+                    <div class="layer">אפליקציה פעילה</div>
+                    <div class="arrow">↓</div>
+                    <div class="layer">system services (background)</div>
+                    <div class="arrow">↓</div>
+                    <div class="layer">Kernel + חומרה</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- סביבת שרת-לקוח -->
+        <div class="content-section" id="client-server-env">
+            <h2>💻🖥️ סביבה שרת-לקוח (Client-Server Environment)</h2>
+            <p>בארכיטקטורת שרת-לקוח, התהליכים מתחלקים בין לקוחות הפונים לשרת מרכזי שמספק שירותים או נתונים.</p>
+            <ul class="feature-list">
+                <li><strong>הקצאת משאבים בשרת:</strong> השרת מנהל תורים של בקשות, thread pools, balancing למשאבים.</li>
+                <li><strong>סקלאביליות:</strong> הוספת שרתים או הרחבת כוח עיבוד לפי עומסים.</li>
+                <li><strong>תקשורת תקינה:</strong> פרוטוקולים (HTTP, RPC) וטיפול ב-latency, טעינת timeout וניהול שגיאות.</li>
+                <li><strong>אבטחה:</strong> אימות משתמשים, הצפנה בתעבורת הנתונים, בידוד בין לקוחות.</li>
+            </ul>
+            <div class="highlight-box">
+                <strong>הערה:</strong> נדרש ניהול עומסים (Load Balancing), caching מצד הלקוח והשרת, ושירותי ניטור לביצועים.
+            </div>
+        </div>
+
+        <!-- סביבת עמית לעמית -->
+        <div class="content-section" id="p2p-env">
+            <h2>🔗 סביבה עמית לעמית (Peer-to-Peer Environment)</h2>
+            <p>ב-P2P כל יחידה (node) פועלת גם כלקוח וגם כשרת, משתפת משאבים ישירות עם עמיתים אחרים ללא שרת מרכזי בלעדי.</p>
+            <ul class="feature-list">
+                <li><strong>חיפוש ומציאה:</strong> פרוטוקולים מבוזרים למציאת משאבים או שירותים בקרב עמיתים.</li>
+                <li><strong>הפצה מבוזרת:</strong> הפצת קבצים או נתונים באופן מבוזר (למשל torrent) כשכל node מעביר לחבריו.</li>
+                <li><strong>עמידות לתקלה:</strong> אין נקודת כשל מרכזית; אם node מתנתק, הרשת ממשיכה בתפקוד.</li>
+                <li><strong>בעיות אבטחה:</strong> אימות זהויות בקשה מורכבת יותר, חשש מהפצת תוכן לא רצוי או זדוני.</li>
+            </ul>
+            <div class="visual-diagram">
+                <h4>🌐 רשת P2P</h4>
+                <div class="hierarchy-box">
+                    <div class="layer">Node A</div>
+                    <div class="arrow">↔️</div>
+                    <div class="layer">Node B</div>
+                    <div class="arrow">↔️</div>
+                    <div class="layer">Node C</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- סביבת מחשוב ענן -->
+        <div class="content-section" id="cloud-computing-env">
+            <h2>☁️ מחשוב ענן (Cloud Computing Environment)</h2>
+            <p>בסביבת ענן המשאבים (Compute, Storage, Network) מסופקים כשרות (IaaS/PaaS/SaaS) דרך האינטרנט, עם סקלאביליות גמישה ותשלום על פי שימוש.</p>
+            <ul class="feature-list">
+                <li><strong>Elasticity:</strong> הגדלה והקטנה אוטומטית של משאבים בהתאם לעומס.</li>
+                <li><strong>Multi-Tenancy:</strong> שרתים ווירטואליים המארחים מספר לקוחות בנפרד, בידוד משאבים ואבטחה.</li>
+                <li><strong>מיקרו-שירותים:</strong> ארכיטקטורה מונחת שירותים קטנים הניתנים לפריסה עצמאית בענן.</li>
+                <li><strong>תשתית ממומשת:</strong> שימוש ב-VM, containers, serverless; ניהול קונפיגורציה ואוטומציה (IaC).</li>
+            </ul>
+            <div class="highlight-box">
+                <strong>נקודות למערכת הפעלה:</strong> תמיכה בווירטואליזציה, ניהול משאבים דינמי, תאימות ל-cloud APIs, ושימור קוהרנטיות בביצוע פעולות מבוזרות.
+            </div>
+        </div>
+
+        <!-- מערכת משובצת בזמן אמת -->
+        <div class="content-section" id="real-time-embedded-env">
+            <h2>⏱️ מערכת משובצת בזמן אמת (Real-Time Embedded System)</h2>
+            <p>סביבה שבה מערכת ההפעלה מותאמת למכשירים משובצים עם דרישות זמן תגובה קפדניות (hard/soft real-time), ומשאבים מוגבלים מאוד.</p>
+            <ul class="feature-list">
+                <li><strong>קפדנות בזמן:</strong> תהליכים חייבים להשלים פעולות תוך מגבלה קבועה (deadlines).</li>
+                <li><strong>ניהול משאבים מוקפד:</strong> זיכרון, CPU, I/O מוקצים מראש, לרוב ללא swapping.</li>
+                <li><strong>Scheduler מיוחד:</strong> ממשקי תזמון קפדניים (Rate Monotonic, Earliest Deadline First) כדי להבטיח עמידה בזמן.</li>
+                <li><strong>אבטחה ובטיחות:</strong> קריטית בתחומים רפואיים, תעופה, תעשייה – מערכות חייבות להיות אמינות וללא crash.</li>
+            </ul>
+            <div class="highlight-box">
+                <strong>הערה:</strong> ל-callbacks ו-interrupts זמן תגובה מינימלי; המערכת לרוב מונוליתית או microkernel מותאם real-time.
+            </div>
+        </div>
+    </div>
+</body>
+</html>
