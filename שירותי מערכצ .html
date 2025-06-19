@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>שירותי מערכת והיבטים נוספים - מערכות הפעלה</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* (העתק אישית את כל ה־CSS מהתבנית שלך כפי שסיפקת) */
+        /* ... כל ה-style שהבאת מקודם ... */
+        /* כאן מניחים שה־CSS זהה למה שסיפקת */
+    </style>
+    <style>
+        /* סרגל ניווט צף */
+        .nav-sidebar {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            z-index: 100;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            max-width: 200px;
+            transition: all 0.3s ease;
+        }
+        .nav-sidebar:hover {
+            transform: translateY(-50%) translateX(-5px);
+        }
+        .nav-sidebar-title {
+            color: #60a5fa;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            font-size: 0.9em;
+        }
+        .nav-sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .nav-sidebar li {
+            margin-bottom: 8px;
+        }
+        .nav-sidebar a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.85em;
+            display: block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+        }
+        .nav-sidebar a:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            transform: translateX(-3px);
+        }
+        @media (max-width: 1200px) {
+            .nav-sidebar {
+                right: -180px;
+                transition: right 0.3s ease;
+            }
+            .nav-sidebar:hover {
+                right: 0;
+                transform: translateY(-50%) translateX(0);
+            }
+            .nav-sidebar::before {
+                content: "≡";
+                position: absolute;
+                left: -35px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 30px;
+                height: 30px;
+                background: rgba(15, 23, 42, 0.8);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #60a5fa;
+                border: 1px solid rgba(148, 163, 184, 0.2);
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+                font-size: 1.5em;
+            }
+        }
+        /* איפוס ועיצוב כללי */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%);
+            background-attachment: fixed;
+            color: #f1f5f9;
+            min-height: 100vh;
+            line-height: 1.7;
+        }
+        /* אפקט חלקיקים ברקע */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 200, 255, 0.1) 0%, transparent 50%);
+            z-index: -1;
+            animation: float 20s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        /* כותרת ראשית */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .header h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+        }
+        .subtitle {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.3em;
+            color: #94a3b8;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+        /* תוכן מחולק לחלקים */
+        .content-section {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.6s ease forwards;
+        }
+        
+        /* סגנון לתכנים מתרחבים */
+        .collapsible-content {
+            display: none;
+            padding: 10px 0;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .toggle-btn {
+            background: transparent;
+            border: none;
+            color: #60a5fa;
+            cursor: pointer;
+            font-size: 0.9em;
+            padding: 0 5px;
+            transition: all 0.2s ease;
+        }
+        
+        .toggle-btn:hover {
+            color: #3b82f6;
+            transform: translateY(-2px);
+        }
+        .content-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+        .content-section:nth-child(odd) {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%);
+            border-left: 3px solid rgba(59, 130, 246, 0.5);
+        }
+        .content-section:nth-child(even) {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border-left: 3px solid rgba(236, 72, 153, 0.5);
+        }
+        .content-section h2 {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .content-section:nth-child(3n+1) h2 {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .content-section:nth-child(3n+2) h2 {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .content-section:nth-child(3n+3) h2 {
+            background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .content-section h3 {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+            color: #60a5fa;
+            border-right: 3px solid #3b82f6;
+            padding-right: 15px;
+        }
+        .content-section:nth-child(3n+2) h3 {
+            color: #c084fc;
+            border-right-color: #8b5cf6;
+        }
+        .content-section:nth-child(3n+3) h3 {
+            color: #f472b6;
+            border-right-color: #ec4899;
+        }
+        .content-section p {
+            margin-bottom: 15px;
+            color: #cbd5e1;
+            font-size: 1.1em;
+        }
+        /* רשימות */
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        .feature-list li {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .content-section:nth-child(3n+1) .feature-list li {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+        .content-section:nth-child(3n+2) .feature-list li {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: rgba(139, 92, 246, 0.2);
+        }
+        .content-section:nth-child(3n+3) .feature-list li {
+            background: rgba(236, 72, 153, 0.1);
+            border-color: rgba(236, 72, 153, 0.2);
+        }
+        .feature-list li::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+        }
+        .content-section:nth-child(3n+1) .feature-list li::before {
+            background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+        }
+        .content-section:nth-child(3n+2) .feature-list li::before {
+            background: linear-gradient(to bottom, #8b5cf6, #ec4899);
+        }
+        .content-section:nth-child(3n+3) .feature-list li::before {
+            background: linear-gradient(to bottom, #ec4899, #f59e0b);
+        }
+        .feature-list li:hover {
+            transform: translateX(-5px);
+        }
+        .content-section:nth-child(3n+1) .feature-list li:hover {
+            background: rgba(59, 130, 246, 0.15);
+        }
+        .content-section:nth-child(3n+2) .feature-list li:hover {
+            background: rgba(139, 92, 246, 0.15);
+        }
+        .content-section:nth-child(3n+3) .feature-list li:hover {
+            background: rgba(236, 72, 153, 0.15);
+        }
+        .feature-list li strong {
+            font-weight: 600;
+        }
+        .content-section:nth-child(3n+1) .feature-list li strong {
+            color: #3b82f6;
+        }
+        .content-section:nth-child(3n+2) .feature-list li strong {
+            color: #8b5cf6;
+        }
+        .content-section:nth-child(3n+3) .feature-list li strong {
+            color: #ec4899;
+        }
+        /* גרפיקה ויזואלית */
+        .visual-diagram {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(51, 65, 85, 0.8));
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+        .content-section:nth-child(3n+1) .visual-diagram {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(59, 130, 246, 0.1));
+        }
+        .content-section:nth-child(3n+2) .visual-diagram {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(139, 92, 246, 0.1));
+        }
+        .content-section:nth-child(3n+3) .visual-diagram {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(236, 72, 153, 0.1));
+        }
+        .hierarchy-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .layer {
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            min-width: 200px;
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+        .content-section:nth-child(3n+1) .layer {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        }
+        .content-section:nth-child(3n+2) .layer {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+        }
+        .content-section:nth-child(3n+3) .layer {
+            background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);
+            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.3);
+        }
+        .layer:hover {
+            transform: scale(1.05);
+        }
+        .content-section:nth-child(3n+1) .layer:hover {
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+        .content-section:nth-child(3n+2) .layer:hover {
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+        .content-section:nth-child(3n+3) .layer:hover {
+            box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
+        }
+        .arrow {
+            font-size: 1.5em;
+        }
+        .content-section:nth-child(3n+1) .arrow {
+            color: #60a5fa;
+        }
+        .content-section:nth-child(3n+2) .arrow {
+            color: #c084fc;
+        }
+        .content-section:nth-child(3n+3) .arrow {
+            color: #f472b6;
+        }
+        /* קוד לדוגמה */
+        .code-example {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9em;
+            color: #e2e8f0;
+            overflow-x: auto;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .content-section:nth-child(3n+1) .code-example {
+            border-left: 4px solid #3b82f6;
+        }
+        .content-section:nth-child(3n+2) .code-example {
+            border-left: 4px solid #8b5cf6;
+        }
+        .content-section:nth-child(3n+3) .code-example {
+            border-left: 4px solid #ec4899;
+        }
+        .content-section:nth-child(3n+1) .code-example .keyword {
+            color: #3b82f6;
+        }
+        .content-section:nth-child(3n+2) .code-example .keyword {
+            color: #8b5cf6;
+        }
+        .content-section:nth-child(3n+3) .code-example .keyword {
+            color: #ec4899;
+        }
+        .code-example .comment {
+            color: #64748b;
+            font-style: italic;
+        }
+        /* הדגשה מיוחדת */
+        .highlight-box {
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+        }
+        .content-section:nth-child(3n+1) .highlight-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        .content-section:nth-child(3n+2) .highlight-box {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        .content-section:nth-child(3n+3) .highlight-box {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+        }
+        .highlight-box::before {
+            content: '💡';
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            background: rgba(15, 23, 42, 0.9);
+            padding: 5px 10px;
+            border-radius: 50%;
+            font-size: 1.2em;
+        }
+        /* רספונסיביות */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            .content-section {
+                padding: 20px;
+            }
+            .hierarchy-box {
+                gap: 10px;
+            }
+            .layer {
+                min-width: 150px;
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+        }
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* סגנון עבור התפריט המדורג */
+        .nav-submenu {
+            display: none;
+            padding-right: 15px;
+            margin-top: 5px;
+        }
+        .nav-category {
+            margin-bottom: 10px;
+        }
+        .category-title {
+            font-weight: 600;
+            color: #60a5fa;
+            cursor: pointer;
+            display: block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+        }
+        .category-title:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+        .nav-category.active .nav-submenu {
+            display: block;
+             transform: translateY(-2px);
+        }
+    </style>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // טיפול בקטגוריות בסרגל הניווט
+        const categoryTitles = document.querySelectorAll('.category-title');
+        
+        categoryTitles.forEach(title => {
+            title.addEventListener('click', function(e) {
+                e.preventDefault();
+                const parent = this.parentElement;
+                const isActive = parent.classList.contains('active');
+                
+                // סגור את כל הקטגוריות
+                document.querySelectorAll('.nav-category').forEach(cat => {
+                    cat.classList.remove('active');
+                });
+                
+                // פתח את הקטגוריה הנוכחית אם היא לא הייתה פתוחה
+                if (!isActive) {
+                    parent.classList.add('active');
+                }
+            });
+        });
+        
+        // פתיחת הקטגוריה הראשונה באופן אוטומטי בטעינה
+        if(document.querySelector('.nav-category')) {
+            document.querySelector('.nav-category').classList.add('active');
+        }
+    });
+
+    // פונקציה להצגה/הסתרה של תוכן מתרחב
+        function toggleContent(button) {
+            const content = button.parentElement.nextElementSibling;
+            
+            if (content.style.display === 'none' || content.style.display === '') {
+                content.style.display = 'block';
+                button.textContent = '▲';
+            } else {
+                content.style.display = 'none';
+                button.textContent = '▼';
+            }
+        }
+    </script>
+</head>
+<body>
+    <!-- סרגל ניווט צף -->
+    <div class="nav-sidebar">
+        <div class="nav-sidebar-title">תוכן העניינים</div>
+        <ul class="nav-main-menu">
+            <!-- קטגוריה 1: ממשקי משתמש -->
+            <li class="nav-category">
+                <a href="#" class="category-title">🖥️ ממשקי משתמש</a>
+                <ul class="nav-submenu">
+                    <li><a href="#cli">ממשק שורת פקודה (CLI)</a></li>
+                    <li><a href="#gui">ממשק גרפי (GUI)</a></li>
+                    <li><a href="#touch">ממשק מסך מגע</a></li>
+                </ul>
+            </li>
+            <!-- קטגוריה 2: קריאות מערכת ושירותים -->
+            <li class="nav-category">
+                <a href="#" class="category-title">🔧 קריאות וספריות מערכת</a>
+                <ul class="nav-submenu">
+                    <li><a href="#syscalls">קריאות מערכת (System Calls)</a></li>
+                    <li><a href="#misc">כל מיני שאלות</a></li>
+                    <li><a href="#lang-lib">ספריות שפות תכנות</a></li>
+                </ul>
+            </li>
+            <!-- קטגוריה 3: היבטי תכנון ויישום -->
+            <li class="nav-category">
+                <a href="#" class="category-title">⚙️ תכנון וביצוע</a>
+                <ul class="nav-submenu">
+                    <li><a href="#linkers-loaders">מחברים ומעמיסים</a></li>
+                    <li><a href="#app-diff">הבדלי פלטפורמות</a></li>
+                    <li><a href="#design-impl">מדיניות ומנגנון</a></li>
+                </ul>
+            </li>
+            <li class="nav-category">
+                <a href="#" class="category-title">🏗️ מבני מערכות הפעלה</a>
+                <ul class="nav-submenu">
+                     <li><a href="#monolithic">מבנה מונוליטי</a></li>
+                    <li><a href="#layered">מבנה שכבתי</a></li>
+                    <li><a href="#microkernel">מיקרו-גרעין</a></li>
+                    <li><a href="#hybrid">מודל היברידי</a></li>
+                    <li><a href="#os-structures-comparison">השוואת מבנים</a></li>
+                </ul>
+            </li>
+            <li class="nav-category">
+                <a href="#" class="category-title">🔄 נושאים מתקדמים</a>
+                <ul class="nav-submenu">
+                    <li><a href="#virtualization">וירטואליזציה</a></li>
+                    <li><a href="#linux-origin">התחלה של לינוקס</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="back-home">
+            <a href="index.html">🏠 חזרה לדף הבית</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>שירותי מערכת הפעלה - ב  🛠️</h1>
+            <div class="subtitle">System Services & Additional Aspects</div>
+        </div>
+
+        <!-- ממשק שורת פקודה -->
+        <div class="content-section" id="cli">
+            <h2>⌨️ ממשק שורת פקודה (CLI)</h2>
+            <p>ממשק טקסטואלי שמקבל פקודות מהמשתמש ומעביר אותן למערכת ההפעלה לביצוע. בדרך כלל מופעל דרך Shell שמפרש את הפקודות, עוטף קריאות מערכת ומריץ תוכניות.</p>
+            <div class="feature-list">
+                <li><strong>הקלדת פקודות ישירות:</strong> משתמש מקליד פקודות, מקבל פלט טקסטואלי.</li>
+                <li><strong>סקריפטים ואוטומציה:</strong> קבצי סקריפט להרצת סדרות פקודות באופן אוטומטי.</li>
+                <li><strong>גישה לניהול משאבים:</strong> קבצים, תהליכים, רשת ומשימות מערכת אחרות.</li>
+            </div>
+        </div>
+
+        <!-- ממשק גרפי -->
+        <div class="content-section" id="gui">
+            <h2>🖥️ ממשק גרפי (GUI)</h2>
+            <p>סביבת משתמש ויזואלית עם חלונות, כפתורים ואלמנטים גרפיים שמאפשרים פעולה בעזרת עכבר ומקלדת. מערכת ההפעלה וספריות GUI מטפלות בציור, אירועי קלט וניהול חלונות.</p>
+            <div class="feature-list">
+                <li><strong>חלונות וסמלים:</strong> הצגה ויזואלית של קבצים ותיקיות, פתיחה ופעולות באמצעות קליקים.</li>
+                <li><strong>אירועי קלט:</strong> טיפול באירועי עכבר ומקלדת והעברתם ליישומים הרלוונטיים.</li>
+                <li><strong>ספריות GUI:</strong> לדוגמה GTK/Qt ב-Linux, Win32/WPF ב-Windows, Cocoa ב-macOS.</li>
+            </div>
+        </div>
+
+        <!-- ממשק מסך מגע -->
+        <div class="content-section" id="touch">
+            <h2>📱 ממשק מסך מגע</h2>
+            <p>מותאם למכשירים ניידים עם זיהוי מחוות (gestures). מערכת ההפעלה מספקת API לזיהוי נגיעות, החלקות וצילום מחוות, ומנהלת מקלדת וירטואלית ותצוגה דינמית.</p>
+            <div class="feature-list">
+                <li><strong>זיהוי מחוות:</strong> תמיכה ב-multitouch, החלקה, צביטה להגדלה/הקטנה וכדומה.</li>
+                <li><strong>מקלדת וירטואלית:</strong> הצגת מקלדת על המסך להזנת טקסט.</li>
+                <li><strong>תגובה מהירה:</strong> דרישה לזמן השהיה נמוך כדי לספק חוויית משתמש טובה.</li>
+            </div>
+        </div>
+
+        <!-- קריאות מערכת -->
+        <div class="content-section" id="syscalls">
+            <h2>🔧 קריאות מערכת (System Calls)</h2>
+            <p>מנגנון שבו תוכנית במרחב משתמש מבקשת שירות מהגרעין, כמו ניהול קבצים, יצירת תהליכים או תקשורת. מבוצע באמצעות trap למצב קרנל, עם העברת פרמטרים דרך רגיסטרים או מחסנית.</p>
+            <div class="feature-list">
+                <li><strong>מעבר מצב:</strong> מעבר מ-safe user mode לקרנל mode באופן מוגן.</li>
+                <li><strong>העברת פרמטרים:</strong> דרך רגיסטרים או זיכרון במרחב משתמש.</li>
+                <li><strong>API עוטפים:</strong> פונקציות ברמה גבוהה (למשל stdlib, POSIX, Win32) שמפשטות שימוש בקריאות מערכת.</li>
+            </div>
+        </div>
+
+        <!-- כל מיני שאלות -->
+        <div class="content-section" id="misc">
+            <h2>❓ כל מיני שאלות</h2>
+            <p>כאן ניתן לכלול שאלות נפוצות או נושאים חופפים לגבי שירותי מערכת ופונקציות נוספות:</p>
+            <div class="feature-list">
+                <li><strong>איך לטפל בהרשאות בעת קריאות מערכת?</strong> לבדוק בדיקות גישה והרשאות לפני קריאה.</li>
+                <li><strong>כיצד להתמודד עם שגיאות קריאות מערכת?</strong> לבדוק קודי שגיאה (errno) ולבצע טיפול מתאים בתוכנית.</li>
+                <li><strong>מתי להשתמש בקריאות מערכת ישירות מול ספריות עוטפות?</strong> בדרך כלל משתמשים בעוטפים לשיפור ניידות, אלא אם נדרשת ביצועיות גבוהה מאוד.</li>
+            </div>
+        </div>
+
+        <!-- ספרייה של שפות תכנות – שירותי מערכת -->
+        <div class="content-section" id="lang-lib">
+            <h2>📚 ספרייה של שפות תכנות – שירותי מערכת</h2>
+            <p>ספריות מתמטקות ושירותי ריצה (runtime) של שפות תכנות מספקות עטיפות לקריאות מערכת וניהול משאבים. הן כוללות פונקציות לניהול זיכרון, קבצים, תהליכים, תקשורת ורשת.</p>
+            <div class="feature-list">
+                <li><strong>סטנדרטים נפוצים:</strong> POSIX בלינוקס/UNIX, Win32 ב-Windows, Runtime environments ב-Java/Python וכו'.</li>
+                <li><strong>ניהול זיכרון:</strong> malloc/free, garbage collection בשפות גבוהות, ובקרת שגיאות הקצאה.</li>
+                <li><strong>יצירת תהליכים/threads:</strong> fork/spawn, thread libraries, סינכרוניזציה באמצעות locks/semaphores.</li>
+            </div>
+        </div>
+
+        <!-- מחברים ומעמיסים -->
+        <div class="content-section" id="linkers-loaders">
+            <h2>🔗 מחברים ומעמיסים (Linkers & Loaders)</h2>
+            <p>Linker מקשר קבצי אובייקט וספריות ליצירת קובץ הרצה אחד, מבצע relocation. Loader טוען את הקוד לזיכרון, מטפל בכתובות, מגדיר מחסנית ו-heap ומשיק את התוכנית.</p>
+            <div class="feature-list">
+            <li><strong>פורמטים נפוצים:</strong> ELF בלינוקס, PE ב-Windows, Mach-O ב-macOS.</li>
+            <li><strong>קישורים דינמיים:</strong> shared libraries (DLL, .so) נטענות במועד ריצה כדי לחסוך מקום ולפשט עדכונים.</li>
+            <li><strong>Relocation:</strong> התאמת כתובות לפי מיקום בזיכרון שנבחר.</li>
+            </div>
+            
+            <div class="highlight-box">
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))" style="cursor: pointer;">
+                הרחבה על מחברים ומעמיסים <button class="toggle-btn" onclick="event.stopPropagation()">▼</button>
+            </h3></h3>
+            <div class="collapsible-content">
+                <p>תהליך ההידור (Compilation) והטעינה כולל מספר שלבים:</p>
+                <ol>
+                    <li><strong>הידור (Compilation):</strong> המהדר (Compiler) ממיר את קוד המקור לקובץ אובייקט (.o בלינוקס, .obj ב-Windows) המכיל קוד מכונה.</li>
+                    <li><strong>קישור (Linking):</strong> המחבר (Linker) מקשר בין קבצי אובייקט וספריות ליצירת קובץ הרצה.</li>
+                    <li><strong>טעינה (Loading):</strong> המעמיס (Loader) מעתיק את הקובץ לזיכרון ומבצע התאמות כתובות (Relocation).</li>
+                </ol>
+                
+                <p>מערכות הפעלה מודרניות משתמשות בספריות מקושרות דינמית (DLLs ב-Windows, .so בלינוקס) שמאפשרות:</p>
+                <ul>
+                    <li>חיסכון בזיכרון - ספריה נטענת פעם אחת ומשותפת לכל התוכניות</li>
+                    <li>עדכוני תוכנה פשוטים יותר - ניתן לעדכן ספריה בלי לקמפל את כל התוכניות מחדש</li>
+                    <li>טעינה לפי דרישה - רק הספריות הנחוצות נטענות בזמן הריצה</li>
+                </ul>
+                
+                <div class="code-example">
+                    <span class="comment">// דוגמה לתהליך:</span><br>
+                    <span class="keyword">gcc</span> -c program.c <span class="comment">// הידור לקובץ אובייקט</span><br>
+                    <span class="keyword">gcc</span> -o program program.o -lm <span class="comment">// קישור לקובץ הרצה עם ספריית מתמטיקה</span><br>
+                    <span class="comment">// בזמן הפעלה: Loader מטעין את התוכנית לזיכרון ומחבר ספריות דינמיות</span>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <!-- למה אפליקציות שונות לכל מערכת הפעלה -->
+        <div class="content-section" id="app-diff">
+            <h2>❓ למה אפליקציות שונות לכל מערכת הפעלה?</h2>
+            <p>ABI ו-API ספציפיים לכל מערכת: פורמט בינארי, קריאות מערכת והעברת פרמטרים משתנים. קוד מקור יכול להיות מקומפל ליעד ספציפי, או לרוץ על VM/Interpreter להימנע מתלות ישירה.</p>
+            <div class="feature-list">
+                <li><strong>הבדלי ABI:</strong> פורמט קובץ הרצה, conventions של קריאות פונקציות.</li>
+                <li><strong>VM/Interpreter:</strong> Java, Python מאפשרות ניידות, אך תלויות במערכת הריצה.</li>
+                <li><strong>ספריות מערכת:</strong> GUI, גישה לחומרה ושירותים משתנים בין מערכות הפעלה.</li>
+            </div>
+        </div>
+
+        <!-- עיצוב ומימוש: מדיניות ומנגנון -->
+        <div class="content-section" id="design-impl">
+            <h2>⚙️ עיצוב ומימוש: מדיניות ומנגנון (Policy vs Mechanism)</h2>
+            <p>בהתכנון מבדילים בין מה (מדיניות) ואיך (מנגנון). מנגנונים מספקים building blocks (למשל טיימר, תור תזמון), ומדיניות קובעת כיצד לנצל אותם. הפרדה מאפשרת גמישות, תחזוקה ושינויים בלי לשנות את המנגנון הבסיסי.</p>
+            <div class="feature-list">
+                <li><strong>הפרדה:</strong> מדיניות ניתנת להתאמה ולשינוי בזמן ריצה, מנגנון קבוע.</li>
+                <li><strong>דוגמה לטיימר:</strong> מנגנון הטיימר קיים, המדיניות מחליטה על גודל time slice וסדר תורים.</li>
+                <li><strong>שיקולים בעיצוב:</strong> איזון בין ביצועים, נוחות משתמש, אבטחה ותחזוקה.</li>
+            </div>
+        </div>
+    </div>
+    <script>
+        // פונקציה להצגת/הסתרת גרף
+        function toggleGraph(id) {
+            const graph = document.getElementById(id);
+            if (graph.style.display === 'none' || graph.style.display === '') {
+                graph.style.display = 'block';
+                document.querySelector(`[data-graph="${id}"]`).textContent = 'הסתר גרף ▲';
+            } else {
+                graph.style.display = 'none';
+                document.querySelector(`[data-graph="${id}"]`).textContent = 'הצג גרף ▼';
+            }
+        }
+    </script>
+
+        <div class="container">
+            <!-- מבנה מונוליטי -->
+            <div class="content-section" id="monolithic">
+                <h2>🏛️ מבנה מונוליטי (Monolithic Structure)</h2>
+                <p>במבנה מערכת הפעלה מונוליטי, כל פונקציות הגרעין—ניהול זיכרון, ניהול תהליכים, מערכת קבצים, דרייברים ועוד—רצות בתוך מרחב הקרנל ומשולבות זו בזו כיחידה אחת גדולה. בגישה זו, קיימת אינטגרציה רחבה בין רכיבי המערכת השונים, מה שיוצר ביצועים מהירים יחסית מכיוון שהמעבר בין פונקציות לא מצריך תקשורת בין-תהליכית מורכבת. יחד עם זאת, שינוי ברכיב אחד עלול לשבור חלקים אחרים בקלות, מה שמקשה על תחזוקה ועל בדיקות, ומעלה סיכון עקב ריבוי קוד במצב קרנל.</p>
+                <div class="feature-list">
+                    <li><strong>יתרון ביצועים:</strong> קריאות פנימיות בתוך הגרעין הן מהירות.</li>
+                    <li><strong>מורכבות תחזוקה:</strong> קושי בבידוד שגיאות ושינויים, סבירות גבוה ל-breaking changes.</li>
+                    <li><strong>גודל רב:</strong> קוד קרנל גדול, קשה לאבטח ולבצע בדיקות יחידה מבודדות.</li>
+                </div>
+                
+                <div class="highlight-box">
+                    <button class="toggle-btn" data-graph="monolithic-graph" onclick="toggleGraph('monolithic-graph')">הצג גרף ▼</button>
+                    <div id="monolithic-graph" class="visual-diagram" style="display:none;">
+                        <div class="hierarchy-box">
+                            <div class="layer">ממשק משתמש / אפליקציות</div>
+                            <div class="arrow">↓</div>
+                            <div class="layer" style="width: 80%; background: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%);">
+                                קרנל מונוליטי
+                                <div style="font-size: 0.8em; margin-top: 5px;">
+                                    ניהול תהליכים • ניהול זיכרון • מערכת קבצים • דרייברים • תזמון CPU
+                                </div>
+                            </div>
+                            <div class="arrow">↓</div>
+                            <div class="layer">חומרה</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+
+            <!-- מבנה שכבתי -->
+            <div class="content-section" id="layered">
+                <h2>🧱 מבנה שכבתי (Layered Structure)</h2>
+                <p>בגישה השכבתית מחלקים את מערכת ההפעלה למספר שכבות היררכיות, כאשר השכבה התחתונה היא החומרה והשכבה העליונה היא ממשק המשתמש או שירותי רמה גבוהה. כל שכבה פונה רק לשכבה מתחתיה ומספקת לה שירותים, מה שיוצר הפרדה ברורה ושיפור קריאות הקוד. שינוי בשכבה מסוימת משפיע רק על השכבות המקושרות ישירות, והגישה תומכת בניהול קוד קריא ותחזוק קל יותר. לעומת זאת, שינוי בממשק בין שכבות עלול לדרוש התאמות נרחבות, ויש עיכוב ביצועים בגלל overhead של קריאות שכבה-שכבה.</p>
+                <div class="feature-list">
+                    <li><strong>יתרונות:</strong> קריאות קוד משופרת, תחזוקה מודולרית, הבדלה ברורה בין רמות מערכת.</li>
+                    <li><strong>חסרונות:</strong> overhead בתקשורת בין-שכבתית שיכולה לפגוע בביצועים, דרישה לתיאום ממשקים מדוקדק.</li>
+                    <li><strong>דוגמה מטאפורית:</strong> בניין עם מנהל מחלקה לתקשורת בין ההיררכיות, בניגוד לגישה שבה מנכ"ל פונה ישירות לכל עובד.</li>
+                </div>
+                
+                <div class="highlight-box">
+                    <button class="toggle-btn" data-graph="layered-graph" onclick="toggleGraph('layered-graph')">הצג גרף ▼</button>
+                    <div id="layered-graph" class="visual-diagram" style="display:none;">
+                        <div style="position: relative; width: 500px; height: 500px; margin: 0 auto;">
+                            <!-- Layer 5: User Interface (outermost) -->
+                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; 
+                                        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+                                        border: 2px solid rgba(59, 130, 246, 0.5); display: flex; align-items: center; justify-content: center;">
+                                <div style="position: absolute; top: 15px; width: 100%; text-align: center; font-weight: bold;">שכבה 5: ממשק משתמש</div>
+                            </div>
+                            
+                            <!-- Layer 4: User Programs -->
+                            <div style="position: absolute; top: 15%; left: 15%; width: 70%; height: 70%; border-radius: 50%; 
+                                        background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+                                        border: 2px solid rgba(139, 92, 246, 0.5); display: flex; align-items: center; justify-content: center;">
+                                <div style="position: absolute; top: 15px; width: 100%; text-align: center; font-weight: bold;">שכבה 4: תוכניות משתמש</div>
+                            </div>
+                            
+                            <!-- Layer 3: File Management -->
+                            <div style="position: absolute; top: 25%; left: 25%; width: 50%; height: 50%; border-radius: 50%; 
+                                        background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
+                                        border: 2px solid rgba(236, 72, 153, 0.5); display: flex; align-items: center; justify-content: center;">
+                                <div style="position: absolute; top: 10px; width: 100%; text-align: center; font-weight: bold;">שכבה 3: ניהול קבצים</div>
+                            </div>
+                            
+                            <!-- Layer 2: Memory and Process Management -->
+                            <div style="position: absolute; top: 35%; left: 35%; width: 30%; height: 30%; border-radius: 50%; 
+                                        background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(34, 197, 94, 0.1) 100%);
+                                        border: 2px solid rgba(245, 158, 11, 0.5); display: flex; align-items: center; justify-content: center;">
+                                <div style="position: absolute; top: 5px; width: 100%; text-align: center; font-weight: bold; font-size: 0.9em;">שכבה 2: ניהול זיכרון ותהליכים</div>
+                            </div>
+                            
+                            <!-- Layer 1: Interrupts and System Calls -->
+                            <div style="position: absolute; top: 42%; left: 42%; width: 16%; height: 16%; border-radius: 50%; 
+                                        background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(14, 165, 233, 0.1) 100%);
+                                        border: 2px solid rgba(34, 197, 94, 0.5); display: flex; align-items: center; justify-content: center;">
+                                <div style="font-weight: bold; font-size: 0.8em; text-align: center;">שכבה 1:<br>פסיקות<br>וקריאות</div>
+                            </div>
+                            
+                            <!-- Layer 0: Hardware (innermost) -->
+                            <div style="position: absolute; top: 46%; left: 46%; width: 8%; height: 8%; border-radius: 50%; 
+                                        background: linear-gradient(135deg, rgba(14, 165, 233, 0.3) 0%, rgba(14, 165, 233, 0.6) 100%);
+                                        border: 2px solid rgba(14, 165, 233, 0.8); display: flex; align-items: center; justify-content: center;">
+                                <div style="font-weight: bold; font-size: 0.7em;">שכבה 0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- מיקרו-גרעין -->
+            <div class="content-section" id="microkernel">
+                <h2>🔧 מיקרו-גרעין (Microkernel)</h2>
+                <p>בארכיטקטורת מיקרו-גרעין יוצרים גרעין קטן מאוד במצב קרנל, הכולל רק פונקציות בסיסיות כמו תקשורת בין-תהליכים ו-switching בין מצבים. רכיבי מערכת נוספים (ניהול זיכרון, מערכת קבצים, דרייברים) רצות במרחב המשתמש כתהליכים נפרדים. זה תורם לאמינות וביטחון מכיוון שפחות קוד פועל במצב קרנל, והפרדה מבודדת מגבלת שגיאות; אך התקשורת בין-תהליכים מרובה עלולה לגרום להאטת המערכת בהשוואה למונוליטי.</p>
+                <div class="feature-list">
+                    <li><strong>יתרונות:</strong> אמינות גבוהה (אם רכיב משתמש קורסת לא ישבור את הגרעין), אבטחה משופרת (קוד קרנל קטן), קל לנפות באגים.</li>
+                    <li><strong>חסרונות:</strong> overhead גדול בתקשורת בין-תהליכים, latencies גבוהים יותר בפעולות מערכת שדורשות מעבר מרחב משתמש למרחב קרנל.</li>
+                    <li><strong>דוגמאות:</strong> Mach, מערכות המבוססות על Mach כמו חלק מ-Darwin/macOS.</li>
+                </div>
+                
+                <div class="highlight-box">
+                    <button class="toggle-btn" data-graph="microkernel-graph" onclick="toggleGraph('microkernel-graph')">הצג גרף ▼</button>
+                    <div id="microkernel-graph" class="visual-diagram" style="display:none;">
+                        <div class="hierarchy-box">
+                            <div style="display: flex; justify-content: space-around; width: 100%;">
+                                <div class="layer" style="background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);">
+                                    מערכת קבצים
+                                    <div style="font-size: 0.8em;">(מרחב משתמש)</div>
+                                </div>
+                                <div class="layer" style="background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);">
+                                    ניהול זיכרון
+                                    <div style="font-size: 0.8em;">(מרחב משתמש)</div>
+                                </div>
+                                <div class="layer" style="background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);">
+                                    דרייברים
+                                    <div style="font-size: 0.8em;">(מרחב משתמש)</div>
+                                </div>
+                            </div>
+                            <div class="arrow">↕ IPC ↕</div>
+                            <div class="layer" style="width: 50%; background: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%);">
+                                מיקרו-גרעין
+                                <div style="font-size: 0.8em; margin-top: 5px;">
+                                    IPC • תזמון בסיסי • מצבי מעבר • הגנת זיכרון
+                                </div>
+                            </div>
+                            <div class="arrow">↓</div>
+                            <div class="layer">חומרה</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- מודל היברידי -->
+            <div class="content-section" id="hybrid">
+                <h2>⚙️ מודל היברידי (Hybrid Systems)</h2>
+                <p>מערכות הפעלה מודרניות רבות אינן טהורות לגמרי למונוליטי או למיקרו-גרעין, אלא משלבות בין ההגדרות: גרעין מונוליטי מובנה שיכול לכלול רכיבים הרצים במרחב קרנל, אך מתוכנן באופן מודולרי עם תמיכה בממשקי IPC ושירותים חיצוניים. גישה זו נועדה להשיג איזון בין ביצועים, אמינות וגמישות. לדוגמה, גרעין לינוקס הוא גרעין מונוליטי עם מודולים דינמיים; ב-Windows יש תתי-מערכות המשתמשות בגישה מיקרו-גרעינית להפרדת תכונות מסוימות; macOS משלבת Mach (מיקרו-גרעין) עם רכיבי BSD מונוליטיים ודרייברים הניתנים לטעינה דינמית.</p>
+                <div class="feature-list">
+                    <li><strong>יתרונות:</strong> ביצועים קרובים למונוליטי עם modularity מוגברת, גמישות בטעינת רכיבים דינמית.</li>
+                    <li><strong>חסרונות:</strong> עדיין מורכב מבחינת תחזוקת קוד קרנל רחב; עשוי להכיל חלקי RPC/IPC מורכבים.</li>
+                    <li><strong>יישומים נפוצים:</strong> גרעיני לינוקס (monolithic modular), Windows עם microkernel-like תתי-מערכות, macOS המבוסס על Mach+BSD.</li>
+                </div>
+                
+                <div class="highlight-box">
+                    <button class="toggle-btn" data-graph="hybrid-graph" onclick="toggleGraph('hybrid-graph')">הצג השוואה ▼</button>
+                    <div id="hybrid-graph" class="visual-diagram" style="display:none;">
+                        <div style="display: flex; justify-content: space-around; margin-bottom: 30px;">
+                            <div style="text-align: center; width: 30%;">
+                                <div style="font-weight: bold; margin-bottom: 10px; color: #3b82f6;">לינוקס</div>
+                                <div style="background: rgba(59, 130, 246, 0.1); border-radius: 10px; padding: 10px;">
+                                    <div>מונוליטי עם מודולים דינמיים</div>
+                                    <div style="height: 10px;"></div>
+                                    <div style="height: 50px; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                                        גרעין מונוליטי
+                                    </div>
+                                    <div style="height: 5px;"></div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <div style="width: 30%; height: 30px; background: rgba(59, 130, 246, 0.5); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 0.8em; color: white;">מודול</div>
+                                        <div style="width: 30%; height: 30px; background: rgba(59, 130, 246, 0.5); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 0.8em; color: white;">מודול</div>
+                                        <div style="width: 30%; height: 30px; background: rgba(59, 130, 246, 0.5); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 0.8em; color: white;">מודול</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="text-align: center; width: 30%;">
+                                <div style="font-weight: bold; margin-bottom: 10px; color: #8b5cf6;">Windows</div>
+                                <div style="background: rgba(139, 92, 246, 0.1); border-radius: 10px; padding: 10px;">
+                                    <div>היברידי עם תת-מערכות</div>
+                                    <div style="height: 10px;"></div>
+                                    <div style="height: 30px; background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8em;">
+                                        מיקרו-גרעין עם שירותים
+                                    </div>
+                                    <div style="height: 5px;"></div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <div style="width: 48%; height: 45px; background: rgba(139, 92, 246, 0.5); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 0.8em; color: white;">תת-מערכת Win32</div>
+                                        <div style="width: 48%; height: 45px; background: rgba(139, 92, 246, 0.5); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 0.8em; color: white;">תת-מערכת POSIX</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="text-align: center; width: 30%;">
+                                <div style="font-weight: bold; margin-bottom: 10px; color: #ec4899;">macOS</div>
+                                <div style="background: rgba(236, 72, 153, 0.1); border-radius: 10px; padding: 10px;">
+                                    <div>היברידי מיקרו-גרעין/מונוליטי</div>
+                                    <div style="height: 10px;"></div>
+                                    <div style="height: 30px; background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8em;">
+                                        מיקרו-גרעין Mach
+                                    </div>
+                                    <div style="height: 5px;"></div>
+                                    <div style="height: 30px; background: rgba(236, 72, 153, 0.5); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 0.8em; color: white;">
+                                        רכיבי BSD
+                                    </div>
+                                    <div style="height: 5px;"></div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <div style="width: 48%; height: 30px; background: rgba(236, 72, 153, 0.3); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 0.8em; color: white;">kexts</div>
+                                        <div style="width: 48%; height: 30px; background: rgba(236, 72, 153, 0.3); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 0.8em; color: white;">דרייברים</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- מבני מערכות הפעלה שונים - השוואה -->
+            <div class="content-section" id="os-structures-comparison">
+                <h2>📊 השוואת מבני מערכות הפעלה</h2>
+                <p>בעיצוב מבנה מערכת ההפעלה יש לשקול מספר פרמטרים מהותיים: ביצועים, אמינות, תחזוקתיות, אבטחה וגמישות. המבנה המונוליטי מספק ביצועים גבוהים אך מסבך את התחזוקה; מיקרו-גרעין מאפשר אמינות גבוהה אך עם מחיר בביצועים; ומבנה היברידי מנסה לאזן בין השניים. בחירת המבנה נשענת על דרישות המערכת הספציפיות, מגבלות חומרה ותרחישי השימוש.</p>
+                
+                <div class="feature-list">
+                    <li><strong>פרמטרי בחירה:</strong> משקל יחסי של ביצועים, אמינות, אבטחה ותרחישי שימוש בבחירת ארכיטקטורה.</li>
+                    <li><strong>מגמות:</strong> התפתחות לכיוון מבנים היברידיים המשלבים יתרונות ממספר גישות.</li>
+                    <li><strong>יישימות:</strong> מערכות משובצות עשויות להעדיף מונוליטי פשוט, שרתים יעדיפו מיקרו-גרעין בטוח יותר, ומכשירים אישיים לרוב מיישמים פתרונות היברידיים.</li>
+                </div>
+                
+                <div class="highlight-box">
+                    <button class="toggle-btn" data-graph="comparison-graph" onclick="toggleGraph('comparison-graph')">הצג טבלת השוואה ▼</button>
+                    <div id="comparison-graph" class="visual-diagram" style="display:none;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: rgba(30, 41, 59, 0.8);">
+                                    <th style="padding: 15px; text-align: right; border: 1px solid rgba(148, 163, 184, 0.2);">פרמטר</th>
+                                    <th style="padding: 15px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2);">מונוליטי</th>
+                                    <th style="padding: 15px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2);">שכבתי</th>
+                                    <th style="padding: 15px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2);">מיקרו-גרעין</th>
+                                    <th style="padding: 15px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2);">היברידי</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 12px; border: 1px solid rgba(148, 163, 184, 0.2);">ביצועים</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #3b82f6;">גבוה מאוד</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #8b5cf6;">בינוני-גבוה</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #ec4899;">נמוך-בינוני</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #f59e0b;">גבוה</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px; border: 1px solid rgba(148, 163, 184, 0.2);">אמינות</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #ef4444;">נמוכה</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #8b5cf6;">בינונית</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #3b82f6;">גבוהה מאוד</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #8b5cf6;">בינונית-גבוהה</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px; border: 1px solid rgba(148, 163, 184, 0.2);">תחזוקתיות</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #ef4444;">נמוכה</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #3b82f6;">גבוהה</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #3b82f6;">גבוהה מאוד</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #8b5cf6;">בינונית-גבוהה</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px; border: 1px solid rgba(148, 163, 184, 0.2);">אבטחה</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #ef4444;">נמוכה-בינונית</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #8b5cf6;">בינונית</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #3b82f6;">גבוהה מאוד</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #8b5cf6;">בינונית-גבוהה</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px; border: 1px solid rgba(148, 163, 184, 0.2);">מורכבות יישום</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #3b82f6;">נמוכה-בינונית</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #8b5cf6;">בינונית</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #ef4444;">גבוהה מאוד</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2); color: #ef4444;">גבוהה</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px; border: 1px solid rgba(148, 163, 184, 0.2);">דוגמאות</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2);">Linux kernel</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2);">THE, Venus</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2);">Mach, QNX</td>
+                                    <td style="padding: 12px; text-align: center; border: 1px solid rgba(148, 163, 184, 0.2);">Windows NT, macOS</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- וירטואליזציה -->
+            <div class="content-section" id="virtualization">
+                <h2>🔄 וירטואליזציה (Virtualization)</h2>
+                <p>וירטואליזציה מאפשרת הרצה של מספר מערכות הפעלה על אותה חומרה פיזית, באמצעות יצירת "מכונות וירטואליות" (VMs) שמדמות חומרה. השכבה שמנהלת את המכונות הווירטואליות נקראת Hypervisor או Virtual Machine Monitor (VMM), והיא יכולה לרוץ ישירות על החומרה (Type 1) או מעל מערכת הפעלה מארחת (Type 2).</p>
+                
+                <div class="feature-list">
+                    <li><strong>יתרונות:</strong> ניצול משאבים יעיל יותר, בידוד אבטחה בין מכונות, גמישות בהקצאת משאבים.</li>
+                    <li><strong>סוגים:</strong> וירטואליזציה מלאה (חומרה וירטואלית מלאה), פארא-וירטואליזציה (שינויים במערכת האורח), וירטואליזציה ברמת מערכת הפעלה (containers).</li>
+                    <li><strong>יישומים:</strong> שרתים וירטואליים, שיתוף משאבי ענן, קונטיינרים, סביבות פיתוח מבודדות.</li>
+                </div>
+                
+                <div class="highlight-box">
+                    <button class="toggle-btn" data-graph="virtualization-graph" onclick="toggleGraph('virtualization-graph')">הצג מודלים של וירטואליזציה ▼</button>
+                    <div id="virtualization-graph" class="visual-diagram" style="display:none;">
+                        <div style="display: flex; justify-content: space-around; margin-bottom: 30px;">
+                            <div style="text-align: center; width: 45%;">
+                                <div style="font-weight: bold; margin-bottom: 10px; color: #3b82f6;">Type 1: Bare Metal Hypervisor</div>
+                                <div style="background: rgba(59, 130, 246, 0.1); border-radius: 10px; padding: 10px;">
+                                    <div style="display: flex; justify-content: space-around;">
+                                        <div style="width: 30%; height: 70px; background: rgba(139, 92, 246, 0.5); border-radius: 5px; display: flex; align-items: center; justify-content: center; color: white; padding: 5px;">
+                                            VM 1<br/>Linux
+                                        </div>
+                                        <div style="width: 30%; height: 70px; background: rgba(139, 92, 246, 0.5); border-radius: 5px; display: flex; align-items: center; justify-content: center; color: white; padding: 5px;">
+                                            VM 2<br/>Windows
+                                        </div>
+                                        <div style="width: 30%; height: 70px; background: rgba(139, 92, 246, 0.5); border-radius: 5px; display: flex; align-items: center; justify-content: center; color: white; padding: 5px;">
+                                            VM 3<br/>macOS
+                                        </div>
+                                    </div>
+                                    <div style="height: 10px;"></div>
+                                    <div style="height: 40px; background: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                                        Hypervisor (VMware ESXi, Xen, Hyper-V)
+                                    </div>
+                                    <div style="height: 10px;"></div>
+                                    <div style="height: 30px; background: #475569; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                                        חומרה פיזית
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="text-align: center; width: 45%;">
+                                <div style="font-weight: bold; margin-bottom: 10px; color: #ec4899;">Type 2: Hosted Hypervisor</div>
+                                <div style="background: rgba(236, 72, 153, 0.1); border-radius: 10px; padding: 10px;">
+                                    <div style="display: flex; justify-content: space-around;">
+                                        <div style="width: 30%; height: 60px; background: rgba(139, 92, 246, 0.5); border-radius: 5px; display: flex; align-items: center; justify-content: center; color: white; padding: 5px;">
+                                            VM 1<br/>Linux
+                                        </div>
+                                        <div style="width: 30%; height: 60px; background: rgba(139, 92, 246, 0.5); border-radius: 5px; display: flex; align-items: center; justify-content: center; color: white; padding: 5px;">
+                                            VM 2<br/>Windows
+                                        </div>
+                                    </div>
+                                    <div style="height: 10px;"></div>
+                                    <div style="height: 40px; background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                                        Hypervisor (VirtualBox, VMware Workstation)
+                                    </div>
+                                    <div style="height: 10px;"></div>
+                                    <div style="height: 40px; background: #64748b; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                                        מערכת הפעלה מארחת
+                                    </div>
+                                    <div style="height: 10px;"></div>
+                                    <div style="height: 30px; background: #475569; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                                        חומרה פיזית
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- התחלה של לינוקס -->
+            <div class="content-section" id="linux-origin">
+                <h2>🐧 התחלה של לינוקס (Linux Origin)</h2>
+                <p>לינוקס נוצר על ידי לינוס טורוואלדס בשנת 1991 כהשראה מ-UNIX, במטרה לבנות קרנל חופשי למחשבים אישיים. גרעין לינוקס אומנם תוכנן כמערכת מונוליטית, אך עם תמיכה במודולים הניתנים לטעינה דינמית (Loadable Kernel Modules), מה שמאפשר הרחבה מבלי לבנות את כל הגרעין מחדש. ההכרזה הראשונית על Linux נעשתה ב-25 באוגוסט 1991, וגרסה 0.01 פורסמה ב-17 בספטמבר 1991 על FTP באוניברסיטת הלסינקי, כאשר ההפצה הרשמית 1.0 יצאה ב-1994.</p>
+                <div class="feature-list">
+                    <li><strong>מונוליטי מודולרי:</strong> קרנל מונוליטי אך מאפשר מודולים דינמיים לטעינה/הסרה.</li>
+                    <li><strong>היסטוריה קצרה:</strong> פרויקט תחביבי שהפך לקהילת פיתוח רחבה, עם תיעוד פתוח ושיתופי פעולה גלובליים.</li>
+                    <li><strong>השפעה רחבה:</strong> לינוקס הפך לאבן יסוד בשרתים, במובייל (Android) ובהתקנים רבים.</li>
+                </div>
+                
+                
+            </div>
+
+
+        </div>
+
+        <script>
+            
+            // מוסיפים את הקטגוריות החדשות לתפריט
+            navMainMenu.appendChild(architectureCategory);
+            navMainMenu.appendChild(advancedCategory);
+            
+            // מפעילים מחדש את האירועים לקטגוריות החדשות
+            const categoryTitles = document.querySelectorAll('.category-title');
+            
+            categoryTitles.forEach(title => {
+                title.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const parent = this.parentElement;
+                    const isActive = parent.classList.contains('active');
+                    
+                    // סגור את כל הקטגוריות
+                    document.querySelectorAll('.nav-category').forEach(cat => {
+                        cat.classList.remove('active');
+                    });
+                    
+                    // פתח את הקטגוריה הנוכחית אם היא לא הייתה פתוחה
+                    if (!isActive) {
+                        parent.classList.add('active');
+                    }
+                });
+            });
+       
+        </script>
+    </body>
+    </html>
+</body>
+</html>
