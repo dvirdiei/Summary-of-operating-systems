@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכות הפעלה - Operating Systems</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%);
+            background-attachment: fixed;
+            color: #f1f5f9;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* אפקט חלקיקים ברקע */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 200, 255, 0.1) 0%, transparent 50%);
+            z-index: -1;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        /* Sidebar משופר */
+        .sidebar {
+            flex: 0 0 320px;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+        
+        .sidebar h2 {
+            font-size: 1.6em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar h2::before {
+            content: '📚';
+            font-size: 1.2em;
+        }
+        
+        .sidebar p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #cbd5e1;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .sidebar .highlight-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border-left: 3px solid #3b82f6;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        /* תוכן ראשי */
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .subtitle {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.3em;
+            color: #94a3b8;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        /* גריד משופר */
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 0 10px;
+        }
+
+        /* כרטיסי נושא משופרים */
+        .topic-card {
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-decoration: none;
+            color: #f1f5f9;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 180px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .topic-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .topic-card:hover::before {
+            left: 100%;
+        }
+
+        .topic-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(59, 130, 246, 0.3);
+            border-color: #3b82f6;
+        }
+
+        .topic-card h3 {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin: 10px 0;
+            text-align: center;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transition: all 0.3s ease;
+        }
+
+        .topic-card:hover h3 {
+            transform: scale(1.05);
+        }
+
+        .topic-card .emoji {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            transition: all 0.4s ease;
+            filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.3));
+        }
+
+        .topic-card:hover .emoji {
+            transform: scale(1.2) rotate(10deg);
+            filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.5));
+        }
+
+        /* אפקטים מיוחדים לכרטיסים שונים */
+        .topic-card:nth-child(1) { --accent: #f59e0b; }
+        .topic-card:nth-child(2) { --accent: #10b981; }
+        .topic-card:nth-child(3) { --accent: #ef4444; }
+        .topic-card:nth-child(4) { --accent: #8b5cf6; }
+        .topic-card:nth-child(5) { --accent: #06b6d4; }
+        .topic-card:nth-child(6) { --accent: #84cc16; }
+        .topic-card:nth-child(7) { --accent: #f97316; }
+        .topic-card:nth-child(8) { --accent: #ec4899; }
+        .topic-card:nth-child(9) { --accent: #14b8a6; }
+        .topic-card:nth-child(10) { --accent: #a855f7; }
+        .topic-card:nth-child(11) { --accent: #3b82f6; }
+        .topic-card:nth-child(12) { --accent: #f43f5e; }
+
+        .topic-card:hover {
+            border-color: var(--accent, #3b82f6);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(var(--accent-rgb, 59, 130, 246), 0.3);
+        }
+
+        /* רספונסיביות משופרת */
+        @media (max-width: 1200px) {
+            .container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .sidebar {
+                flex: none;
+                position: static;
+                width: 100%;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .topics-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .topic-card {
+                min-height: 120px;
+                padding: 20px 15px;
+            }
+            
+            .sidebar {
+                padding: 20px;
+            }
+        }
+
+        /* אנימציית כניסה */
+        .topic-card {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.6s ease forwards;
+        }
+
+        .topic-card:nth-child(1) { animation-delay: 0.1s; }
+        .topic-card:nth-child(2) { animation-delay: 0.2s; }
+        .topic-card:nth-child(3) { animation-delay: 0.3s; }
+        .topic-card:nth-child(4) { animation-delay: 0.4s; }
+        .topic-card:nth-child(5) { animation-delay: 0.5s; }
+        .topic-card:nth-child(6) { animation-delay: 0.6s; }
+        .topic-card:nth-child(7) { animation-delay: 0.7s; }
+        .topic-card:nth-child(8) { animation-delay: 0.8s; }
+        .topic-card:nth-child(9) { animation-delay: 0.9s; }
+        .topic-card:nth-child(10) { animation-delay: 1.0s; }
+        .topic-card:nth-child(11) { animation-delay: 1.1s; }
+        .topic-card:nth-child(12) { animation-delay: 1.2s; }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar: דבר העורך -->
+        <div class="sidebar">
+            <h2>דבר העורך</h2>
+            <p>
+                ברוכים הבאים לקורס מערכות הפעלה! כאן תוכלו למצוא את כל החומר הנדרש ללימוד עמוק ומקיף של מערכות הפעלה מודרניות.
+            </p>
+            <p>
+                הקורס בנוי בצורה מתקדמת הדרגתית, כאשר כל נושא מתבסס על הקודמים. מומלץ ללמוד לפי הסדר המוצג.
+            </p>
+            <div class="highlight-box">
+                <strong>💡 טיפ:</strong> השתמשו בלשונית "תרגילים ומבחנים" כדי לתרגל את החומר הנלמד ולהכין עצמכם למבחנים.
+            </div>
+        </div>
+
+        <!-- תוכן ראשי -->
+        <div class="main-content">
+            <div class="header">
+                <h1>מערכות הפעלה</h1>
+                <div class="subtitle">Operating Systems Course</div>
+            </div>
+
+            <!-- גריד של כרטיסי נושאים -->
+            <div class="topics-grid">
+                <a href="מבוא.html" class="topic-card">
+                    <div class="emoji">🖥️</div>
+                    <h3>מבוא למערכות הפעלה</h3>
+                </a>
+                <a href="pages/processes.html" class="topic-card">
+                    <div class="emoji">🧵</div>
+                    <h3>תהליכים וחוטים</h3>
+                </a>
+                <a href="pages/scheduling.html" class="topic-card">
+                    <div class="emoji">⏱️</div>
+                    <h3>תזמון תהליכים</h3>
+                </a>
+                <a href="pages/synchronization.html" class="topic-card">
+                    <div class="emoji">🔄</div>
+                    <h3>סינכרוניזציה</h3>
+                </a>
+                <a href="pages/memory.html" class="topic-card">
+                    <div class="emoji">🧠</div>
+                    <h3>ניהול זיכרון</h3>
+                </a>
+                <a href="pages/virtual_memory.html" class="topic-card">
+                    <div class="emoji">💾</div>
+                    <h3>זיכרון וירטואלי</h3>
+                </a>
+                <a href="pages/file_systems.html" class="topic-card">
+                    <div class="emoji">📁</div>
+                    <h3>מערכות קבצים</h3>
+                </a>
+                <a href="pages/io_storage.html" class="topic-card">
+                    <div class="emoji">💽</div>
+                    <h3>קלט/פלט ואחסון</h3>
+                </a>
+                <a href="pages/security.html" class="topic-card">
+                    <div class="emoji">🔒</div>
+                    <h3>אבטחה והגנה</h3>
+                </a>
+                <a href="pages/distributed.html" class="topic-card">
+                    <div class="emoji">🌐</div>
+                    <h3>מערכות מבוזרות</h3>
+                </a>
+                <a href="pages/virtualization.html" class="topic-card">
+                    <div class="emoji">📦</div>
+                    <h3>וירטואליזציה</h3>
+                </a>
+                <a href="pages/exercises.html" class="topic-card">
+                    <div class="emoji">✏️</div>
+                    <h3>תרגילים ומבחנים</h3>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
