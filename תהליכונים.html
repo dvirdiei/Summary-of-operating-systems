@@ -7,547 +7,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <style>
-        /* סרגל ניווט צף */
-        .nav-sidebar {
-            position: fixed;
-            top: 50%;
-            right: 20px;
-            transform: translateY(-50%);
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 15px;
-            z-index: 100;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            max-width: 200px;
-            transition: all 0.3s ease;
-        }
-        .nav-sidebar:hover {
-            transform: translateY(-50%) translateX(-5px);
-        }
-        .nav-sidebar-title {
-            color: #60a5fa;
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-            font-size: 0.9em;
-        }
-        .nav-sidebar ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .nav-sidebar li {
-            margin-bottom: 8px;
-        }
-        .nav-sidebar a {
-            color: #cbd5e1;
-            text-decoration: none;
-            font-size: 0.85em;
-            display: block;
-            padding: 5px 10px;
-            border-radius: 5px;
-            transition: all 0.2s ease;
-        }
-        .nav-sidebar a:hover {
-            background: rgba(59, 130, 246, 0.2);
-            color: #60a5fa;
-            transform: translateX(-3px);
-        }
-        @media (max-width: 1200px) {
-            .nav-sidebar {
-                right: -180px;
-                transition: right 0.3s ease;
-            }
-            .nav-sidebar:hover {
-                right: 0;
-                transform: translateY(-50%) translateX(0);
-            }
-            .nav-sidebar::before {
-                content: "≡";
-                position: absolute;
-                left: -35px;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 30px;
-                height: 30px;
-                background: rgba(15, 23, 42, 0.8);
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #60a5fa;
-                border: 1px solid rgba(148, 163, 184, 0.2);
-                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-                font-size: 1.5em;
-            }
-        }
-        /* איפוס ועיצוב כללי */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: 'Heebo', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%);
-            background-attachment: fixed;
-            color: #f1f5f9;
-            min-height: 100vh;
-            line-height: 1.7;
-        }
-        /* אפקט חלקיקים ברקע */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-image: 
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(120, 200, 255, 0.1) 0%, transparent 50%);
-            z-index: -1;
-            animation: float 20s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        /* כותרת ראשית */
-        .header {
-            text-align: center;
-            margin-bottom: 50px;
-            padding: 40px 20px;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-        .header h1 {
-            font-size: clamp(2.5rem, 5vw, 3.5rem);
-            font-weight: 700;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
-        }
-        .subtitle {
-            font-family: 'Fira Code', monospace;
-            font-size: 1.3em;
-            color: #94a3b8;
-            font-weight: 500;
-            letter-spacing: 1px;
-        }
-        /* תוכן מחולק לחלקים */
-        .content-section {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            opacity: 0;
-            transform: translateY(30px);
-            animation: slideIn 0.6s ease forwards;
-        }
-        
-        /* סגנון לתכנים מתרחבים */
-        .collapsible-content {
-            display: none;
-            padding: 10px 0;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .toggle-btn {
-            background: transparent;
-            border: none;
-            color: #60a5fa;
-            cursor: pointer;
-            font-size: 0.9em;
-            padding: 0 5px;
-            transition: all 0.2s ease;
-        }
-        
-        .toggle-btn:hover {
-            color: #3b82f6;
-            transform: translateY(-2px);
-        }
-        .content-section:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-        }
-        .content-section:nth-child(odd) {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%);
-            border-left: 3px solid rgba(59, 130, 246, 0.5);
-        }
-        .content-section:nth-child(even) {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
-            border-left: 3px solid rgba(236, 72, 153, 0.5);
-        }
-        .content-section h2 {
-            font-size: 2em;
-            font-weight: 700;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .content-section:nth-child(3n+1) h2 {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .content-section:nth-child(3n+2) h2 {
-            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .content-section:nth-child(3n+3) h2 {
-            background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .content-section h3 {
-            font-size: 1.4em;
-            font-weight: 600;
-            margin: 25px 0 15px 0;
-            color: #60a5fa;
-            border-right: 3px solid #3b82f6;
-            padding-right: 15px;
-        }
-        .content-section:nth-child(3n+2) h3 {
-            color: #c084fc;
-            border-right-color: #8b5cf6;
-        }
-        .content-section:nth-child(3n+3) h3 {
-            color: #f472b6;
-            border-right-color: #ec4899;
-        }
-        .content-section p {
-            margin-bottom: 15px;
-            color: #cbd5e1;
-            font-size: 1.1em;
-        }
-        /* רשימות */
-        .feature-list {
-            list-style: none;
-            padding: 0;
-            margin: 20px 0;
-        }
-        .feature-list li {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin-bottom: 10px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .content-section:nth-child(3n+1) .feature-list li {
-            background: rgba(59, 130, 246, 0.1);
-            border-color: rgba(59, 130, 246, 0.2);
-        }
-        .content-section:nth-child(3n+2) .feature-list li {
-            background: rgba(139, 92, 246, 0.1);
-            border-color: rgba(139, 92, 246, 0.2);
-        }
-        .content-section:nth-child(3n+3) .feature-list li {
-            background: rgba(236, 72, 153, 0.1);
-            border-color: rgba(236, 72, 153, 0.2);
-        }
-        .feature-list li::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 4px;
-            height: 100%;
-        }
-        .content-section:nth-child(3n+1) .feature-list li::before {
-            background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
-        }
-        .content-section:nth-child(3n+2) .feature-list li::before {
-            background: linear-gradient(to bottom, #8b5cf6, #ec4899);
-        }
-        .content-section:nth-child(3n+3) .feature-list li::before {
-            background: linear-gradient(to bottom, #ec4899, #f59e0b);
-        }
-        .feature-list li:hover {
-            transform: translateX(-5px);
-        }
-        .content-section:nth-child(3n+1) .feature-list li:hover {
-            background: rgba(59, 130, 246, 0.15);
-        }
-        .content-section:nth-child(3n+2) .feature-list li:hover {
-            background: rgba(139, 92, 246, 0.15);
-        }
-        .content-section:nth-child(3n+3) .feature-list li:hover {
-            background: rgba(236, 72, 153, 0.15);
-        }
-        .feature-list li strong {
-            font-weight: 600;
-        }
-        .content-section:nth-child(3n+1) .feature-list li strong {
-            color: #3b82f6;
-        }
-        .content-section:nth-child(3n+2) .feature-list li strong {
-            color: #8b5cf6;
-        }
-        .content-section:nth-child(3n+3) .feature-list li strong {
-            color: #ec4899;
-        }
-        /* גרפיקה ויזואלית */
-        .visual-diagram {
-            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(51, 65, 85, 0.8));
-            border-radius: 15px;
-            padding: 25px;
-            margin: 20px 0;
-            text-align: center;
-            border: 1px solid rgba(148, 163, 184, 0.2);
-        }
-        .content-section:nth-child(3n+1) .visual-diagram {
-            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(59, 130, 246, 0.1));
-        }
-        .content-section:nth-child(3n+2) .visual-diagram {
-            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(139, 92, 246, 0.1));
-        }
-        .content-section:nth-child(3n+3) .visual-diagram {
-            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(236, 72, 153, 0.1));
-        }
-        .hierarchy-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            margin: 20px 0;
-        }
-        .layer {
-            color: white;
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-weight: 600;
-            min-width: 200px;
-            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
-            transition: all 0.3s ease;
-        }
-        .content-section:nth-child(3n+1) .layer {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
-        }
-        .content-section:nth-child(3n+2) .layer {
-            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
-            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
-        }
-        .content-section:nth-child(3n+3) .layer {
-            background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);
-            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.3);
-        }
-        .layer:hover {
-            transform: scale(1.05);
-        }
-        .content-section:nth-child(3n+1) .layer:hover {
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
-        }
-        .content-section:nth-child(3n+2) .layer:hover {
-            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
-        }
-        .content-section:nth-child(3n+3) .layer:hover {
-            box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
-        }
-        .arrow {
-            font-size: 1.5em;
-        }
-        .content-section:nth-child(3n+1) .arrow {
-            color: #60a5fa;
-        }
-        .content-section:nth-child(3n+2) .arrow {
-            color: #c084fc;
-        }
-        .content-section:nth-child(3n+3) .arrow {
-            color: #f472b6;
-        }
-        /* קוד לדוגמה */
-        .code-example {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 15px 0;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.9em;
-            color: #e2e8f0;
-            overflow-x: auto;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        .content-section:nth-child(3n+1) .code-example {
-            border-left: 4px solid #3b82f6;
-        }
-        .content-section:nth-child(3n+2) .code-example {
-            border-left: 4px solid #8b5cf6;
-        }
-        .content-section:nth-child(3n+3) .code-example {
-            border-left: 4px solid #ec4899;
-        }
-        .content-section:nth-child(3n+1) .code-example .keyword {
-            color: #3b82f6;
-        }
-        .content-section:nth-child(3n+2) .code-example .keyword {
-            color: #8b5cf6;
-        }
-        .content-section:nth-child(3n+3) .code-example .keyword {
-            color: #ec4899;
-        }
-        .code-example .comment {
-            color: #64748b;
-            font-style: italic;
-        }
-        /* הדגשה מיוחדת */
-        .highlight-box {
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
-            position: relative;
-        }
-        .content-section:nth-child(3n+1) .highlight-box {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-        }
-        .content-section:nth-child(3n+2) .highlight-box {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-        }
-        .content-section:nth-child(3n+3) .highlight-box {
-            background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
-            border: 1px solid rgba(236, 72, 153, 0.3);
-        }
-        .highlight-box::before {
-            content: '💡';
-            position: absolute;
-            top: -15px;
-            right: 20px;
-            background: rgba(15, 23, 42, 0.9);
-            padding: 5px 10px;
-            border-radius: 50%;
-            font-size: 1.2em;
-        }
-        /* רספונסיביות */
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-            .content-section {
-                padding: 20px;
-            }
-            .hierarchy-box {
-                gap: 10px;
-            }
-            .layer {
-                min-width: 150px;
-                padding: 10px 20px;
-                font-size: 0.9em;
-            }
-        }
-        @keyframes slideIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        /* סגנון עבור התפריט המדורג */
-        .nav-submenu {
-            display: none;
-            padding-right: 15px;
-            margin-top: 5px;
-        }
-        .nav-category {
-            margin-bottom: 10px;
-        }
-        .category-title {
-            font-weight: 600;
-            color: #60a5fa;
-            cursor: pointer;
-            display: block;
-            padding: 5px 10px;
-            border-radius: 5px;
-            transition: all 0.2s ease;
-        }
-        .category-title:hover {
-            background: rgba(59, 130, 246, 0.2);
-        }
-        .nav-category.active .nav-submenu {
-            display: block;
-             transform: translateY(-2px);
-        }
-    </style>
-    
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // טיפול בקטגוריות בסרגל הניווט
-        const categoryTitles = document.querySelectorAll('.category-title');
-        
-        categoryTitles.forEach(title => {
-            title.addEventListener('click', function(e) {
-                e.preventDefault();
-                const parent = this.parentElement;
-                const isActive = parent.classList.contains('active');
-                
-                // סגור את כל הקטגוריות
-                document.querySelectorAll('.nav-category').forEach(cat => {
-                    cat.classList.remove('active');
-                });
-                
-                // פתח את הקטגוריה הנוכחית אם היא לא הייתה פתוחה
-                if (!isActive) {
-                    parent.classList.add('active');
-                }
-            });
-        });
-        
-        // פתיחת הקטגוריה הראשונה באופן אוטומטי בטעינה
-        if(document.querySelector('.nav-category')) {
-            document.querySelector('.nav-category').classList.add('active');
-        }
-    });
+    <link rel="stylesheet" href="style/base.css">
+    <script src="script/sidebar.js"></script>
 
-    // פונקציה להצגה/הסתרה של תוכן מתרחב
-        function toggleContent(button) {
-            const content = button.parentElement.nextElementSibling;
-            
-            if (content.style.display === 'none' || content.style.display === '') {
-                content.style.display = 'block';
-                button.textContent = '▲';
-            } else {
-                content.style.display = 'none';
-                button.textContent = '▼';
-            }
-        }
-    </script>
+    
+  
+  
 </head>
 <body>
     <!-- סרגל ניווט צף -->
@@ -555,12 +20,26 @@
         <div class="nav-sidebar-title">תוכן העניינים</div>
         <ul class="nav-main-menu">
             <li class="nav-category">
-                <a href="#" class="category-title">🔗 תהליכונים והקבלה</a>
+                <a href="#what-is-thread" class="category-title">📝 יסודות תהליכונים</a>
                 <ul class="nav-submenu">
                     <li><a href="#what-is-thread">מה זה תהליכון?</a></li>
                     <li><a href="#multi-threaded-servers">שרתי ריבוי תהליכונים</a></li>
+                </ul>
+            </li>
+            <li class="nav-category">
+                <a href="#multi-core-programming" class="category-title">⚡ מקביליות וביצועים</a>
+                <ul class="nav-submenu">
                     <li><a href="#multi-core-programming">תכנות ריבוי ליבות</a></li>
                     <li><a href="#amdahl-law">חוק אמדאל</a></li>
+                </ul>
+            </li>
+            <li class="nav-category">
+                <a href="#kernel-threads" class="category-title">🧠 מודלי תהליכונים</a>
+                <ul class="nav-submenu">
+                    <li><a href="#kernel-threads">תהליכי גרעין ומודלים</a></li>
+                    <li><a href="#kernel-threads" onclick="document.getElementById('kernel-threads').scrollIntoView();">מודל רבים-לאחד</a></li>
+                    <li><a href="#kernel-threads" onclick="document.getElementById('kernel-threads').scrollIntoView();">מודל אחד-לאחד</a></li>
+                    <li><a href="#kernel-threads" onclick="document.getElementById('kernel-threads').scrollIntoView();">מודל רבים-לרבים</a></li>
                 </ul>
             </li>
         </ul>
@@ -963,8 +442,342 @@
                 </p>
             </div>
             </div>
-        </div></ul>
         </div>
+        <!-- תהליכי גרעין וסוגי מודלים -->
+        <div class="content-section" id="kernel-threads">
+            <h2>🧠 תהליכי גרעין ומודלים של תהליכונים</h2>
+            <p>
+                תהליכי גרעין (Kernel Threads) הם תהליכונים המנוהלים ישירות על-ידי מערכת ההפעלה. בניגוד לתהליכוני משתמש, תהליכוני גרעין מוכרים למתזמן (scheduler) של מערכת ההפעלה ומאפשרים מקביליות אמיתית על מערכות מרובות מעבדים. כאשר תהליכון גרעין חוסם פעולה (למשל קריאת קובץ), שאר התהליכונים יכולים להמשיך לרוץ.
+            </p>
+            <p>
+                תהליכונים ברמת המשתמש (User-Level Threads) מנוהלים על-ידי ספריית תהליכונים בשכבת המשתמש, ומערכת ההפעלה אינה מודעת לקיומם. הם נחשבים לקלי משקל יותר, אך דורשים מנגנוני סנכרון מיוחדים כדי להימנע מחסימת כל התהליכונים בעת קריאות מערכת.
+            </p>
+            <p>
+                הקשר בין תהליכוני המשתמש לתהליכוני הגרעין מוגדר באמצעות מספר מודלים שונים, שכל אחד מהם מציע איזון אחר בין גמישות, פשטות, ויעילות:
+            </p>
+            
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">מודל רבים-לאחד (Many-to-One) <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+                <p>
+                    במודל זה, מספר תהליכוני משתמש ממופים לתהליכון גרעין יחיד.
+                </p>
+                <ul class="feature-list">
+                    <li><strong>יתרונות:</strong> ניהול תהליכונים יעיל, עובד במערכות הפעלה שאינן תומכות בתהליכוני גרעין מרובים.</li>
+                    <li><strong>חסרונות:</strong> אם תהליכון אחד יבצע קריאת מערכת חוסמת, כל התהליכונים ייחסמו. חוסר יכולת לנצל מספר מעבדים.</li>
+                </ul>
+                
+                <div class="visual-diagram">
+                    <div style="display: flex; justify-content: center; margin: 20px 0;">
+                        <div style="width: 450px; height: 300px; position: relative; background: rgba(30, 41, 59, 0.4); border-radius: 10px; padding: 20px;">
+                            <!-- User-Level Threads -->
+                            <div style="position: absolute; top: 20px; left: 30px; right: 30px; border-bottom: 1px dashed #94a3b8; padding-bottom: 10px;">
+                                <div style="color: #cbd5e1; text-align: center; margin-bottom: 15px; font-weight: bold;">תהליכוני משתמש</div>
+                                <div style="display: flex; justify-content: space-around;">
+                                    <div style="width: 40px; height: 40px; background-color: #93c5fd; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold;">U₁</div>
+                                    <div style="width: 40px; height: 40px; background-color: #93c5fd; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold;">U₂</div>
+                                    <div style="width: 40px; height: 40px; background-color: #93c5fd; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold;">U₃</div>
+                                    <div style="width: 40px; height: 40px; background-color: #93c5fd; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold;">U₄</div>
+                                    <div style="width: 40px; height: 40px; background-color: #93c5fd; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold;">U₅</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Arrows -->
+                            <div style="position: absolute; top: 120px; left: 50px; right: 50px; height: 60px;">
+                                <svg width="100%" height="100%" viewBox="0 0 350 60">
+                                    <defs>
+                                        <marker id="arrowhead-blue" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                                            <polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6" />
+                                        </marker>
+                                    </defs>
+                                    <line x1="30" y1="10" x2="175" y2="50" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowhead-blue)" />
+                                    <line x1="95" y1="10" x2="175" y2="50" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowhead-blue)" />
+                                    <line x1="175" y1="10" x2="175" y2="50" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowhead-blue)" />
+                                    <line x1="255" y1="10" x2="175" y2="50" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowhead-blue)" />
+                                    <line x1="320" y1="10" x2="175" y2="50" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowhead-blue)" />
+                                </svg>
+                            </div>
+                            
+                            <!-- Kernel Thread -->
+                            <div style="position: absolute; bottom: 20px; left: 30px; right: 30px; border-top: 1px dashed #94a3b8; padding-top: 20px;">
+                                <div style="color: #cbd5e1; text-align: center; margin-bottom: 15px; font-weight: bold;">תהליכון גרעין</div>
+                                <div style="display: flex; justify-content: center;">
+                                    <div style="width: 60px; height: 60px; background-color: #fb923c; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold; border: 2px solid #f59e0b;">K₁</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="text-align: center;">מודל רבים-לאחד: תהליכוני משתמש רבים ממופים לתהליכון גרעין יחיד</p>
+                </div>
+            </div>
+            
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">מודל אחד-לאחד (One-to-One) <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+                <p>
+                    במודל זה, כל תהליכון ברמת המשתמש ממופה לתהליכון גרעין נפרד.
+                </p>
+                <ul class="feature-list">
+                    <li><strong>יתרונות:</strong> מאפשר מקביליות אמיתית, אם תהליכון נחסם אחרים יכולים להמשיך לרוץ.</li>
+                    <li><strong>חסרונות:</strong> יצירת תהליכון חדש עולה יותר משאבים, הגבלה על מספר התהליכונים במערכת.</li>
+                </ul>
+                
+                <div class="visual-diagram">
+                    <div style="display: flex; justify-content: center; margin: 20px 0;">
+                        <div style="width: 450px; height: 300px; position: relative; background: rgba(30, 41, 59, 0.4); border-radius: 10px; padding: 20px;">
+                            <!-- User-Level Threads -->
+                            <div style="position: absolute; top: 20px; left: 30px; right: 30px; border-bottom: 1px dashed #94a3b8; padding-bottom: 10px;">
+                                <div style="color: #cbd5e1; text-align: center; margin-bottom: 15px; font-weight: bold;">תהליכוני משתמש</div>
+                                <div style="display: flex; justify-content: space-around;">
+                                    <div style="width: 40px; height: 40px; background-color: #93c5fd; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold;">U₁</div>
+                                    <div style="width: 40px; height: 40px; background-color: #93c5fd; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold;">U₂</div>
+                                    <div style="width: 40px; height: 40px; background-color: #93c5fd; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold;">U₃</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Arrows -->
+                            <div style="position: absolute; top: 120px; left: 50px; right: 50px; height: 60px;">
+                                <svg width="100%" height="100%" viewBox="0 0 350 60">
+                                    <defs>
+                                        <marker id="arrowhead-purple" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                                            <polygon points="0 0, 10 3.5, 0 7" fill="#8b5cf6" />
+                                        </marker>
+                                    </defs>
+                                    <line x1="85" y1="10" x2="85" y2="50" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arrowhead-purple)" />
+                                    <line x1="175" y1="10" x2="175" y2="50" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arrowhead-purple)" />
+                                    <line x1="265" y1="10" x2="265" y2="50" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arrowhead-purple)" />
+                                </svg>
+                            </div>
+                            
+                            <!-- Kernel Threads -->
+                            <div style="position: absolute; bottom: 20px; left: 30px; right: 30px; border-top: 1px dashed #94a3b8; padding-top: 20px;">
+                                <div style="color: #cbd5e1; text-align: center; margin-bottom: 15px; font-weight: bold;">תהליכוני גרעין</div>
+                                <div style="display: flex; justify-content: space-around;">
+                                    <div style="width: 40px; height: 40px; background-color: #fb923c; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold; border: 2px solid #f59e0b;">K₁</div>
+                                    <div style="width: 40px; height: 40px; background-color: #fb923c; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold; border: 2px solid #f59e0b;">K₂</div>
+                                    <div style="width: 40px; height: 40px; background-color: #fb923c; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold; border: 2px solid #f59e0b;">K₃</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="text-align: center;">מודל אחד-לאחד: כל תהליכון משתמש ממופה לתהליכון גרעין נפרד</p>
+                </div>
+            </div>
+            
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">מודל רבים-לרבים (Many-to-Many) <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+                <p>
+                    מודל היברידי שבו מספר תהליכוני משתמש ממופים למספר תהליכוני גרעין.
+                </p>
+                <ul class="feature-list">
+                    <li><strong>יתרונות:</strong> גמישות מרבית, מאפשר מקביליות אמיתית, מגביל את מספר תהליכוני גרעין למספר אופטימלי.</li>
+                    <li><strong>חסרונות:</strong> מורכב יותר ליישום, צורך במנגנון תזמון מתוחכם יותר.</li>
+                </ul>
+                
+                <div class="visual-diagram">
+                    <div style="display: flex; justify-content: center; margin: 20px 0;">
+                        <div style="width: 450px; height: 300px; position: relative; background: rgba(30, 41, 59, 0.4); border-radius: 10px; padding: 20px;">
+                            <!-- User-Level Threads -->
+                            <div style="position: absolute; top: 20px; left: 30px; right: 30px; border-bottom: 1px dashed #94a3b8; padding-bottom: 10px;">
+                                <div style="color: #cbd5e1; text-align: center; margin-bottom: 15px; font-weight: bold;">תהליכוני משתמש</div>
+                                <div style="display: flex; justify-content: space-around;">
+                                    <div style="width: 40px; height: 40px; background-color: #93c5fd; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold;">U₁</div>
+                                    <div style="width: 40px; height: 40px; background-color: #93c5fd; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold;">U₂</div>
+                                    <div style="width: 40px; height: 40px; background-color: #93c5fd; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold;">U₃</div>
+                                    <div style="width: 40px; height: 40px; background-color: #93c5fd; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold;">U₄</div>
+                                    <div style="width: 40px; height: 40px; background-color: #93c5fd; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold;">U₅</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Arrows -->
+                            <div style="position: absolute; top: 120px; left: 50px; right: 50px; height: 60px;">
+                                <svg width="100%" height="100%" viewBox="0 0 350 60">
+                                    <defs>
+                                        <marker id="arrowhead-pink" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                                            <polygon points="0 0, 10 3.5, 0 7" fill="#ec4899" />
+                                        </marker>
+                                    </defs>
+                                    <line x1="30" y1="10" x2="85" y2="50" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowhead-pink)" />
+                                    <line x1="95" y1="10" x2="85" y2="50" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowhead-pink)" />
+                                    <line x1="95" y1="10" x2="175" y2="50" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowhead-pink)" />
+                                    <line x1="175" y1="10" x2="175" y2="50" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowhead-pink)" />
+                                    <line x1="255" y1="10" x2="175" y2="50" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowhead-pink)" />
+                                    <line x1="255" y1="10" x2="265" y2="50" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowhead-pink)" />
+                                    <line x1="320" y1="10" x2="265" y2="50" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowhead-pink)" />
+                                </svg>
+                            </div>
+                            
+                            <!-- Kernel Threads -->
+                            <div style="position: absolute; bottom: 20px; left: 30px; right: 30px; border-top: 1px dashed #94a3b8; padding-top: 20px;">
+                                <div style="color: #cbd5e1; text-align: center; margin-bottom: 15px; font-weight: bold;">תהליכוני גרעין</div>
+                                <div style="display: flex; justify-content: space-around;">
+                                    <div style="width: 40px; height: 40px; background-color: #fb923c; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold; border: 2px solid #f59e0b;">K₁</div>
+                                    <div style="width: 40px; height: 40px; background-color: #fb923c; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold; border: 2px solid #f59e0b;">K₂</div>
+                                    <div style="width: 40px; height: 40px; background-color: #fb923c; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold; border: 2px solid #f59e0b;">K₃</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="text-align: center;">מודל רבים-לרבים: תהליכוני משתמש רבים ממופים למספר תהליכוני גרעין</p>
+                </div>
+            </div>
+            
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">השוואה בין המודלים <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+                <table class="comparison-table" style="width: 100%; border-collapse: collapse; margin: 20px 0; color: #cbd5e1;">
+                    <thead>
+                        <tr style="background-color: rgba(30, 41, 59, 0.7);">
+                            <th style="padding: 12px; text-align: right; border: 1px solid #475569;">מאפיין</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #475569;">רבים-לאחד</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #475569;">אחד-לאחד</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #475569;">רבים-לרבים</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background-color: rgba(30, 41, 59, 0.4);">
+                            <td style="padding: 12px; border: 1px solid #475569; font-weight: bold;">תמיכה במקביליות אמיתית</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">❌ לא</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">✅ כן</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">✅ כן</td>
+                        </tr>
+                        <tr style="background-color: rgba(30, 41, 59, 0.4);">
+                            <td style="padding: 12px; border: 1px solid #475569; font-weight: bold;">עלות יצירת תהליכון</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">נמוכה</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">גבוהה</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">בינונית</td>
+                        </tr>
+                        <tr style="background-color: rgba(30, 41, 59, 0.4);">
+                            <td style="padding: 12px; border: 1px solid #475569; font-weight: bold;">השפעת חסימת תהליכון</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">חוסם את כל התהליכונים</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">חוסם רק את התהליכון הנוכחי</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">תלוי במימוש</td>
+                        </tr>
+                        <tr style="background-color: rgba(30, 41, 59, 0.4);">
+                            <td style="padding: 12px; border: 1px solid #475569; font-weight: bold;">מורכבות המימוש</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">נמוכה</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">בינונית</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">גבוהה</td>
+                        </tr>
+                        <tr style="background-color: rgba(30, 41, 59, 0.4);">
+                            <td style="padding: 12px; border: 1px solid #475569; font-weight: bold;">גמישות</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">נמוכה</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">בינונית</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">גבוהה</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">יישום במערכות הפעלה נפוצות <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+                <div style="display: flex; justify-content: space-between; margin: 20px 0;">
+                    <!-- Windows -->
+                    <div style="width: 48%; background-color: rgba(30, 41, 59, 0.4); border-radius: 10px; padding: 15px;">
+                        <h4 style="text-align: center; margin-bottom: 15px; color: #60a5fa;">Windows</h4>
+                        <ul class="feature-list">
+                            <li><strong>מודל:</strong> אחד-לאחד</li>
+                            <li><strong>תהליכונים:</strong> Windows עובדת עם תהליכונים ברמת גרעין הנקראים threads.</li>
+                            <li><strong>מימוש:</strong> כל תהליכון משתמש מקושר ישירות לתהליכון גרעין.</li>
+                            <li><strong>API:</strong> Win32 Thread API או .NET ThreadPool</li>
+                            <li><strong>קוד לדוגמה:</strong></li>
+                        </ul>
+                        <div class="code-example" style="margin-top: 10px;">
+                            <pre><code class="language-csharp"># Windows Thread Creation (C#)
+        using System.Threading;
+
+        // יצירת תהליכון חדש
+        Thread t = new Thread(() => {
+            Console.WriteLine("Hello from thread!");
+        });
+
+        // התחלת הריצה
+        t.Start();
+
+        // המתנה לסיום התהליכון
+        t.Join();</code></pre>
+                        </div>
+                    </div>
+                    
+                    <!-- Linux -->
+                    <div style="width: 48%; background-color: rgba(30, 41, 59, 0.4); border-radius: 10px; padding: 15px;">
+                        <h4 style="text-align: center; margin-bottom: 15px; color: #f59e0b;">Linux</h4>
+                        <ul class="feature-list">
+                            <li><strong>מודל:</strong> אחד-לאחד עם גמישות למודל רבים-לרבים</li>
+                            <li><strong>תהליכונים:</strong> POSIX threads (pthreads) ב-user space ותהליכוני גרעין ב-kernel.</li>
+                            <li><strong>מימוש:</strong> המודל המודרני מבוסס על Native POSIX Threads Library (NPTL)</li>
+                            <li><strong>API:</strong> POSIX pthread</li>
+                            <li><strong>קוד לדוגמה:</strong></li>
+                        </ul>
+                        <div class="code-example" style="margin-top: 10px;">
+                            <pre><code class="language-c"># Linux Thread Creation (C with pthreads)
+        #include &lt;pthread.h&gt;
+        #include &lt;stdio.h&gt;
+
+        void* thread_function(void* arg) {
+            printf("Hello from thread!\n");
+            return NULL;
+        }
+
+        int main() {
+            pthread_t thread_id;
+            
+            // יצירת תהליכון חדש
+            pthread_create(&thread_id, NULL, 
+                           thread_function, NULL);
+            
+            // המתנה לסיום התהליכון
+            pthread_join(thread_id, NULL);
+            
+            return 0;
+        }</code></pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <h4 style="margin-top: 20px; margin-bottom: 10px;">הבדלים עיקריים בין מימושים:</h4>
+                <ul class="feature-list">
+                    <li><strong>Windows:</strong> מימוש אחד-לאחד מלא, דגש על קלות שימוש ואינטגרציה עם מרכיבי המערכת.</li>
+                    <li><strong>Linux:</strong> בגרסאות מוקדמות היה שימוש במודל רבים-לרבים עם מנגנון התאמה (scheduler activations). בגרסאות מודרניות המעבר למודל אחד-לאחד עם NPTL שיפר את הביצועים משמעותית.</li>
+                    <li><strong>מימושי User-Level:</strong> ספריות כמו GNU Portable Threads יכולות לספק מימושי תהליכונים ברמת משתמש מעל תהליכונים ברמת גרעין.</li>
+                </ul>
+            </div>
+            
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">אתגרים ושיקולים <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+                <p>
+                    בחירת מודל תהליכונים מושפעת ממספר שיקולים חשובים:
+                </p>
+                <div class="visual-diagram" style="margin: 20px 0;">
+                    <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px;">
+                        <div style="width: 200px; background-color: rgba(30, 41, 59, 0.4); border-radius: 8px; padding: 15px; text-align: center;">
+                            <div style="font-size: 24px;">⚡</div>
+                            <h4 style="margin: 10px 0; color: #60a5fa;">ביצועים</h4>
+                            <p style="font-size: 14px;">עלות החלפת הקשר בין תהליכונים, ניצול משאבים, השפעה על זמני תגובה</p>
+                        </div>
+                        <div style="width: 200px; background-color: rgba(30, 41, 59, 0.4); border-radius: 8px; padding: 15px; text-align: center;">
+                            <div style="font-size: 24px;">🧩</div>
+                            <h4 style="margin: 10px 0; color: #60a5fa;">גמישות</h4>
+                            <p style="font-size: 14px;">היכולת להתאים את מספר התהליכונים למשימות משתנות ולהקצאת משאבים דינמית</p>
+                        </div>
+                        <div style="width: 200px; background-color: rgba(30, 41, 59, 0.4); border-radius: 8px; padding: 15px; text-align: center;">
+                            <div style="font-size: 24px;">🔒</div>
+                            <h4 style="margin: 10px 0; color: #60a5fa;">סנכרון</h4>
+                            <p style="font-size: 14px;">מורכבות מנגנוני הסנכרון בין תהליכונים במודלים השונים</p>
+                        </div>
+                        <div style="width: 200px; background-color: rgba(30, 41, 59, 0.4); border-radius: 8px; padding: 15px; text-align: center;">
+                            <div style="font-size: 24px;">📊</div>
+                            <h4 style="margin: 10px 0; color: #60a5fa;">קנה מידה</h4>
+                            <p style="font-size: 14px;">היכולת להתמודד עם מאות או אלפי תהליכונים במקביל</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="highlight-box">
+                    <p>
+                        <strong>מגמה חדשה:</strong> הופעת מודל הסיבים (Fibers) ותהליכוני קורוטינות (Coroutines) - תהליכונים קלי משקל שנוצרים ומנוהלים ברמת שפת התכנות (לדוגמה Go Goroutines) ומאפשרים מקביליות מאוד גבוהה ללא העמסת יתר על מערכת ההפעלה.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
 
     </div>
 

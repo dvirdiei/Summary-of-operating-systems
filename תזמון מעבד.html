@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תזמון מעבד - מערכות הפעלה</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style/base.css">
+    <script src="script/sidebar.js"></script>
+</head>
+<body>
+    <!-- סרגל ניווט צף -->
+    <div class="nav-sidebar">
+        <div class="nav-sidebar-title">תוכן העניינים</div>
+        <ul class="nav-main-menu">
+            <!-- קטגוריה: יסודות תזמון מעבד -->
+            <li class="nav-category">
+                <a href="javascript:void(0)" class="category-title">🧠 יסודות תזמון מעבד</a>
+                <ul class="nav-submenu">
+                    <li><a href="#basic-concepts">קונספטים בסיסיים</a></li>
+                    <li><a href="#cpu-burst-io-burst">מחזורי CPU ומחזורי I/O</a></li>
+                    <li><a href="#cpu-scheduler">מתזמן מעבד</a></li>
+                    <li><a href="#dispatcher">משגר</a></li>
+                </ul>
+            </li>
+            
+            <!-- קטגוריה: קריטריונים להערכה -->
+            <li class="nav-category">
+                <a href="javascript:void(0)" class="category-title">📏 קריטריונים וביצועים</a>
+                <ul class="nav-submenu">
+                    <li><a href="#scheduling-criteria">קריטריוני תזמון</a></li>
+                    <li><a href="#littles-formula">נוסחת ליטל</a></li>
+                </ul>
+            </li>
+            
+            <!-- קטגוריה: אלגוריתמי תזמון -->
+            <li class="nav-category">
+                <a href="javascript:void(0)" class="category-title">⚙️ אלגוריתמי תזמון</a>
+                <ul class="nav-submenu">
+                    <li><a href="#fcfs">First Come First Serve</a></li>
+                    <li><a href="#sjf">Shortest Job First</a></li>
+                    <li><a href="#srtf">Shortest Remaining Time First</a></li>
+                    <li><a href="#rr">Round Robin</a></li>
+                    <li><a href="#priority-scheduling">תזמון עדיפויות</a></li>
+                    <li><a href="#multilevel-queue">ריבוי רמות בתור</a></li>
+                    <li><a href="#feedback-queue">תור רמות עם משוב</a></li>
+                </ul>
+            </li>
+            
+            <!-- קטגוריה: תזמון מתקדם -->
+            <li class="nav-category">
+                <a href="javascript:void(0)" class="category-title">💻 תזמון מתקדם</a>
+                <ul class="nav-submenu">
+                    <li><a href="#thread-scheduling">תזמון תהליכונים</a></li>
+                    <li><a href="#multiprocessor-scheduling">תזמון מרובה מעבדים</a></li>
+                    <li><a href="#cpu-affinity">העדפת מעבד</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="back-home">
+            <a href="index.html">🏠 חזרה לדף הבית</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>תזמון מעבד –</h1>
+            <div class="subtitle">CPU Scheduling</div>
+        </div>
+
+        <!-- קונספטים בסיסיים -->
+        <div class="content-section" id="basic-concepts">
+            <h2>🔄 קונספטים בסיסיים</h2>
+            <p>תזמון מעבד הוא אחד המנגנונים הבסיסיים ביותר במערכת הפעלה. הוא אחראי על הקצאת זמן מעבד לתהליכים השונים, מה שמאפשר ריבוי תהליכים ומיצוי יעיל של משאבי המחשב. המעבד הוא משאב יקר, ומערכת ההפעלה צריכה לנהל אותו בצורה המיטבית.</p>
+            
+            <div class="feature-box">
+                <h3>מטרות תזמון מעבד:</h3>
+                <div class="feature-list">
+                    <li><strong>ניצול מרבי של המעבד:</strong> מניעת מצב שבו המעבד פנוי כשיש תהליכים מוכנים לריצה.</li>
+                    <li><strong>איזון עומסים:</strong> חלוקה הוגנת של זמן המעבד בין תהליכים.</li>
+                    <li><strong>צדק (Fairness):</strong> כל תהליך מקבל חלק הוגן מזמן המעבד.</li>
+                    <li><strong>תגובתיות:</strong> מינימום זמן תגובה לבקשות משתמש (חשוב במערכות אינטראקטיביות).</li>
+                    <li><strong>שיטות תזמון מרכזיות:</strong> 
+                        <ul>
+                            <li><em>ללא הפקעות (Non-preemptive):</em> התהליך רץ ברצף עד שהוא מסיים או מוותר מרצונו.</li>
+                            <li><em>עם הפקעות (Preemptive):</em> המערכת יכולה להפסיק תהליך באופן יזום ולהחליפו באחר.</li>
+                        </ul>
+                    </li>
+                </div>
+            </div>
+        </div>
+
+        <!-- מחזורי CPU ומחזורי I/O -->
+        <div class="content-section" id="cpu-burst-io-burst">
+            <h2>⏱️ מחזורי CPU ומחזורי I/O</h2>
+            <p>תהליכים מתאפיינים בדפוס קבוע של פעילות: מחזור שימוש במעבד (CPU burst) ואחריו מחזור של פעולות קלט/פלט (I/O burst).</p>
+
+            <div class="image-container">
+                <div class="concept-image">
+                    <svg width="100%" height="210" viewBox="0 0 700 210" xmlns="http://www.w3.org/2000/svg">
+                        <!-- צבעים -->
+                        <defs>
+                            <!-- Modern gradient for CPU burst -->
+                            <linearGradient id="cpuBlue" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#4CAF50"/>
+                                <stop offset="100%" stop-color="#2196F3"/>
+                            </linearGradient>
+                            <!-- I/O burst pattern -->
+                            <pattern id="ioHatch" patternUnits="userSpaceOnUse" width="8" height="8">
+                                <rect width="8" height="8" fill="#f8f9fa"/>
+                                <path d="M0,8 l8,-8 M-2,2 l4,-4 M6,10 l4,-4" stroke="#FF5722" stroke-width="0.8"/>
+                            </pattern>
+                            <!-- Arrow marker -->
+                            <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6"
+                                markerWidth="8" markerHeight="8" orient="auto">
+                                <path d="M 0 2 L 10 6 L 0 10 Q 2 6 0 2" fill="#3F51B5"/>
+                            </marker>
+                        </defs>
+
+                        <!-- כותרות לתהליכים -->
+                        <text x="100" y="45" font-size="17" text-anchor="end" dominant-baseline="middle" fill="#35633" font-weight="bold">תהליך 1:</text>
+                        <text x="100" y="105" font-size="17" text-anchor="end" dominant-baseline="middle" fill="#35633" font-weight="bold">תהליך 2:</text>
+
+                        <!-- תהליך 1 -->
+                        <g>
+                            <!-- CPU bursts -->
+                            <rect x="120" y="25" width="110" height="40" fill="url(#cpuBlue)" rx="7" />
+                            <rect x="350" y="25" width="110" height="40" fill="url(#cpuBlue)" rx="7" />
+                            <!-- I/O bursts -->
+                            <rect x="230" y="25" width="120" height="40" fill="url(#ioHatch)" stroke="#FF5722" stroke-width="2" rx="7"/>
+                            <rect x="460" y="25" width="80" height="40" fill="url(#ioHatch)" stroke="#FF5722" stroke-width="2" rx="7"/>
+                            <!-- ... -->
+                            <text x="555" y="45" font-size="22" fill="#333" font-weight="bold" dominant-baseline="middle">...</text>
+                        </g>
+
+                        <!-- תהליך 2 -->
+                        <g>
+                            <!-- CPU bursts -->
+                            <rect x="120" y="85" width="80" height="40" fill="url(#cpuBlue)" rx="7" />
+                            <rect x="260" y="85" width="80" height="40" fill="url(#cpuBlue)" rx="7" />
+                            <rect x="400" y="85" width="80" height="40" fill="url(#cpuBlue)" rx="7" />
+                            <!-- I/O bursts -->
+                            <rect x="200" y="85" width="60" height="40" fill="url(#ioHatch)" stroke="#FF5722" stroke-width="2" rx="7"/>
+                            <rect x="340" y="85" width="60" height="40" fill="url(#ioHatch)" stroke="#FF5722" stroke-width="2" rx="7"/>
+                            <!-- ... -->
+                            <text x="500" y="105" font-size="22" fill="#333" font-weight="bold" dominant-baseline="middle">...</text>
+                        </g>
+
+                        <!-- ציר הזמן -->
+                        <line x1="110" y1="170" x2="570" y2="170" stroke="#3F51B5" stroke-width="3" marker-end="url(#arrow)" />
+                        <text x="340" y="195" font-size="16" text-anchor="middle" fill="#3F51B5" font-weight="bold">זמן</text>
+
+                        <!-- מקרא -->
+                        <rect x="120" y="130" width="28" height="13" fill="url(#cpuBlue)" rx="3"/>
+                        <text x="155" y="161" font-size="14" text-anchor="start" dominant-baseline="middle" fill="#35633">מחזור CPU</text>
+                        <rect x="240" y="130" width="28" height="13" fill="url(#ioHatch)" stroke="#FF5722" stroke-width="1.5" rx="3"/>
+                        <text x="275" y="161" font-size="14" text-anchor="start" dominant-baseline="middle" fill="#35633">מחזור I/O</text>
+                    </svg>
+                    <div class="image-caption">דוגמה של מחזורי CPU ו-I/O בתהליכים שונים</div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3>סוגי תהליכים לפי דפוס שימוש:</h3>
+                <ul>
+                    <li><strong>תהליכי CPU (CPU-bound):</strong> תהליכים עם מחזורי CPU ארוכים ומעט פעולות I/O.</li>
+                    <li><strong>תהליכי I/O (I/O-bound):</strong> תהליכים עם מחזורי I/O תכופים ומחזורי CPU קצרים.</li>
+                </ul>
+            </div>
+
+            <p>ניתוח מחזורי ה-CPU מאפשר למתזמן לנבא את דפוס הפעולה של תהליכים ולקבל החלטות תזמון טובות יותר.</p>
+        </div>
+
+        
+        <!-- מתזמן מעבד -->
+        <div class="content-section" id="cpu-scheduler">
+            <h2>🧩 מתזמן מעבד (CPU Scheduler)</h2>
+            <p>מתזמן המעבד הוא יחידה בתוך מערכת ההפעלה שאחראית על בחירת מי מהתהליכים שבתור יקבל את המעבד. המתזמן מתעסק רק עם התור של המוכנים ולא של הממתינים, אפשר לארגן את התור בשיטות שונות (לא כזה משנה איך, יותר אכפת מי הבא שרץ).</p>
+
+            <div class="info-box">
+            <h3>מצבים בהם המתזמן עושה בחירות במצבים הבאים:</h3>
+            <ol>
+                <li>התהליך עובר ממצב רץ למצב המתנה.</li>
+                <li>הוא מעביר ממצב רץ למוכן (מחליט גם איפה לשים).</li>
+                <li>מצב המתנה למוכן הוא בעיקר מחליט לאיפה בתור הא הולך.</li>
+                <li>כשהתהליכית מסתיימת.</li>
+            </ol>
+            </div>
+
+            <div class="warning-box">
+            <p>2 דברים חשובים להבין:</p>
+            <ul>
+                <li>כל הפעולות הנ״ל לא חייבות להפקיע את התהליך הנוכחי, רשות התהליך כדי שמערכת תוכל לעשות את ההעברה הזאת.</li>
+                <li>פעולה כמו ב2 (יותר טכני), ובעיקרו נחשב עם הפקעה.</li>
+            </ul>
+            </div>
+
+        </div>
+    
+
+            
+        
+
+        <!-- משגר -->
+        <div class="content-section" id="dispatcher">
+            <h2>🚀 משגר (Dispatcher)</h2>
+            <p>המשגר הוא הרכיב שמבצע בפועל את החלפת התהליכים במעבד לאחר שהמתזמן החליט איזה תהליך יקבל את המעבד. פעולות המשגר הן חלק מ"החלפת הקשר" (context switch).</p>
+
+            <div class="feature-box">
+                <h3>תפקידי המשגר:</h3>
+                <div class="feature-list">
+                    <li><strong>החלפת הקשר:</strong> שמירת מצב התהליך הנוכחי וטעינת מצב התהליך החדש.</li>
+                    <li><strong>מעבר למצב משתמש:</strong> שינוי מצב המעבד ממצב kernel למצב user.</li>
+                    <li><strong>קפיצה לנקודה הנכונה בקוד:</strong> העברת הריצה לכתובת המתאימה בקוד התהליך החדש.</li>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h3>זמן משגר (Dispatch Latency)</h3>
+                <p>הזמן שלוקח למשגר להפסיק תהליך אחד ולהתחיל תהליך אחר. זמן זה קריטי לביצועי המערכת וככל שהוא קצר יותר, כך עדיף.</p>
+            </div>
+            <div class="expandable-section">
+                <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">החלפת הקשר <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                <div class="collapsible-content">
+                    <!-- החלפת הקשר -->
+                    <div class="content-section" id="context-switch">
+                        <p>החלפת הקשר היא תהליך החלפת התהליך הרץ במעבד. זהו תהליך שכרוך בתקורה (overhead) ודורש זמן מעבד שאינו משמש לעבודה "מועילה".</p>
+
+                        <div class="image-container">
+                            <div class="concept-image">
+                                <svg width="700" height="200" viewBox="0 0 700 200">
+                                    <!-- Definitions for gradients and patterns -->
+                                    <defs>
+                                        <linearGradient id="processGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" style="stop-color:#6A1B9A;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#8E24AA;stop-opacity:1" />
+                                        </linearGradient>
+                                        
+                                        <pattern id="switchPattern" patternUnits="userSpaceOnUse" width="10" height="10">
+                                            <rect width="10" height="10" fill="#E3F2FD"/>
+                                            <path d="M0,10 l10,-10 M-2,2 l4,-4 M8,12 l4,-4" stroke="#1E88E5" stroke-width="1"/>
+                                        </pattern>
+                                    </defs>
+
+                                    <!-- Timeline arrow -->
+                                    <line x1="50" y1="150" x2="650" y2="150" stroke="#333" stroke-width="2" marker-end="url(#arrowMarker)"/>
+                                    <text x="670" y="155" font-size="14">זמן</text>
+
+                                    <!-- Process blocks -->
+                                    <rect x="100" y="50" width="120" height="60" rx="10" fill="url(#processGradient)"/>
+                                    <text x="160" y="85" text-anchor="middle" fill="white" font-weight="bold">תהליך A</text>
+
+                                    <rect x="290" y="50" width="120" height="60" rx="10" fill="url(#processGradient)"/>
+                                    <text x="350" y="85" text-anchor="middle" fill="white" font-weight="bold">תהליך B</text>
+
+                                    <rect x="480" y="50" width="120" height="60" rx="10" fill="url(#processGradient)"/>
+                                    <text x="540" y="85" text-anchor="middle" fill="white" font-weight="bold">תהליך C</text>
+
+                                    <!-- Context switch indicators -->
+                                    <rect x="220" y="40" width="70" height="80" fill="url(#switchPattern)" opacity="0.7"/>
+                                    <text x="255" y="140" text-anchor="middle" font-size="12">החלפת הקשר 1</text>
+
+                                    <rect x="410" y="40" width="70" height="80" fill="url(#switchPattern)" opacity="0.7"/>
+                                    <text x="445" y="140" text-anchor="middle" font-size="12">החלפת הקשר 2</text>
+                                </svg>
+                                <div class="image-caption">תקורת החלפת הקשר בין תהליכים</div>
+                            </div>
+                        </div>
+
+                        <div class="info-box">
+                            <h3>שלבי החלפת הקשר:</h3>
+                            <ol>
+                                <li>שמירת ערכי אוגרים ומונה תוכנית (PC) של התהליך היוצא ב-PCB שלו.</li>
+                                <li>טעינת ערכי אוגרים ומונה תוכנית של התהליך הנכנס מה-PCB שלו.</li>
+                                <li>החלפת מרחב כתובות (טבלאות דפים, קטעי זיכרון וכו').</li>
+                                <li>עדכון מבני נתונים פנימיים של מערכת ההפעלה.</li>
+                            </ol>
+                        </div>
+
+                        <div class="warning-box">
+                            <p>החלפות הקשר תכופות מדי עלולות לגרום ל"thrashing" - מצב שבו המערכת מבזבזת יותר זמן על החלפות הקשר מאשר על עבודה מועילה.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+          
+        </div>
+
+       
+
+        <!-- קריטריוני תזמון -->
+        <div class="content-section" id="scheduling-criteria">
+            <h2>📏 קריטריוני תזמון (Scheduling Criteria)</h2>
+            <p>אלגוריתמי תזמון נבחנים לפי מספר קריטריונים שמשקפים את היעילות והתפקוד של המערכת.</p>
+
+            <div class="concept-grid">
+                <div class="concept-row">
+                    <div class="concept-item">
+                        <h3>ניצולת המעבד</h3>
+                        <p>אחוז הזמן שהמעבד עסוק בעבודה "מועילה".</p>
+                        <div class="formula">CPU Utilization = (Total CPU Time - Idle Time) / Total Time × 100%</div>
+                        <div class="highlight">מטרה: מקסימום ניצולת</div>
+                    </div>
+                    <div class="concept-item">
+                        <h3>תפוקה</h3>
+                        <p>מספר התהליכים שמושלמים ביחידת זמן.</p>
+                        <div class="formula">Throughput = Number of Completed Processes / Time</div>
+                        <div class="highlight">מטרה: מקסימום תפוקה</div>
+                    </div>
+                </div>
+                <div class="concept-row">
+                    <div class="concept-item">
+                        <h3>זמן סבב</h3>
+                        <p>הזמן הכולל מרגע הגעת התהליך ועד לסיומו.</p>
+                        <div class="formula">Turnaround Time = Completion Time - Arrival Time</div>
+                        <div class="highlight">מטרה: מינימום זמן סבב</div>
+                    </div>
+                    <div class="concept-item">
+                        <h3>זמן המתנה</h3>
+                        <p>הזמן הכולל שתהליך מבלה בתור המוכנים.</p>
+                        <div class="formula">Waiting Time = Turnaround Time - CPU Time</div>
+                        <div class="highlight">מטרה: מינימום זמן המתנה</div>
+                    </div>
+                </div>
+                <div class="concept-row">
+                    <div class="concept-item">
+                        <h3>זמן תגובה</h3>
+                        <p>הזמן שעובר מרגע שליחת בקשה ועד לקבלת התגובה הראשונה (חשוב במערכות אינטראקטיביות).</p>
+                        <div class="formula">Response Time = First Run Time - Arrival Time</div>
+                        <div class="highlight">מטרה: מינימום זמן תגובה</div>
+                    </div>
+                    <div class="concept-item">
+                        <h3>הרעבה (Starvation)</h3>
+                        <p>מצב שבו תהליך לעולם לא מקבל את משאב המעבד בגלל אלגוריתם תזמון בעייתי.</p>
+                        <div class="formula">כשתהליכים חדשים בעלי עדיפות גבוהה יותר מגיעים באופן רציף</div>
+                        <div class="highlight">מטרה: מניעת הרעבה והבטחת התקדמות</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!-- FCFS Algorithm -->
+    <div class="content-section" id="fcfs">
+        <h2>⏩ First Come First Serve (FCFS)</h2>
+        <p>אלגוריתם פשוט המבוסס על עיקרון "ראשון שמגיע, ראשון מקבל שירות". התהליכים מתוזמנים לפי סדר הגעתם.</p>
+
+        
+        <div class="animation-container" style="display: flex; justify-content: space-around; margin: 20px 0; position: relative;">
+            <!-- First Graph: P1 in execution -->
+            <div class="fcfs-step" style="text-align: center;">
+                <h3>שלב 1</h3>
+                <svg width="200" height="300" viewBox="0 0 200 300">
+                    <!-- Execution Area -->
+                    <rect x="25" y="50" width="150" height="60" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="8"/>
+                    <text x="100" y="40" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">אזור ביצוע</text>
+                    
+                    <!-- P1 in execution -->
+                    <rect x="50" y="60" width="100" height="40" fill="#e74c3c" rx="6"/>
+                    <text x="100" y="85" fill="white" text-anchor="middle" font-weight="bold">P1 (24)</text>
+                    
+                    <!-- Queue area -->
+                    <path d="M25,130 L175,130 L175,250 L25,250 Z" fill="none" stroke="#3498db" stroke-width="2"/>
+                    <text x="100" y="280" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">תור ריק</text>
+                    
+                    <!-- Arrow from queue to execution area -->
+                    <defs>
+                        <marker id="queue-arrow1" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#3498db" />
+                        </marker>
+                    </defs>
+                    <line x1="100" y1="130" x2="100" y2="120" stroke="#3498db" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#queue-arrow1)" />
+                </svg>
+            </div>
+            
+            
+            
+            <!-- Second Graph: P1 in execution, P2 in queue -->
+            <div class="fcfs-step" style="text-align: center;">
+                <h3>שלב 2</h3>
+                <svg width="200" height="300" viewBox="0 0 200 300">
+                    <!-- Execution Area -->
+                    <rect x="25" y="50" width="150" height="60" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="8"/>
+                    <text x="100" y="40" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">אזור ביצוע</text>
+                    
+                    <!-- P1 still in execution -->
+                    <rect x="50" y="60" width="100" height="40" fill="#e74c3c" rx="6"/>
+                    <text x="100" y="85" fill="white" text-anchor="middle" font-weight="bold">P1 (24)</text>
+                    
+                    <!-- Queue area -->
+                    <path d="M25,130 L175,130 L175,250 L25,250 Z" fill="none" stroke="#3498db" stroke-width="2"/>
+                    <text x="100" y="150" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">תור</text>
+                    
+                    <!-- P2 in queue -->
+                    <rect x="50" y="200" width="100" height="40" fill="#3498db" rx="6"/>
+                    <text x="100" y="225" fill="white" text-anchor="middle" font-weight="bold">P2 (3)</text>
+                    
+                    <!-- Arrow from queue to execution area -->
+                    <defs>
+                        <marker id="queue-arrow2" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#3498db" />
+                        </marker>
+                    </defs>
+                    <line x1="100" y1="130" x2="100" y2="120" stroke="#3498db" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#queue-arrow2)" />
+                    
+                    <!-- Arrow from outside to queue for P2 entering -->
+                    <defs>
+                        <marker id="entry-arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#2ecc71" />
+                        </marker>
+                    </defs>
+                    <line x1="10" y1="210" x2="40" y2="220" stroke="#2ecc71" stroke-width="2" marker-end="url(#entry-arrow)" />
+                    <text x="80" y="200" text-anchor="start" font-size="12" fill="#2ecc71" transform="rotate(-15,10,210)">תוכנית נכנסת</text>
+                </svg>
+            </div>
+            
+            
+            
+            <!-- Third Graph: P2 in execution, P3 in queue -->
+            <div class="fcfs-step" style="text-align: center;">
+                <h3>שלב 3</h3>
+                <svg width="200" height="300" viewBox="0 0 200 300">
+                    <!-- Execution Area -->
+                    <rect x="25" y="50" width="150" height="60" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="8"/>
+                    <text x="100" y="40" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">אזור ביצוע</text>
+                    
+                    <!-- P2 in execution -->
+                    <rect x="50" y="60" width="100" height="40" fill="#3498db" rx="6"/>
+                    <text x="100" y="85" fill="white" text-anchor="middle" font-weight="bold">P2 (3)</text>
+                    
+                    <!-- Queue area -->
+                    <path d="M25,130 L175,130 L175,250 L25,250 Z" fill="none" stroke="#3498db" stroke-width="2"/>
+                    <text x="100" y="150" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">תור</text>
+                    
+                    <!-- P3 in queue -->
+                    <rect x="50" y="200" width="100" height="40" fill="#9b59b6" rx="6"/>
+                    <text x="100" y="225" fill="white" text-anchor="middle" font-weight="bold">P3 (3)</text>
+                    
+                    <!-- Arrow from queue to execution area -->
+                    <defs>
+                        <marker id="queue-arrow3" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#3498db" />
+                        </marker>
+                    </defs>
+                    <line x1="100" y1="130" x2="100" y2="120" stroke="#3498db" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#queue-arrow3)" />
+                    
+                    <!-- Arrow from outside to queue for P3 entering -->
+                    <defs>
+                        <marker id="entry-arrow3" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#2ecc71" />
+                        </marker>
+                    </defs>
+                    <line x1="10" y1="210" x2="40" y2="220" stroke="#2ecc71" stroke-width="2" marker-end="url(#entry-arrow3)" />
+                    <text x="80" y="200" text-anchor="start" font-size="12" fill="#2ecc71" transform="rotate(-15,10,210)">תוכנית נכנסת</text>
+                </svg>
+            </div>
+        </div>
+            <div class="info-box">
+                <h3>מאפייני FCFS:</h3>
+                <ul>
+                    <li>פשוט ליישום ולתפעול.</li>
+                    <li>עלול לגרום לזמן המתנה ארוך עבור תהליכים קצרים (בעיית Convoy Effect).</li>
+                    <li>לא מתאים למערכות אינטראקטיביות.</li>
+                </ul>
+        </div>
+    </div>
+
+    <!-- SJF Algorithm -->
+    <div class="content-section" id="sjf">
+        <h2>📊 Shortest Job First (SJF)</h2>
+        <p>אלגוריתם המתזמן תהליכים לפי זמן העיבוד הקצר ביותר שלהם. התהליך עם אורך הפרץ (burst) הקצר ביותר מקבל עדיפות. זהו אלגוריתם ללא הפקעות (Non-preemptive), כלומר תהליך שהתחיל לרוץ ימשיך עד סיומו, גם אם מגיע תהליך חדש עם זמן עיבוד קצר יותר.</p>
+        <div class="animation-container" style="display: flex; justify-content: space-around; margin: 20px 0; position: relative;">
+            <!-- First Graph: P3 in execution (shortest) -->
+            <div class="sjf-step" style="text-align: center;">
+                <h3>שלב 1</h3>
+                <svg width="200" height="300" viewBox="0 0 200 300">
+                    <!-- Execution Area -->
+                    <rect x="25" y="50" width="150" height="60" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="8"/>
+                    <text x="100" y="40" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">אזור ביצוע</text>
+                    
+                    <!-- P3 in execution (shortest) -->
+                    <rect x="50" y="60" width="100" height="40" fill="#9b59b6" rx="6"/>
+                    <text x="100" y="85" fill="white" text-anchor="middle" font-weight="bold">P3 (3)</text>
+                    
+                    <!-- Queue area -->
+                    <path d="M25,130 L175,130 L175,250 L25,250 Z" fill="none" stroke="#3498db" stroke-width="2"/>
+                    <text x="100" y="150" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">תור:</text>
+
+                    <!-- P1 in queue (longest) -->
+                    <rect x="50" y="170" width="100" height="30" fill="#e74c3c" rx="6"/>
+                    <text x="100" y="190" fill="white" text-anchor="middle" font-weight="bold">P1 (24)</text>
+
+                    <!-- P2 in queue -->
+                    <rect x="50" y="210" width="100" height="30" fill="#3498db" rx="6"/>
+                    <text x="100" y="230" fill="white" text-anchor="middle" font-weight="bold">P2 (6)</text>
+                    <!-- Arrow from queue to execution area -->
+                    <defs>
+                        <marker id="queue-arrow-sjf1" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#3498db" />
+                        </marker>
+                    </defs>
+                    <line x1="100" y1="130" x2="100" y2="120" stroke="#3498db" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#queue-arrow-sjf1)" />
+                </svg>
+            </div>
+            
+            <!-- Second Graph: P3 completed, P2 in execution (next shortest) -->
+            <div class="sjf-step" style="text-align: center;">
+                <h3>שלב 2</h3>
+                <svg width="200" height="300" viewBox="0 0 200 300">
+                    <!-- Execution Area -->
+                    <rect x="25" y="50" width="150" height="60" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="8"/>
+                    <text x="100" y="40" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">אזור ביצוע</text>
+                    
+                    <!-- P2 in execution (next shortest) -->
+                    <rect x="50" y="60" width="100" height="40" fill="#3498db" rx="6"/>
+                    <text x="100" y="85" fill="white" text-anchor="middle" font-weight="bold">P2 (6)</text>
+                    
+                    <!-- Queue area -->
+                    <path d="M25,130 L175,130 L175,250 L25,250 Z" fill="none" stroke="#3498db" stroke-width="2"/>
+                    <text x="100" y="150" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">תור:</text>
+                    
+                    <!-- P1 in queue (longest) -->
+                    <rect x="50" y="170" width="100" height="30" fill="#e74c3c" rx="6"/>
+                    <text x="100" y="190" fill="white" text-anchor="middle" font-weight="bold">P1 (24)</text>
+                    
+                    <!-- P4 in queue (new process) -->
+                    <rect x="50" y="210" width="100" height="30" fill="#2ecc71" rx="6"/>
+                    <text x="100" y="230" fill="white" text-anchor="middle" font-weight="bold">P4 (2)</text>
+                    <!-- Arrow from queue to execution area -->
+                    <defs>
+                        <marker id="queue-arrow-sjf2" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#3498db" />
+                        </marker>
+                    </defs>
+                    <line x1="100" y1="130" x2="100" y2="120" stroke="#3498db" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#queue-arrow-sjf2)" />
+                    
+                    <!-- Arrow from outside to queue for P4 entering -->
+                    <defs>
+                        <marker id="entry-arrow-sjf" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#2ecc71" />
+                        </marker>
+                    </defs>
+                    <line x1="10" y1="210" x2="40" y2="220" stroke="#2ecc71" stroke-width="2" marker-end="url(#entry-arrow-sjf)" />
+                    <text x="80" y="200" text-anchor="start" font-size="12" fill="#2ecc71" transform="rotate(-15,10,210)">תוכנית חדשה</text>
+                </svg>
+            </div>
+            
+            <!-- Third Graph: P4 in execution (arrived and is shortest) -->
+            <div class="sjf-step" style="text-align: center;">
+                <h3>שלב 3</h3>
+                <svg width="200" height="300" viewBox="0 0 200 300">
+                    <!-- Execution Area -->
+                    <rect x="25" y="50" width="150" height="60" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="8"/>
+                    <text x="100" y="40" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">אזור ביצוע</text>
+                    
+                    <!-- P4 in execution (new shortest) -->
+                    <rect x="50" y="60" width="100" height="40" fill="#2ecc71" rx="6"/>
+                    <text x="100" y="85" fill="white" text-anchor="middle" font-weight="bold">P4 (2)</text>
+                    
+                    <!-- Queue area -->
+                    <path d="M25,130 L175,130 L175,250 L25,250 Z" fill="none" stroke="#3498db" stroke-width="2"/>
+                    <text x="100" y="150" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">תור מדורג לפי זמן:</text>
+                    
+                   
+                    
+                    <!-- P1 in queue (longest) -->
+                    <rect x="50" y="170" width="100" height="30" fill="#e74c3c" rx="6"/>
+                    <text x="100" y="190" fill="white" text-anchor="middle" font-weight="bold">P1 (24)</text>
+                    
+                    <!-- Arrow from queue to execution area -->
+                    <defs>
+                        <marker id="queue-arrow-sjf3" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#3498db" />
+                        </marker>
+                    </defs>
+                    <line x1="100" y1="130" x2="100" y2="120" stroke="#3498db" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#queue-arrow-sjf3)" />
+                </svg>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h3>מאפייני SJF:</h3>
+            <ul>
+                <li>אופטימלי מבחינת זמן המתנה ממוצע - מבטיח את זמן ההמתנה הממוצע המינימלי.</li>
+                <li>קשה ליישום בפועל כי דורש ידע או הערכה מראש של זמן הריצה של תהליכים.</li>
+                <li>עלול לגרום להרעבה (starvation) של תהליכים ארוכים כאשר תהליכים קצרים ממשיכים להגיע.</li>
+                
+            </ul>
+        </div>
+    </div>
+
+    <!-- SRTF Algorithm -->
+    <div class="content-section" id="srtf">
+        <h2>⚡ Shortest Remaining Time First (SRTF)</h2>
+        <p>גרסה עם הפקעה של SJF. בוחר תמיד את התהליך עם זמן העיבוד הנותר הקצר ביותר.</p>
+        
+        <div class="animation-container" style="display: flex; justify-content: space-around; margin: 20px 0; position: relative;">
+            <!-- First Graph: P1 in execution -->
+            <div class="srtf-step" style="text-align: center;">
+                <h3>שלב 1</h3>
+                <svg width="200" height="300" viewBox="0 0 200 300">
+                    <!-- Execution Area -->
+                    <rect x="25" y="50" width="150" height="60" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="8"/>
+                    <text x="100" y="40" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">אזור ביצוע</text>
+                    
+                    <!-- P1 in execution -->
+                    <rect x="50" y="210" width="100" height="30" fill="#e74c3c" rx="6"/>
+                    <text x="100" y="230" fill="white" text-anchor="middle" font-weight="bold">P1 (10)</text>
+                    
+                    <!-- Queue area -->
+                    <path d="M25,130 L175,130 L175,250 L25,250 Z" fill="none" stroke="#3498db" stroke-width="2"/>
+                    <text x="100" y="150" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">תור:</text>
+                    
+                    <!-- P2 in queue -->
+                    <rect x="50" y="170" width="100" height="30" fill="#3498db" rx="6"/>
+                    <text x="100" y="190" fill="white" text-anchor="middle" font-weight="bold">P2 (8)</text>
+                    
+                    <!-- P3 in queue -->
+                    <rect x="50" y="60" width="100" height="40" fill="#9b59b6" rx="6"/>
+                    <text x="100" y="85" fill="white" text-anchor="middle" font-weight="bold">P3 (6)</text>
+                    
+                    <!-- Arrow from queue to execution area -->
+                    <defs>
+                        <marker id="queue-arrow-srtf1" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#3498db" />
+                        </marker>
+                    </defs>
+                <line x1="100" y1="130" x2="100" y2="120" stroke="#3498db" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#queue-arrow-srtf1)" />
+            </svg>
+        </div>
+        
+        <!-- Second Graph: P4 preempts P1 -->
+        <div class="srtf-step" style="text-align: center;">
+            <h3>שלב 2</h3>
+            <svg width="250" height="300" viewBox="0 0 200 300">
+                <!-- Execution Area -->
+                <rect x="25" y="50" width="150" height="60" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="8"/>
+                <text x="100" y="40" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">אזור ביצוע</text>
+                
+                <!-- P4 in execution (shortest remaining time) -->
+                <rect x="50" y="60" width="100" height="40" fill="#2ecc71" rx="6"/>
+                <text x="100" y="85" fill="white" text-anchor="middle" font-weight="bold">P4 (3)</text>
+                    <rect x="50" y="60" width="100" height="40" fill="#2ecc71" rx="6"/>
+                    <text x="100" y="85" fill="white" text-anchor="middle" font-weight="bold">P4 (3)</text>
+                    
+                    <!-- Queue area -->
+                    <path d="M25,130 L175,130 L175,250 L25,250 Z" fill="none" stroke="#3498db" stroke-width="2"/>
+                    <text x="100" y="150" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">תור:</text>
+                    
+                    <!-- P2 in queue -->
+                    <rect x="50" y="210" width="100" height="30" fill="#3498db" rx="6"/>
+                    <text x="100" y="230" fill="white" text-anchor="middle" font-weight="bold">P2 (8)</text>
+                    
+                    <!-- P3 in queue -->
+                    <rect x="50" y="170" width="100" height="30" fill="#9b59b6" rx="6"/>
+                    <text x="100" y="190" fill="white" text-anchor="middle" font-weight="bold">P3 (4)</text>
+                    
+                    <!-- Arrow showing preemption - improved visibility -->
+                    <defs>
+                        <marker id="preempt-arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#d32f2f" />
+                        </marker>
+                    </defs>
+                    <path d="M175,180 C200,180 200,80 175,80" fill="none" stroke="#d32f2f" stroke-width="3" marker-end="url(#preempt-arrow)" />
+                    <text x="210" y="130" font-size="12" fill="#d32f2f" font-weight="bold" text-anchor="" transform="rotate(90,210,130)">הפקעה</text>
+                    
+                    <!-- Arrow from outside to execution for P4 entering - darker text -->
+                    <defs>
+                        <marker id="entry-arrow-srtf" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#2ecc71" />
+                        </marker>
+                    </defs>
+                    <line x1="10" y1="70" x2="40" y2="80" stroke="#2ecc71" stroke-width="2" marker-end="url(#entry-arrow-srtf)" />
+                    <text x="75" y="65" text-anchor="start" font-size="12" fill="#33333" font-weight="bold">תוכנית חדשה</text>
+                </svg>
+            </div>
+            
+            <!-- Third Graph: After P4 completes, P3 runs (next shortest) -->
+            <div class="srtf-step" style="text-align: center;">
+                <h3>שלב 3</h3>
+                <svg width="200" height="300" viewBox="0 0 200 300">
+                    <!-- Execution Area -->
+                    <rect x="25" y="50" width="150" height="60" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="8"/>
+                    <text x="100" y="40" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">אזור ביצוע</text>
+                    
+                    <!-- P3 in execution (next shortest remaining time) -->
+                    <rect x="50" y="60" width="100" height="40" fill="#9b59b6" rx="6"/>
+                    <text x="100" y="85" fill="white" text-anchor="middle" font-weight="bold">P3 (4)</text>
+                    
+                    <!-- Queue area -->
+                    <path d="M25,130 L175,130 L175,250 L25,250 Z" fill="none" stroke="#3498db" stroke-width="2"/>
+                    <text x="100" y="150" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">תור מדורג לפי זמן נותר:</text>
+                    
+                    <!-- P1 in queue -->
+                    <rect x="50" y="210" width="100" height="30" fill="#e74c3c" rx="6"/>
+                    <text x="100" y="230" fill="white" text-anchor="middle" font-weight="bold">P1 (10)</text>
+                    
+                    <!-- P2 in queue -->
+                    <rect x="50" y="170" width="100" height="30" fill="#3498db" rx="6"/>
+                    <text x="100" y="190" fill="white" text-anchor="middle" font-weight="bold">P2 (8)</text>
+                    
+                    <!-- Arrow from queue to execution area -->
+                    <defs>
+                        <marker id="queue-arrow-srtf3" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#3498db" />
+                        </marker>
+                    </defs>
+                    <line x1="100" y1="130" x2="100" y2="120" stroke="#3498db" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#queue-arrow-srtf3)" />
+                </svg>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h3>מאפייני SRTF:</h3>
+            <ul>
+                <li>גרסה עם הפקעה של SJF - תהליך רץ יופקע אם מגיע תהליך עם זמן עיבוד נותר קצר יותר.</li>
+                <li>מבטיח זמן המתנה ממוצע מינימלי מבין כל אלגוריתמי התזמון.</li>
+                <li>מחייב ידיעת זמן הריצה הנותר - קשה מאוד ליישום בפועל.</li>
+                <li>תקורה גבוהה בגלל החלפות הקשר התכופות.</li>
+                <li>סובל מבעיית הרעבה (starvation) של תהליכים ארוכים כאשר תהליכים קצרים ממשיכים להגיע.</li>
+            </ul>
+        </div>
+    </div>
+    <!-- Round Robin Algorithm -->
+    <div class="content-section" id="rr">
+        <h2>🔄 Round Robin (RR)</h2>
+        <p>אלגוריתם הגינות שבו כל תהליך מקבל פרק זמן קצוב (quantum) לריצה, ולאחר מכן מועבר לסוף התור, וכך בסבב. זהו אלגוריתם עם הפקעות שמנוהל על ידי שעון.</p>
+        
+        <div class="animation-container" style="display: flex; justify-content: space-around; margin: 20px 0; position: relative;">
+            <!-- First Graph: P1 in execution, P2 & P3 waiting -->
+            <div class="rr-step" style="text-align: center;">
+                <h3>שלב 1</h3>
+                <svg width="200" height="300" viewBox="0 0 200 300">
+                    <!-- Execution Area -->
+                    <rect x="25" y="50" width="150" height="60" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="8"/>
+                    <text x="100" y="45" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">אזור ביצוע</text>
+                    
+                    <!-- P1 in execution -->
+                    <rect x="50" y="60" width="100" height="40" fill="#e74c3c" rx="6"/>
+                    <text x="100" y="85" fill="white" text-anchor="middle" font-weight="bold">P1 (q=4)</text>
+                    
+                    <!-- Queue area -->
+                    <path d="M25,130 L175,130 L175,250 L25,250 Z" fill="none" stroke="#3498db" stroke-width="2"/>
+                    <text x="100" y="150" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">תור</text>
+                    
+                    <!-- P2 in queue -->
+                    <rect x="50" y="170" width="100" height="30" fill="#3498db" rx="6"/>
+                    <text x="100" y="190" fill="white" text-anchor="middle" font-weight="bold">P2(10)</text>
+                    
+                    <!-- P3 in queue -->
+                    <rect x="50" y="210" width="100" height="30" fill="#9b59b6" rx="6"/>
+                    <text x="100" y="230" fill="white" text-anchor="middle" font-weight="bold">P3(2)</text>
+                    
+                    <!-- Time quantum indicator -->
+                    <rect x="25" y="20" width="150" height="15" fill="none" stroke="#333" stroke-width="1"/>
+                    <rect x="25" y="20" width="150" height="15" fill="#4CAF50"/>
+                    <text x="100" y="32" text-anchor="middle" font-size="10" fill="#333">זמן קוונטום</text>
+                </svg>
+            </div>
+            
+            <!-- Second Graph: P2 in execution, P3 & P1 waiting -->
+            <div class="rr-step" style="text-align: center;">
+                <h3>שלב 2</h3>
+                <svg width="250" height="300" viewBox="0 0 200 300">
+                    <!-- Execution Area -->
+                    <rect x="25" y="50" width="150" height="60" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="8"/>
+                    <text x="100" y="45" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">אזור ביצוע</text>
+                    
+                    <!-- P2 in execution -->
+                    <rect x="50" y="60" width="100" height="40" fill="#3498db" rx="6"/>
+                    <text x="100" y="85" fill="white" text-anchor="middle" font-weight="bold">P2 (q=10)</text>
+                    
+                    <!-- Queue area -->
+                    <path d="M25,130 L175,130 L175,250 L25,250 Z" fill="none" stroke="#3498db" stroke-width="2"/>
+                    <text x="100" y="150" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">תור</text>
+                    
+                    <!-- P3 in queue -->
+                    <rect x="50" y="170" width="100" height="30" fill="#9b59b6" rx="6"/>
+                    <text x="100" y="190" fill="white" text-anchor="middle" font-weight="bold">P3(2)</text>
+                    
+                    <!-- P1 moved to end of queue -->
+                    <rect x="50" y="210" width="100" height="30" fill="#e74c3c" rx="6"/>
+                    <text x="100" y="230" fill="white" text-anchor="middle" font-weight="bold">P1(2)</text>
+                    
+                    <!-- Curved arrow showing P1 was moved to back of queue -->
+                    <path d="M180,80 C220,80 220,220 180,220" fill="none" stroke="#e74c3c" stroke-width="2" stroke-dasharray="5,3"/>
+                    <polygon points="180,220 185,215 175,215" fill="#e74c3c"/>
+                    
+                    <!-- Time quantum indicator -->
+                    <rect x="25" y="20" width="150" height="15" fill="none" stroke="#333" stroke-width="1"/>
+                    <rect x="25" y="20" width="150" height="15" fill="#4CAF50"/>
+                    <text x="100" y="32" text-anchor="middle" font-size="10" fill="#333">זמן קוונטום חדש</text>
+                </svg>
+            </div>
+            
+            <!-- Third Graph: P3 in execution, P1 & P2 waiting -->
+            <div class="rr-step" style="text-align: center;">
+                <h3>שלב 3</h3>
+                <svg width="250" height="300" viewBox="0 0 200 300">
+                    <!-- Execution Area -->
+                    <rect x="25" y="50" width="150" height="60" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="8"/>
+                    <text x="100" y="45" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">אזור ביצוע</text>
+                    
+                    <!-- P3 in execution -->
+                    <rect x="50" y="60" width="100" height="40" fill="#9b59b6" rx="6"/>
+                    <text x="100" y="85" fill="white" text-anchor="middle" font-weight="bold">P3 (q2)</text>
+                    
+                    <!-- Queue area -->
+                    <path d="M25,130 L175,130 L175,250 L25,250 Z" fill="none" stroke="#3498db" stroke-width="2"/>
+                    <text x="100" y="150" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">תור</text>
+                    
+                    <!-- P1 in queue -->
+                    <rect x="50" y="170" width="100" height="30" fill="#e74c3c" rx="6"/>
+                    <text x="100" y="190" fill="white" text-anchor="middle" font-weight="bold">P1(2)</text>
+                    
+                    <!-- P2 in queue -->
+                    <rect x="50" y="210" width="100" height="30" fill="#3498db" rx="6"/>
+                    <text x="100" y="230" fill="white" text-anchor="middle" font-weight="bold">P2(8)</text>
+                    
+                    <!-- Curved arrow showing P2 was moved to back of queue -->
+                    <path d="M180,80 C220,80 220,220 180,220" fill="none" stroke="#3498db" stroke-width="2" stroke-dasharray="5,3"/>
+                    <polygon points="180,220 185,215 175,215" fill="#3498db"/>
+                    
+                    <!-- Time quantum indicator -->
+                    <rect x="25" y="20" width="150" height="15" fill="none" stroke="#333" stroke-width="1"/>
+                    <rect x="25" y="20" width="150" height="15" fill="#4CAF50"/>
+                    <text x="100" y="32" text-anchor="middle" font-size="10" fill="#333">זמן קוונטום חדש</text>
+                </svg>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h3>מאפייני Round Robin:</h3>
+            <ul>
+                <li><strong>הוגנות:</strong> כל תהליך מקבל זמן מעבד שווה בסבב.</li>
+                <li><strong>תגובתיות:</strong> מתאים למערכות אינטראקטיביות כי מבטיח זמן תגובה מהיר.</li>
+                <li><strong>פשטות:</strong> קל ליישום ולהבנה.</li>
+                <li><strong>תלוי בגודל הקוונטום:</strong>
+                    <ul>
+                        <li>קוונטום קטן מדי: תקורה גבוהה בגלל ריבוי החלפות הקשר.</li>
+                        <li>קוונטום גדול מדי: דומה לאלגוריתם FCFS.</li>
+                    </ul>
+                </li>
+                <li><strong>אידיאלי:</strong> זמן קוונטום גדול מעט מזמן החלפת הקשר, אך קטן מספיק לתגובתיות.</li>
+            </ul>
+        </div>
+    </div>
+    <!-- Priority Scheduling -->
+    <div class="content-section" id="priority-scheduling">
+        <h2>🔢 עדיפות תזמון (Priority Scheduling)</h2>
+        <p>אלגוריתם המבוסס על העדפת תהליכים עם עדיפות גבוהה יותר. לכל תהליך מוקצה מספר עדיפות, והמתזמן מבחר תמיד את התהליך בעל העדיפות הגבוהה ביותר מבין התהליכים המוכנים.</p>
+        
+        <div class="animation-container" style="display: flex; justify-content: space-around; margin: 20px 0; position: relative;">
+            <!-- First Graph: Priority Queue -->
+            <div class="priority-step" style="text-align: center;">
+                <h3>שלב 1</h3>
+                <svg width="200" height="300" viewBox="0 0 200 300">
+                    <!-- Execution Area -->
+                    <rect x="25" y="50" width="150" height="60" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="8"/>
+                    <text x="100" y="40" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">אזור ביצוע</text>
+                    
+                    <!-- P2 in execution (highest priority) -->
+                    <rect x="50" y="60" width="100" height="40" fill="#3498db" rx="6"/>
+                    <text x="100" y="75" fill="white" text-anchor="middle" font-weight="bold">P2</text>
+                    <text x="100" y="95" fill="white" text-anchor="middle" font-size="12">עדיפות 10</text>
+                    
+                    <!-- Queue area with priorities -->
+                    <path d="M25,130 L175,130 L175,250 L25,250 Z" fill="none" stroke="#3498db" stroke-width="2"/>
+                    <text x="100" y="150" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">תור עדיפויות:</text>
+                    
+                    <!-- P1 in queue -->
+                    <rect x="50" y="170" width="100" height="30" fill="#e74c3c" rx="6"/>
+                    <text x="100" y="180" fill="white" text-anchor="middle" font-size="12" font-weight="bold">P1</text>
+                    <text x="100" y="195" fill="white" text-anchor="middle" font-size="10">עדיפות 5</text>
+                    
+                    <!-- P3 in queue -->
+                    <rect x="50" y="210" width="100" height="30" fill="#9b59b6" rx="6"/>
+                    <text x="100" y="220" fill="white" text-anchor="middle" font-size="12" font-weight="bold">P3</text>
+                    <text x="100" y="235" fill="white" text-anchor="middle" font-size="10">עדיפות 2</text>
+                </svg>
+            </div>
+            
+            <!-- Second Graph: P4 arrives with higher priority -->
+            <div class="priority-step" style="text-align: center;">
+                <h3>שלב 2</h3>
+                <svg width="250" height="300" viewBox="0 0 200 300">
+                    <!-- Execution Area -->
+                    <rect x="25" y="50" width="150" height="60" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="8"/>
+                    <text x="100" y="40" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">אזור ביצוע</text>
+                    
+                    <!-- P4 in execution (preempts) -->
+                    <rect x="50" y="60" width="100" height="40" fill="#2ecc71" rx="6"/>
+                    <text x="100" y="75" fill="white" text-anchor="middle" font-weight="bold">P4</text>
+                    <text x="100" y="95" fill="white" text-anchor="middle" font-size="12">עדיפות 15</text>
+                    
+                    <!-- Queue area with priorities -->
+                    <path d="M25,130 L175,130 L175,250 L25,250 Z" fill="none" stroke="#3498db" stroke-width="2"/>
+                    <text x="100" y="150" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">תור עדיפויות:</text>
+                    
+                    <!-- P2 in queue now -->
+                    <rect x="50" y="170" width="100" height="30" fill="#3498db" rx="6"/>
+                    <text x="100" y="180" fill="white" text-anchor="middle" font-size="12" font-weight="bold">P2</text>
+                    <text x="100" y="195" fill="white" text-anchor="middle" font-size="10">עדיפות 10</text>
+                    
+                    <!-- P1 in queue -->
+                    <rect x="50" y="210" width="100" height="30" fill="#e74c3c" rx="6"/>
+                    <text x="100" y="220" fill="white" text-anchor="middle" font-size="12" font-weight="bold">P1</text>
+                    <text x="100" y="235" fill="white" text-anchor="middle" font-size="10">עדיפות 5</text>
+                    
+                    <!-- Arrow showing new process entered with high priority -->
+                    <defs>
+                        <marker id="priority-arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#2ecc71" />
+                        </marker>
+                    </defs>
+                    <line x1="10" y1="70" x2="40" y2="80" stroke="#2ecc71" stroke-width="2" marker-end="url(#priority-arrow)" />
+                    <text x="40" y="60" text-anchor="start" font-size="12" fill="#2ecc71" font-weight="bold">תהליך חדש</text>
+                </svg>
+            </div>
+            
+            <!-- Third Graph: Starvation issue -->
+            <div class="priority-step" style="text-align: center;">
+                <h3>בעיית הרעבה</h3>
+                <svg width="200" height="300" viewBox="0 0 200 300">
+                    <!-- Execution Area -->
+                    <rect x="25" y="50" width="150" height="60" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="8"/>
+                    <text x="100" y="40" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">אזור ביצוע</text>
+                    
+                    <!-- P5 in execution (another high priority) -->
+                    <rect x="50" y="60" width="100" height="40" fill="#f39c12" rx="6"/>
+                    <text x="100" y="75" fill="white" text-anchor="middle" font-weight="bold">P5</text>
+                    <text x="100" y="95" fill="white" text-anchor="middle" font-size="12">עדיפות 20</text>
+                    
+                    <!-- Queue area showing starvation -->
+                    <path d="M25,130 L175,130 L175,250 L25,250 Z" fill="none" stroke="#3498db" stroke-width="2"/>
+                    <text x="100" y="150" text-anchor="middle" font-size="14" fill="#2c3e50" font-weight="500">תהליך P3 מורעב:</text>
+                    
+                    <!-- P3 still waiting and aging -->
+                    <rect x="50" y="210" width="100" height="30" fill="#9b59b6" rx="6"/>
+                    <text x="100" y="225" fill="white" text-anchor="middle" font-weight="bold">P3 (מורעב)</text>
+                    <rect x="60" y="170" width="80" height="30" fill="none" stroke="#e74c3c" stroke-width="2" stroke-dasharray="3,3" rx="6"/>
+                    <text x="100" y="190" fill="#e74c3c" text-anchor="middle" font-size="14">הרעבה!</text>
+                </svg>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h3>מאפייני תזמון עדיפויות:</h3>
+            <ul>
+                <li><strong>הקצאת עדיפויות:</strong> ניתן לקבוע עדיפויות על בסיס פנימי (זמן CPU, דרישות זיכרון) או חיצוני (חשיבות התהליך, תשלום).</li>
+                <li><strong>הפקעה:</strong> יכול להיות עם הפקעה (כאשר תהליך בעדיפות גבוהה יותר מגיע) או ללא הפקעה.</li>
+                <li><strong>פתרון הרעבה:</strong> "הזדקנות" (Aging) - הגדלת עדיפות תהליכים שממתינים זמן רב בתור.</li>
+                <li><strong>יישום:</strong> קל יחסית, נפוץ במערכות הפעלה מודרניות בשילוב עם אלגוריתמים אחרים.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Multilevel Queue Scheduling -->
+    <div class="content-section" id="multilevel-queue">
+        <h2>📚 ריבוי רמות בתור מוכנים (Multilevel Queue)</h2>
+        <p>מנגנון שבו התהליכים ממוינים לתורים נפרדים על פי סוגם או חשיבותם. כל תור מנוהל באמצעות אלגוריתם תזמון שונה בהתאם למאפיינים של קבוצת התהליכים שלו.</p>
+        
+        <div class="image-container">
+            <div class="concept-image">
+                <svg width="100%" height="320" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Queue definitions -->
+                    <defs>
+                        <linearGradient id="foregroundGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#3498db" stop-opacity="0.7"/>
+                            <stop offset="100%" stop-color="#3498db" stop-opacity="0.4"/>
+                        </linearGradient>
+                        <linearGradient id="backgroundGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#f8f9fa" stop-opacity="1"/>
+                            <stop offset="100%" stop-color="#f8f9fa" stop-opacity="0.8"/>
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- Background -->
+                    <rect x="50" y="30" width="600" height="250" fill="url(#backgroundGradient)" rx="15" stroke="#ddd" stroke-width="1"/>
+                    
+                    <!-- CPU -->
+                    <rect x="500" y="110" width="120" height="80" fill="#2c3e50" rx="10"/>
+                    <text x="560" y="150" font-size="20" text-anchor="middle" fill="white" font-weight="bold">CPU</text>
+                    
+                    <!-- Queue 1: Foreground (Interactive) -->
+                    <rect x="100" y="60" width="350" height="60" fill="url(#foregroundGradient)" rx="8" stroke="#3498db" stroke-width="2"/>
+                    <text x="300" y="80" font-size="16" fill="#2c3e50" font-weight="bold">תור קדמי (אינטראקטיבי - RR)</text>
+                    
+                    <!-- Processes in first queue -->
+                    <rect x="120" y="90" width="40" height="20" fill="#e74c3c" rx="4"/>
+                    <text x="140" y="105" font-size="12" text-anchor="middle" fill="white">P1</text>
+                    <rect x="170" y="90" width="40" height="20" fill="#e67e22" rx="4"/>
+                    <text x="190" y="105" font-size="12" text-anchor="middle" fill="white">P2</text>
+                    <rect x="220" y="90" width="40" height="20" fill="#f1c40f" rx="4"/>
+                    <text x="240" y="105" font-size="12" text-anchor="middle" fill="white">P3</text>
+                    
+                    <!-- Priority arrow -->
+                    <line x1="450" y1="90" x2="490" y2="120" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+                    
+                    <!-- Queue 2: Middle (Batch) -->
+                    <rect x="100" y="130" width="350" height="60" fill="url(#foregroundGradient)" rx="8" stroke="#3498db" stroke-width="2"/>
+                    <text x="300" y="150" font-size="16" fill="#2c3e50" font-weight="bold">תור ביניים (אצווה - SJF)</text>
+                    
+                    <!-- Processes in second queue -->
+                    <rect x="120" y="160" width="40" height="20" fill="#27ae60" rx="4"/>
+                    <text x="140" y="175" font-size="12" text-anchor="middle" fill="white">P4</text>
+                    <rect x="170" y="160" width="40" height="20" fill="#16a085" rx="4"/>
+                    <text x="190" y="175" font-size="12" text-anchor="middle" fill="white">P5</text>
+                    
+                    <!-- Priority arrow -->
+                    <line x1="450" y1="160" x2="490" y2="160" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+                    
+                    <!-- Queue 3: Background (System) -->
+                    <rect x="100" y="200" width="350" height="60" fill="url(#foregroundGradient)" rx="8" stroke="#3498db" stroke-width="2"/>
+                    <text x="300" y="220" font-size="16" fill="#2c3e50" font-weight="bold">תור רקע (מערכת - FCFS)</text>
+                    
+                    <!-- Processes in third queue -->
+                    <rect x="120" y="230" width="40" height="20" fill="#8e44ad" rx="4"/>
+                    <text x="140" y="245" font-size="12" text-anchor="middle" fill="white">P6</text>
+                    
+                    <!-- Priority arrow -->
+                    <line x1="450" y1="230" x2="490" y2="190" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrow)"/>
+                    
+                    <!-- Arrows -->
+                    <defs>
+                        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                                markerWidth="6" markerHeight="6" orient="auto">
+                            <path d="M 0 0 L 10 5 L 0 10 Z" fill="#2c3e50"/>
+                        </marker>
+                    </defs>
+                    
+                    <!-- Priority labels -->
+                    <text x="475" y="60" font-size="14" text-anchor="middle" fill="#e74c3c" font-weight="bold">עדיפות גבוהה</text>
+                    <text x="475" y="280" font-size="14" text-anchor="middle" fill="#3498db" font-weight="bold">עדיפות נמוכה</text>
+                    <line x1="475" y1="70" x2="475" y2="260" stroke="#666" stroke-width="2" stroke-dasharray="5,3"/>
+                    <polygon points="475,260 471,250 479,250" fill="#666"/>
+                </svg>
+                <div class="image-caption">תיאור מבנה ריבוי רמות בתורים עם אלגוריתמי תזמון שונים לכל סוג תהליך</div>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h3>מאפייני ריבוי רמות בתור:</h3>
+            <ul>
+                <li><strong>חלוקה לקטגוריות:</strong> תהליכים משויכים לתורים שונים לפי סוגם (אינטראקטיבי, אצווה, מערכת).</li>
+                <li><strong>אלגוריתמים שונים לתורים שונים:</strong> כל תור יכול להיות מנוהל על ידי אלגוריתם תזמון שונה המתאים לסוג התהליכים.</li>
+                <li><strong>עדיפות קבועה בין תורים:</strong> תהליכים בתורים בעלי עדיפות גבוהה יותר מקבלים שירות לפני תהליכים בתורים נמוכים יותר.</li>
+                <li><strong>הקצאת קיבולת:</strong> ניתן להקצות אחוזים מזמן המעבד לכל תור, לדוגמה: 80% לתור הקדמי, 15% לתור הביניים, 5% לתור הרקע.</li>
+            </ul>
+        </div>
+        
+        <div class="warning-box">
+            <h3>חסרונות:</h3>
+            <p>תהליכים בתורים בעדיפות נמוכה עלולים לסבול מהרעבה אם התורים בעדיפות גבוהה תמיד מכילים תהליכים מוכנים. אין מעבר של תהליכים בין התורים השונים.</p>
+        </div>
+    </div>
+    <!-- Multilevel Feedback Queue -->
+    <div class="content-section" id="feedback-queue">
+        <h2>🔄 תור רמות עם משוב (Multilevel Feedback Queue)</h2>
+        <p>שיפור של תור רמות מרובות שמאפשר לתהליכים לעבור בין רמות עדיפות שונות על סמך התנהגותם. מנגנון זה מאפשר למידה והתאמה של עדיפויות התהליכים בזמן ריצה.</p>
+        
+        <div class="animation-container" style="display: flex; justify-content: space-around; flex-wrap: wrap; margin: 20px 0;">
+            <!-- Define global markers once -->
+            <svg width="0" height="0">
+                <defs>
+                    <marker id="arrow-marker" viewBox="0 0 10 10" refX="9" refY="5"
+                            markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 0 L 10 5 L 0 10 Z" fill="#3498db"/>
+                    </marker>
+                    <marker id="promotion-marker" viewBox="0 0 10 10" refX="9" refY="5"
+                            markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 0 L 10 5 L 0 10 Z" fill="#3498db"/>
+                    </marker>
+                    <marker id="demotion-marker" viewBox="0 0 10 10" refX="9" refY="5"
+                            markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 0 L 10 5 L 0 10 Z" fill="#e74c3c"/>
+                    </marker>
+                    <marker id="new-process-marker" viewBox="0 0 10 10" refX="9" refY="5"
+                            markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 0 L 10 5 L 0 10 Z" fill="#27ae60"/>
+                    </marker>
+                </defs>
+            </svg>
+            
+            <!-- Step 1: Initial state -->
+            <div class="feedback-step" style="text-align: center; flex-basis: 45%; margin-bottom: 30px;">
+                <h3>שלב 1: תהליך חדש</h3>
+                <svg width="320" height="240" viewBox="0 0 320 240">
+                    <!-- CPU -->
+                    <rect x="220" y="90" width="80" height="60" fill="#2c3e50" rx="8"/>
+                    <text x="260" y="125" font-size="16" text-anchor="middle" fill="white" font-weight="bold">CPU</text>
+                    
+                    <!-- Queues -->
+                    <rect x="20" y="40" width="160" height="40" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="6"/>
+                    <text x="120" y="65" font-size="14" text-anchor="start" fill="#2c3e50">תור עליון (q=4)</text>
+                    <rect x="155" y="45" width="30" height="30" fill="#e74c3c" rx="4"/>
+                    <text x="155" y="65" font-size="14" text-anchor="middle" fill="white">P1</text>
+                    
+                    <rect x="20" y="100" width="160" height="40" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="6"/>
+                    <text x="155" y="125" font-size="14" text-anchor="start" fill="#2c3e50">תור אמצעי (q=8)</text>
+                    
+                    <rect x="20" y="160" width="160" height="40" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="6"/>
+                    <text x="155" y="185" font-size="14" text-anchor="start" fill="#2c3e50">תור תחתון (FCFS)</text>
+                    
+                    <!-- Arrow from top queue to CPU -->
+                    <line x1="180" y1="60" x2="215" y2="100" stroke="#3498db" stroke-width="2" marker-end="url(#arrow-marker)"/>
+                    
+                    <!-- New process enters top queue -->
+                    <path d="M 10,60 Q 0,40 10,20 H 40" fill="none" stroke="#27ae60" stroke-width="2" marker-end="url(#new-process-marker)"/>
+                    <text x="75" y="15" font-size="12" text-anchor="start" fill="#27ae60">תהליכים חדשים</text>
+                </svg>
+            </div>
+            
+            <!-- Step 2: Process uses full quantum -->
+            <div class="feedback-step" style="text-align: center; flex-basis: 45%; margin-bottom: 30px;">
+                <h3>שלב 2: שימוש בקוונטום מלא</h3>
+                <svg width="320" height="240" viewBox="0 0 320 240">
+                    <!-- CPU -->
+                    <rect x="220" y="90" width="80" height="60" fill="#2c3e50" rx="8"/>
+                    <text x="260" y="125" font-size="16" text-anchor="middle" fill="white" font-weight="bold">CPU</text>
+                    
+                    <!-- Queues -->
+                    <rect x="20" y="40" width="160" height="40" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="6"/>
+                    <text x="155" y="65" font-size="14" text-anchor="start" fill="#2c3e50">תור עליון (q=4)</text>
+                    
+                    <rect x="20" y="100" width="160" height="40" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="6"/>
+                    <text x="130" y="125" font-size="14" text-anchor="start" fill="#2c3e50">תור אמצעי (q=8)</text>
+                    <rect x="140" y="105" width="30" height="30" fill="#e74c3c" rx="4"/>
+                    <text x="155" y="125" font-size="14" text-anchor="middle" fill="white">P1</text>
+                    
+                    <rect x="20" y="160" width="160" height="40" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="6"/>
+                    <text x="155" y="185" font-size="14" text-anchor="start" fill="#2c3e50">תור תחתון (FCFS)</text>
+                    
+                    <!-- Arrow showing demotion -->
+                    <path d="M 260,150 Q 260,170 200,170 Q 140,170 140,150 Q 140,130 140,105" fill="none" stroke="#e74c3c" stroke-width="2" stroke-dasharray="4,2"/>
+                    <polygon points="140,105 135,115 145,115" fill="#e74c3c"/>
+                    <text x="260" y="180" font-size="12" fill="#e74c3c">הורדת עדיפות</text>
+                </svg>
+            </div>
+            
+            <!-- Step 3: Process gives up CPU -->
+            <div class="feedback-step" style="text-align: center; flex-basis: 45%;">
+                <h3>שלב 3: שחרור לפני תום הקוונטום</h3>
+                <svg width="320" height="240" viewBox="0 0 320 240">
+                    <!-- CPU -->
+                    <rect x="220" y="90" width="80" height="60" fill="#2c3e50" rx="8"/>
+                    <text x="260" y="125" font-size="16" text-anchor="middle" fill="white" font-weight="bold">CPU</text>
+                    
+                    <!-- Queues -->
+                    <rect x="20" y="40" width="160" height="40" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="6"/>
+                    <text x="130" y="65" font-size="14" text-anchor="start" fill="#2c3e50">תור עליון (q=4)</text>
+                    <rect x="140" y="45" width="30" height="30" fill="#3498db" rx="4"/>
+                    <text x="155" y="65" font-size="14" text-anchor="middle" fill="white">P2</text>
+                    
+                    <rect x="20" y="100" width="160" height="40" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="6"/>
+                    <text x="155" y="125" font-size="14" text-anchor="start" fill="#2c3e50">תור אמצעי (q=8)</text>
+                    
+                    <rect x="20" y="160" width="160" height="40" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="6"/>
+                    <text x="155" y="185" font-size="14" text-anchor="start" fill="#2c3e50">תור תחתון (FCFS)</text>
+                    
+                    <!-- Arrow showing promotion -->
+                    <path d="M 260,90 Q 260,20 200,20 Q 140,20 140,40" fill="none" stroke="#3498db" stroke-width="2" stroke-dasharray="4,2"/>
+                    <polygon points="140,40 135,30 145,30" fill="#3498db"/>
+                    <text x="260" y="20" font-size="12" fill="#3498db">העלאת עדיפות</text>
+                </svg>
+            </div>
+            
+            <!-- Step 4: Long-running process -->
+            <div class="feedback-step" style="text-align: center; flex-basis: 45%;">
+                <h3>שלב 4: תהליך ארוך</h3>
+                <svg width="320" height="240" viewBox="0 0 320 240">
+                    <!-- CPU -->
+                    <rect x="220" y="90" width="80" height="60" fill="#2c3e50" rx="8"/>
+                    <text x="260" y="125" font-size="16" text-anchor="middle" fill="white" font-weight="bold">CPU</text>
+                    
+                    <!-- Queues -->
+                    <rect x="20" y="40" width="160" height="40" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="6"/>
+                    <text x="155" y="65" font-size="14" text-anchor="start" fill="#2c3e50">תור עליון (q=4)</text>
+                    
+                    <rect x="20" y="100" width="160" height="40" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="6"/>
+                    <text x="155" y="125" font-size="14" text-anchor="start" fill="#2c3e50">תור אמצעי (q=8)</text>
+                    
+                    <rect x="20" y="160" width="160" height="40" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="6"/>
+                    <text x="130" y="185" font-size="14" text-anchor="start" fill="#2c3e50">תור תחתון (FCFS)</text>
+                    <rect x="155" y="165" width="30" height="30" fill="#e74c3c" rx="4"/>
+                    <text x="155" y="185" font-size="14" text-anchor="middle" fill="white">P1</text>
+                    
+                    <!-- Arrow to CPU -->
+                    <line x1="180" y1="180" x2="215" y2="120" stroke="#3498db" stroke-width="2" marker-end="url(#arrow-marker)"/>
+                    <text x="190" y="210" font-size="12" fill="#666">עדיפות נמוכה ביותר</text>
+                </svg>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h3>מאפייני תור עם משוב:</h3>
+            <ul>
+                <li><strong>למידה והסתגלות:</strong> המערכת לומדת את מאפייני התהליכים ומתאימה את העדפות התזמון בהתאם.</li>
+                <li><strong>אופטימיזציה אוטומטית:</strong> תהליכי I/O נשארים בתורים בעלי עדיפות גבוהה, ותהליכי CPU ארוכים יורדים לתורים בעלי עדיפות נמוכה.</li>
+                <li><strong>כללי מעבר בין תורים:</strong> 
+                    <ul>
+                        <li>תהליך חדש נכנס לתור העליון (עדיפות גבוהה).</li>
+                        <li>אם תהליך משתמש בכל הקוונטום שלו, הוא יורד לתור נמוך יותר.</li>
+                        <li>אם תהליך משחרר את המעבד לפני סיום הקוונטום (ביצוע I/O), הוא נשאר באותו תור או עולה לתור גבוה יותר.</li>
+                    </ul>
+                </li>
+                <li><strong>גמישות:</strong> ניתן להתאים פרמטרים כמו גודל קוונטום לכל רמה, מספר הרמות, וכללי המעבר בין הרמות.</li>
+            </ul>
+        </div>
+        
+        <div class="expandable-section">
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">חישוב זמני המתנה <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+                <p>חישוב זמני ההמתנה באלגוריתם תורים עם משוב מורכב יותר ותלוי בפרמטרים רבים:</p>
+                <ul>
+                    <li>מספר הרמות בתור</li>
+                    <li>גודל הקוונטום בכל רמה</li>
+                    <li>כללי המעבר בין הרמות</li>
+                    <li>עומס המערכת</li>
+                </ul>
+                <p>בדרך כלל, תהליכים קצרים וממוקדי I/O ייהנו מזמני המתנה נמוכים, ותהליכים ארוכים וממוקדי CPU ייאלצו להמתין יותר.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thread Scheduling -->
+    <div class="content-section" id="thread-scheduling">
+        <h2>🧵 תזמון תהליכונים (Thread Scheduling)</h2>
+        <p>תהליכונים (threads) מוסיפים שכבה נוספת למורכבות התזמון. מערכת ההפעלה צריכה כעת לתזמן לא רק תהליכים אלא גם את התהליכונים בתוך כל תהליך.</p>
+        
+        <div class="image-container">
+            <div class="concept-image">
+                <svg width="100%" height="400" viewBox="0 0 700 400" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Background -->
+                    <rect x="0" y="0" width="700" height="400" fill="#f8f9fa" rx="15"/>
+                    
+                    <!-- Process 1 with threads -->
+                    <rect x="50" y="40" width="250" height="280" fill="#ecf0f1" stroke="#3498db" stroke-width="2" rx="10"/>
+                    <text x="175" y="25" font-size="18" text-anchor="middle" fill="#2c3e50" font-weight="bold">תהליך 1</text>
+                    
+                    <!-- Shared components -->
+                    <rect x="70" y="50" width="210" height="100" fill="#bdc3c7" rx="5"/>
+                    <text x="175" y="70" font-size="14" text-anchor="middle" fill="#2c3e50">קוד משותף</text>
+                    <text x="175" y="90" font-size="14" text-anchor="middle" fill="#2c3e50">ערימה</text>
+                    <text x="175" y="110" font-size="14" text-anchor="middle" fill="#2c3e50">נתונים גלובליים</text>
+                    <text x="175" y="130" font-size="14" text-anchor="middle" fill="#2c3e50">קבצים פתוחים</text>
+                    
+                    <!-- Individual threads -->
+                    <rect x="70" y="160" width="95" height="150" fill="#3498db" rx="5"/>
+                    <text x="117" y="180" font-size="14" text-anchor="middle" fill="white">תהליכון 1-1</text>
+                    <text x="117" y="210" font-size="12" text-anchor="middle" fill="white">מונה תוכנית</text>
+                    <text x="117" y="230" font-size="12" text-anchor="middle" fill="white">אוגרים</text>
+                    <text x="117" y="250" font-size="12" text-anchor="middle" fill="white">מחסנית</text>
+                    <text x="117" y="270" font-size="12" text-anchor="middle" fill="white">מצב</text>
+                    <text x="117" y="290" font-size="12" text-anchor="middle" fill="white">עדיפות</text>
+                    
+                    <rect x="185" y="160" width="95" height="150" fill="#3498db" rx="5"/>
+                    <text x="232" y="180" font-size="14" text-anchor="middle" fill="white">תהליכון 1-2</text>
+                    <text x="232" y="210" font-size="12" text-anchor="middle" fill="white">מונה תוכנית</text>
+                    <text x="232" y="230" font-size="12" text-anchor="middle" fill="white">אוגרים</text>
+                    <text x="232" y="250" font-size="12" text-anchor="middle" fill="white">מחסנית</text>
+                    <text x="232" y="270" font-size="12" text-anchor="middle" fill="white">מצב</text>
+                    <text x="232" y="290" font-size="12" text-anchor="middle" fill="white">עדיפות</text>
+
+                    <!-- Process 2 with threads -->
+                    <rect x="400" y="40" width="250" height="280" fill="#ecf0f1" stroke="#e74c3c" stroke-width="2" rx="10"/>
+                    <text x="525" y="25" font-size="18" text-anchor="middle" fill="#2c3e50" font-weight="bold">תהליך 2</text>
+                    
+                    <!-- Shared components -->
+                    <rect x="420" y="50" width="210" height="100" fill="#bdc3c7" rx="5"/>
+                    <text x="525" y="70" font-size="14" text-anchor="middle" fill="#2c3e50">קוד משותף</text>
+                    <text x="525" y="90" font-size="14" text-anchor="middle" fill="#2c3e50">ערימה</text>
+                    <text x="525" y="110" font-size="14" text-anchor="middle" fill="#2c3e50">נתונים גלובליים</text>
+                    <text x="525" y="130" font-size="14" text-anchor="middle" fill="#2c3e50">קבצים פתוחים</text>
+                    
+                    <!-- Individual threads -->
+                    <rect x="420" y="160" width="95" height="150" fill="#e74c3c" rx="5"/>
+                    <text x="467" y="180" font-size="14" text-anchor="middle" fill="white">תהליכון 2-1</text>
+                    <text x="467" y="210" font-size="12" text-anchor="middle" fill="white">מונה תוכנית</text>
+                    <text x="467" y="230" font-size="12" text-anchor="middle" fill="white">אוגרים</text>
+                    <text x="467" y="250" font-size="12" text-anchor="middle" fill="white">מחסנית</text>
+                    <text x="467" y="270" font-size="12" text-anchor="middle" fill="white">מצב</text>
+                    <text x="467" y="290" font-size="12" text-anchor="middle" fill="white">עדיפות</text>
+                    
+                    <rect x="535" y="160" width="95" height="150" fill="#e74c3c" rx="5"/>
+                    <text x="582" y="180" font-size="14" text-anchor="middle" fill="white">תהליכון 2-2</text>
+                    <text x="582" y="210" font-size="12" text-anchor="middle" fill="white">מונה תוכנית</text>
+                    <text x="582" y="230" font-size="12" text-anchor="middle" fill="white">אוגרים</text>
+                    <text x="582" y="250" font-size="12" text-anchor="middle" fill="white">מחסנית</text>
+                    <text x="582" y="270" font-size="12" text-anchor="middle" fill="white">מצב</text>
+                    <text x="582" y="290" font-size="12" text-anchor="middle" fill="white">עדיפות</text>
+                    
+                    <!-- CPU cores -->
+                    <rect x="200" y="340" width="80" height="40" fill="#2c3e50" rx="5"/>
+                    <text x="240" y="365" font-size="14" text-anchor="middle" fill="white">CPU 1</text>
+                    <rect x="420" y="340" width="80" height="40" fill="#2c3e50" rx="5"/>
+                    <text x="460" y="365" font-size="14" text-anchor="middle" fill="white">CPU 2</text>
+                    
+                    <!-- Scheduling arrows -->
+                    <defs>
+                        <marker id="thread-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                                markerWidth="6" markerHeight="6" orient="auto">
+                            <path d="M 0 0 L 10 5 L 0 10 Z" fill="#2c3e50"/>
+                        </marker>
+                    </defs>
+                    <line x1="117" y1="310" x2="240" y2="340" stroke="#2c3e50" stroke-width="2" marker-end="url(#thread-arrow)"/>
+                    <line x1="582" y1="310" x2="460" y2="340" stroke="#2c3e50" stroke-width="2" marker-end="url(#thread-arrow)"/>
+                </svg>
+                <div class="image-caption">תזמון תהליכונים במערכת רב-מעבדית</div>
+            </div>
+            </div>
+
+            <div class="info-box">
+            <h3>מודלים לתזמון תהליכונים:</h3>
+            <ul>
+                <li><strong>תזמון תהליכונים ברמת משתמש (User-Level):</strong> ספריית תהליכונים מתזמנת תהליכונים בתוך תהליך ללא מעורבות מערכת ההפעלה.</li>
+                <li><strong>תזמון תהליכונים ברמת מערכת (Kernel-Level):</strong> מערכת ההפעלה מתזמנת באופן ישיר את כל התהליכונים במערכת.</li>
+                <li><strong>גישה היברידית:</strong> שילוב של שתי הגישות, לרוב בצורת מיפוי רבים-לרבים (m:n).</li>
+            </ul>
+            </div>
+
+            <div class="feature-box">
+            <h3>שיקולים בתזמון תהליכונים:</h3>
+            <div class="feature-list">
+                <li><strong>זיקת תהליכונים (Thread Affinity):</strong> העדפת הרצת תהליכון על אותו מעבד שבו רץ בעבר, לניצול טוב יותר של מטמון המעבד.</li>
+                <li><strong>איזון עומסים:</strong> חלוקה נכונה של תהליכונים בין המעבדים הזמינים.</li>
+                <li><strong>מודעות למבנה החומרה:</strong> התחשבות במרחקים בין מעבדים ובמבנה הזיכרון במערכות NUMA.</li>
+                <li><strong>גרעינים לוגיים (Hyper-Threading):</strong> התייחסות לגרעינים לוגיים במעבדים התומכים בטכנולוגיה זו.</li>
+            </div>
+        </div>
+    </div>
+
+<!-- Multiprocessor Scheduling -->
+<div class="content-section" id="multiprocessor-scheduling">
+<h2>💻 תזמון במערכות מרובות מעבדים</h2>
+<p>במערכות מרובות מעבדים (multiprocessors), אלגוריתמי התזמון נעשים מורכבים יותר. קיימות שתי גישות בסיסיות לתזמון במערכות אלה, וכל אחת מהן מציעה איזון שונה בין פשטות לביצועים.</p>
+
+<div class="expandable-section">
+<h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">גישות בסיסיות לתזמון מרובה מעבדים <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+<div class="collapsible-content">
+    <div class="concept-grid">
+        <div class="concept-row">
+            <div class="concept-item">
+                <h3>תור מוכנים אחד (SQ)</h3>
+                <p>תהליכים נכנסים לתור אחד, וכל מעבד שמתפנה לוקח את התהליך הבא בתור.</p>
+                <div class="highlight">יתרון: איזון עומסים אוטומטי בין המעבדים</div>
+                <div class="highlight">חיסרון: תחרות על המידע בתור המשותף</div>
+            </div>
+            <div class="concept-item">
+                <h3>מספר תורים (MQ)</h3>
+                <p>לכל מעבד יש תור תהליכים משלו, והאלגוריתם קובע לאיזה תור ישויך כל תהליך.</p>
+                <div class="highlight">יתרון: פחות תחרות על גישה למבני נתונים</div>
+                <div class="highlight">חיסרון: עומס לא מאוזן בין המעבדים</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="image-container">
+        <div class="concept-image">
+            <svg width="100%" height="300" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+                <!-- SQ model (left side) -->
+                <rect x="50" y="30" width="250" height="250" fill="#f8f9fa" rx="15" stroke="#ddd" stroke-width="1"/>
+                <text x="175" y="20" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">תור מוכנים משותף (SQ)</text>
+                
+                <!-- Shared ready queue -->
+                <rect x="75" y="70" width="200" height="80" fill="#ecf0f1" stroke="#3498db" stroke-width="2" rx="5"/>
+                <text x="175" y="60" font-size="14" text-anchor="middle" fill="#2c3e50">תור מוכנים</text>
+                
+                <!-- Process blocks in queue -->
+                <rect x="85" y="80" width="30" height="20" fill="#e74c3c" rx="3"/>
+                <text x="100" y="95" font-size="12" text-anchor="middle" fill="white">P1</text>
+                <rect x="125" y="80" width="30" height="20" fill="#e67e22" rx="3"/>
+                <text x="140" y="95" font-size="12" text-anchor="middle" fill="white">P2</text>
+                <rect x="165" y="80" width="30" height="20" fill="#f1c40f" rx="3"/>
+                <text x="180" y="95" font-size="12" text-anchor="middle" fill="white">P3</text>
+                <rect x="205" y="80" width="30" height="20" fill="#2ecc71" rx="3"/>
+                <text x="220" y="95" font-size="12" text-anchor="middle" fill="white">P4</text>
+                <rect x="85" y="110" width="30" height="20" fill="#9b59b6" rx="3"/>
+                <text x="100" y="125" font-size="12" text-anchor="middle" fill="white">P5</text>
+                <rect x="125" y="110" width="30" height="20" fill="#3498db" rx="3"/>
+                <text x="140" y="125" font-size="12" text-anchor="middle" fill="white">P6</text>
+                
+                <!-- CPUs -->
+                <rect x="75" y="200" width="60" height="40" fill="#2c3e50" rx="5"/>
+                <text x="105" y="225" font-size="14" text-anchor="middle" fill="white">CPU 1</text>
+                <rect x="145" y="200" width="60" height="40" fill="#2c3e50" rx="5"/>
+                <text x="175" y="225" font-size="14" text-anchor="middle" fill="white">CPU 2</text>
+                <rect x="215" y="200" width="60" height="40" fill="#2c3e50" rx="5"/>
+                <text x="245" y="225" font-size="14" text-anchor="middle" fill="white">CPU 3</text>
+                
+                <!-- Arrows to CPUs -->
+                <defs>
+                    <marker id="sq-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                            markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 0 L 10 5 L 0 10 Z" fill="#3498db"/>
+                    </marker>
+                </defs>
+                <line x1="105" y1="150" x2="105" y2="195" stroke="#3498db" stroke-width="2" marker-end="url(#sq-arrow)"/>
+                <line x1="175" y1="150" x2="175" y2="195" stroke="#3498db" stroke-width="2" marker-end="url(#sq-arrow)"/>
+                <line x1="245" y1="150" x2="245" y2="195" stroke="#3498db" stroke-width="2" marker-end="url(#sq-arrow)"/>
+                
+                <!-- MQ model (right side) -->
+                <rect x="400" y="30" width="250" height="250" fill="#f8f9fa" rx="15" stroke="#ddd" stroke-width="1"/>
+                <text x="525" y="20" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">תורים נפרדים למעבדים (MQ)</text>
+                
+                <!-- Multiple ready queues -->
+                <rect x="425" y="60" width="60" height="100" fill="#ecf0f1" stroke="#3498db" stroke-width="2" rx="5"/>
+                <text x="455" y="50" font-size="12" text-anchor="middle" fill="#2c3e50">תור 1</text>
+                <rect x="435" y="70" width="40" height="20" fill="#e74c3c" rx="3"/>
+                <text x="455" y="85" font-size="12" text-anchor="middle" fill="white">P1</text>
+                <rect x="435" y="100" width="40" height="20" fill="#e67e22" rx="3"/>
+                <text x="455" y="115" font-size="12" text-anchor="middle" fill="white">P4</text>
+                
+                <rect x="495" y="60" width="60" height="100" fill="#ecf0f1" stroke="#3498db" stroke-width="2" rx="5"/>
+                <text x="525" y="50" font-size="12" text-anchor="middle" fill="#2c3e50">תור 2</text>
+                <rect x="505" y="70" width="40" height="20" fill="#f1c40f" rx="3"/>
+                <text x="525" y="85" font-size="12" text-anchor="middle" fill="white">P2</text>
+                <rect x="505" y="100" width="40" height="20" fill="#2ecc71" rx="3"/>
+                <text x="525" y="115" font-size="12" text-anchor="middle" fill="white">P5</text>
+                
+                <rect x="565" y="60" width="60" height="100" fill="#ecf0f1" stroke="#3498db" stroke-width="2" rx="5"/>
+                <text x="595" y="50" font-size="12" text-anchor="middle" fill="#2c3e50">תור 3</text>
+                <rect x="575" y="70" width="40" height="20" fill="#9b59b6" rx="3"/>
+                <text x="595" y="85" font-size="12" text-anchor="middle" fill="white">P3</text>
+                <rect x="575" y="100" width="40" height="20" fill="#3498db" rx="3"/>
+                <text x="595" y="115" font-size="12" text-anchor="middle" fill="white">P6</text>
+                
+                <!-- CPUs -->
+                <rect x="425" y="200" width="60" height="40" fill="#2c3e50" rx="5"/>
+                <text x="455" y="225" font-size="14" text-anchor="middle" fill="white">CPU 1</text>
+                <rect x="495" y="200" width="60" height="40" fill="#2c3e50" rx="5"/>
+                <text x="525" y="225" font-size="14" text-anchor="middle" fill="white">CPU 2</text>
+                <rect x="565" y="200" width="60" height="40" fill="#2c3e50" rx="5"/>
+                <text x="595" y="225" font-size="14" text-anchor="middle" fill="white">CPU 3</text>
+                
+                <!-- Arrows to CPUs -->
+                <defs>
+                    <marker id="mq-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                            markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 0 L 10 5 L 0 10 Z" fill="#3498db"/>
+                    </marker>
+                </defs>
+                <line x1="455" y1="160" x2="455" y2="195" stroke="#3498db" stroke-width="2" marker-end="url(#mq-arrow)"/>
+                <line x1="525" y1="160" x2="525" y2="195" stroke="#3498db" stroke-width="2" marker-end="url(#mq-arrow)"/>
+                <line x1="595" y1="160" x2="595" y2="195" stroke="#3498db" stroke-width="2" marker-end="url(#mq-arrow)"/>
+                
+                <!-- Load balancing arrow -->
+                <path d="M 490,140 Q 525,120 560,140" fill="none" stroke="#e74c3c" stroke-width="2" stroke-dasharray="5,3"/>
+                <polygon points="560,140 550,136 554,145" fill="#e74c3c"/>
+                <text x="525" y="170" font-size="12" text-anchor="middle" fill="#e74c3c">איזון עומסים</text>
+            </svg>
+            <div class="image-caption">השוואה בין מודל תור משותף (SQ) ומודל תורים נפרדים למעבדים (MQ)</div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<div class="info-box">
+<h3>אתגרים בתזמון מרובה מעבדים:</h3>
+<ul>
+    <li><strong>זיקת מטמון (Cache Affinity):</strong> עדיף שתהליך ירוץ על אותו מעבד כדי לנצל את המידע ששמור במטמון.</li>
+    <li><strong>איזון עומסים:</strong> העברת תהליכים ממעבד עמוס למעבד פנוי.</li>
+    <li><strong>SMP (Symmetric MultiProcessing):</strong> כל המעבדים זהים ויש גישה אחידה לזיכרון.</li>
+    <li><strong>NUMA (Non-Uniform Memory Access):</strong> גישה לזיכרון תלויה במרחק בין המעבד לזיכרון.</li>
+    <li><strong>סינכרון:</strong> התמודדות עם הצורך בסנכרון גישה למבני נתונים משותפים.</li>
+</ul>
+</div>
+</div>
+
+<!-- CPU Affinity -->
+<div class="content-section" id="cpu-affinity">
+    <h2>🧲 העדפת מעבד (CPU Affinity)</h2>
+    <p>במערכות מרובות מעבדים, <i>העדפת מעבד</i> (CPU Affinity) היא מנגנון המאפשר לקבוע על איזה מעבד יריצו תהליך מסוים. הרעיון מאחורי העדפת מעבד הוא ניצול יעיל של זיכרון המטמון (cache) ושיפור הביצועים על ידי שמירה על תהליכים במעבדים ספציפיים.</p>
+
+    <div class="image-container">
+        <div class="concept-image">
+            <svg width="100%" height="280" viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">
+                <!-- Background -->
+                <rect x="0" y="0" width="700" height="280" fill="#f8f9fa" rx="15"/>
+                
+                <!-- CPUs with caches -->
+                <rect x="50" y="50" width="140" height="180" fill="#ecf0f1" stroke="#3498db" stroke-width="2" rx="10"/>
+                <text x="120" y="35" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">מעבד 1</text>
+                
+                <!-- Cache for CPU 1 -->
+                <rect x="70" y="70" width="100" height="40" fill="#3498db" rx="5"/>
+                <text x="120" y="95" font-size="14" text-anchor="middle" fill="white">מטמון L1/L2</text>
+                
+                <!-- Process 1 running on CPU 1 -->
+                <rect x="70" y="130" width="100" height="80" fill="#e74c3c" rx="5"/>
+                <text x="120" y="160" font-size="16" text-anchor="middle" fill="white">תהליך 1</text>
+                <text x="120" y="185" font-size="12" text-anchor="middle" fill="white">שימוש במטמון</text>
+                
+                <!-- CPU 2 -->
+                <rect x="280" y="50" width="140" height="180" fill="#ecf0f1" stroke="#3498db" stroke-width="2" rx="10"/>
+                <text x="350" y="35" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">מעבד 2</text>
+                
+                <!-- Cache for CPU 2 -->
+                <rect x="300" y="70" width="100" height="40" fill="#3498db" rx="5"/>
+                <text x="350" y="95" font-size="14" text-anchor="middle" fill="white">מטמון L1/L2</text>
+                
+                <!-- Process 2 running on CPU 2 -->
+                <rect x="300" y="130" width="100" height="80" fill="#9b59b6" rx="5"/>
+                <text x="350" y="160" font-size="16" text-anchor="middle" fill="white">תהליך 2</text>
+                <text x="350" y="185" font-size="12" text-anchor="middle" fill="white">שימוש במטמון</text>
+                
+                <!-- Migration example -->
+                <rect x="510" y="50" width="140" height="180" fill="#ecf0f1" stroke="#3498db" stroke-width="2" rx="10"/>
+                <text x="580" y="35" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">מעבד 3</text>
+                
+                <!-- Cache for CPU 3 -->
+                <rect x="530" y="70" width="100" height="40" fill="#3498db" rx="5"/>
+                <text x="580" y="95" font-size="14" text-anchor="middle" fill="white">מטמון ריק</text>
+                
+                <!-- Migration arrow -->
+                <path d="M 170,170 Q 350,100 525,170" fill="none" stroke="#e74c3c" stroke-width="2.5" stroke-dasharray="5,3"/>
+                <polygon points="525,170 515,164 515,176" fill="#e74c3c"/>
+                
+                <!-- Cache miss text -->
+                <text x="350" y="240" font-size="14" text-anchor="middle" fill="#e74c3c" font-weight="bold">החלפת מעבד = החטאות מטמון!</text>
+                
+                <!-- Affinity lock symbol -->
+                <text x="120" y="215" font-size="14" text-anchor="middle" fill="#27ae60" font-weight="bold">🔒</text>
+            </svg>
+            <div class="image-caption">העדפת מעבד - שמירת תהליכים על אותו מעבד לניצול יעיל של המטמון</div>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h3>סוגי העדפת מעבד:</h3>
+        <ul>
+            <li><strong>העדפת מעבד קשה (Hard Affinity):</strong> תהליך מוגבל לרוץ אך ורק על מעבד מסוים או קבוצת מעבדים.</li>
+            <li><strong>העדפת מעבד רכה (Soft Affinity):</strong> המערכת מנסה להריץ תהליך על אותו מעבד, אך יכולה להעבירו במידת הצורך.</li>
+        </ul>
+    </div>
+
+    <div class="feature-box">
+        <h3>יתרונות העדפת מעבד:</h3>
+        <div class="feature-list">
+            <li><strong>שיפור ניצול המטמון:</strong> מפחית החטאות מטמון (cache misses) ומשפר את זמן הגישה לנתונים.</li>
+            <li><strong>יציבות בביצועים:</strong> מונע קפיצות בביצועים הנגרמות מהעברת תהליכים בין מעבדים.</li>
+            <li><strong>שליטה משופרת:</strong> מאפשר למתכנת או למנהל המערכת לקבוע כיצד למפות תהליכים למעבדים.</li>
+        </div>
+    </div>
+
+    <div class="warning-box">
+        <h3>חסרונות:</h3>
+        <p>הגבלת תהליך למעבד מסוים עלולה לפגוע באיזון העומסים במערכת ולגרום למצב שבו מעבד אחד עמוס בעוד שאחר פנוי. לכן, יש לאזן בין יתרונות העדפת מעבד לבין הצורך באיזון עומסים יעיל.</p>
+    </div>
+</div>
+
+<!-- Little's Formula -->
+<div class="content-section" id="littles-formula">
+    <h2>📊 נוסחת ליטל (Little's Law)</h2>
+    <p>נוסחת ליטל היא אחת הנוסחאות המרכזיות בתורת התורים והיא מיושמת גם בתזמון תהליכים. היא מתארת את היחס שבין מספר הפריטים הממוצע במערכת, קצב ההגעה ממוצע, וזמן השהיה הממוצע במערכת.</p>
+
+    <div class="formula-container" style="text-align: center; margin: 30px 0; padding: 20px; background-color: #f1f8ff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <div style="font-size: 28px; font-weight: bold; margin-bottom: 10px; color: #2c3e50;">L = λ × W</div>
+        <div style="font-size: 16px; color: #555; margin: 5px 0;">כאשר:</div>
+        <div style="font-size: 18px; color: #333; margin: 5px 0;"><strong>L</strong> = מספר הפריטים הממוצע במערכת</div>
+        <div style="font-size: 18px; color: #333; margin: 5px 0;"><strong>λ</strong> = קצב ההגעה הממוצע (פריטים ליחידת זמן)</div>
+        <div style="font-size: 18px; color: #333; margin: 5px 0;"><strong>W</strong> = זמן השהייה הממוצע של פריט במערכת</div>
+    </div>
+
+    <div class="image-container">
+        <div class="concept-image">
+            <svg width="100%" height="300" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+                <!-- Background -->
+                <rect x="0" y="0" width="700" height="300" fill="#f8f9fa" rx="15"/>
+                
+                <!-- System box -->
+                <rect x="250" y="80" width="200" height="140" fill="#ecf0f1" stroke="#3498db" stroke-width="2" rx="15"/>
+                <text x="350" y="65" font-size="18" text-anchor="middle" fill="#2c3e50" font-weight="bold">מערכת התור</text>
+                
+                <!-- Processes in system -->
+                <circle cx="290" cy="120" r="15" fill="#e74c3c"/>
+                <text x="290" y="125" font-size="14" text-anchor="middle" fill="white">P</text>
+                
+                <circle cx="330" cy="140" r="15" fill="#e67e22"/>
+                <text x="330" y="145" font-size="14" text-anchor="middle" fill="white">P</text>
+                
+                <circle cx="360" cy="110" r="15" fill="#f1c40f"/>
+                <text x="360" y="115" font-size="14" text-anchor="middle" fill="white">P</text>
+                
+                <circle cx="390" cy="150" r="15" fill="#2ecc71"/>
+                <text x="390" y="155" font-size="14" text-anchor="middle" fill="white">P</text>
+                
+                <circle cx="410" cy="130" r="15" fill="#9b59b6"/>
+                <text x="410" y="135" font-size="14" text-anchor="middle" fill="white">P</text>
+                
+                <!-- Input arrow -->
+                <defs>
+                    <marker id="input-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                            markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 0 L 10 5 L 0 10 Z" fill="#3498db"/>
+                    </marker>
+                </defs>
+                <line x1="150" y1="150" x2="245" y2="150" stroke="#3498db" stroke-width="3" marker-end="url(#input-arrow)"/>
+                <text x="200" y="140" font-size="16" text-anchor="middle" fill="#3498db" font-weight="bold">λ</text>
+                <text x="200" y="170" font-size="12" text-anchor="middle" fill="#666">קצב הגעה</text>
+                
+                <!-- Output arrow -->
+                <defs>
+                    <marker id="output-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                            markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 0 L 10 5 L 0 10 Z" fill="#3498db"/>
+                    </marker>
+                </defs>
+                <line x1="450" y1="150" x2="550" y2="150" stroke="#3498db" stroke-width="3" marker-end="url(#output-arrow)"/>
+                <text x="500" y="140" font-size="16" text-anchor="middle" fill="#3498db" font-weight="bold">1/W</text>
+                <text x="500" y="170" font-size="12" text-anchor="middle" fill="#666">קצב יציאה</text>
+                
+                <!-- L label -->
+                <text x="350" y="185" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">L = 5 תהליכים</text>
+                
+                <!-- Formula at bottom -->
+                <rect x="200" y="230" width="300" height="40" fill="#3498db" rx="10" opacity="0.2"/>
+                <text x="350" y="255" font-size="18" text-anchor="middle" fill="#2c3e50" font-weight="bold">L = λ × W</text>
+                <text x="550" y="255" font-size="16" text-anchor="start" fill="#2c3e50">⟵ נוסחת ליטל</text>
+            </svg>
+            <div class="image-caption">תיאור חזותי של נוסחת ליטל - היחס בין מספר התהליכים, קצב ההגעה וזמן השהייה</div>
+        </div>
+    </div>
+    
+    <div class="info-box">
+        <h3>משמעות נוסחת ליטל בתזמון תהליכים:</h3>
+        <ul>
+            <li><strong>עומס מערכת:</strong> מספר התהליכים הממוצע (L) מייצג את העומס במערכת.</li>
+<footer class="page-footer">
+<div>סיכום מערכות הפעלה - תזמון מעבד</div>
+</footer></footer></marker></div></marker></div></marker>
+
+
+    <footer class="page-footer">
+        <div>סיכום מערכות הפעלה - תזמון מעבד</div>
+    </footer>
+</body>
+</html>
