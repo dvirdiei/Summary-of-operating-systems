@@ -1,0 +1,2053 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>בעיות סנכרון - מערכות הפעלה</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style/base.css">
+    <script src="script/sidebar.js"></script>
+</head>
+<body>
+    <!-- סרגל ניווט צף -->
+    <div class="nav-sidebar">
+        <div class="nav-sidebar-title">תוכן העניינים</div>
+        <ul class="nav-main-menu">
+            <!-- קטגוריה: מבוא לבעיות סנכרון -->
+            <li class="nav-category">
+                <a href="javascript:void(0)" class="category-title">🔄 מבוא לבעיות סנכרון</a>
+                <ul class="nav-submenu">
+                    <li><a href="#sync-overview">סקירה כללית</a></li>
+                    <li><a href="#sync-primitives">מנגנוני סנכרון בסיסיים</a></li>
+                </ul>
+            </li>
+            
+            <!-- קטגוריה: בעיית יצרן-צרכן -->
+            <li class="nav-category">
+                <a href="javascript:void(0)" class="category-title">🏭 בעיית יצרן-צרכן</a>
+                <ul class="nav-submenu">
+                    <li><a href="#producer-consumer">הגדרת הבעיה</a></li>
+                    <li><a href="#pc-semaphore">פתרון עם סמפורים</a></li>
+                    <li><a href="#pc-monitor">פתרון עם מוניטורים</a></li>
+                    <li><a href="#pc-issues">בעיות נפוצות ופתרונן</a></li>
+                </ul>
+            </li>
+            
+            <!-- קטגוריה: בעיית הקוראים והכותבים -->
+            <li class="nav-category">
+                <a href="javascript:void(0)" class="category-title">📚 בעיית הקוראים והכותבים</a>
+                <ul class="nav-submenu">
+                    <li><a href="#readers-writers">הגדרת הבעיה</a></li>
+                    <li><a href="#rw-solutions">פתרונות שונים</a></li>
+                    <li><a href="#rw-issues">בעיות נפוצות</a></li>
+                </ul>
+            </li>
+            
+            <!-- קטגוריה: בעיית הפילוסופים הסועדים -->
+            <li class="nav-category">
+                <a href="javascript:void(0)" class="category-title">🍽️ בעיית הפילוסופים הסועדים</a>
+                <ul class="nav-submenu">
+                    <li><a href="#dining-philosophers">הגדרת הבעיה</a></li>
+                    <li><a href="#dp-deadlock">בעיית הקיפאון</a></li>
+                    <li><a href="#dp-solutions">פתרונות אפשריים</a></li>
+                    <li><a href="#dp-implementation">מימוש מפורט</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="back-home">
+            <a href="index.html">🏠 חזרה לדף הבית</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>דוגמאות לבעיות סנכרון</h1>
+            <div class="subtitle">Examples of Synchronization Problems</div>
+        </div>
+
+        <!-- מבוא לבעיות סנכרון -->
+        <div class="content-section" id="sync-overview">
+            <h2>🔄 סקירה כללית של בעיות סנכרון</h2>
+            <p>
+                בעיות סנכרון הן אתגרים מרכזיים במערכות הפעלה, הנובעים מהצורך בתיאום בין תהליכים או תהליכונים הפועלים במקביל ומשתפים משאבים. בלי מנגנוני סנכרון נאותים, מערכות מקביליות עלולות להיתקל במצבי race condition, deadlock, starvation ובעיות אחרות.
+            </p>
+
+            <div class="feature-box">
+                <h3>האתגרים המרכזיים בסנכרון:</h3>
+                <div class="feature-list">
+                    <li><strong>Race Conditions:</strong> מצב בו התוצאה תלויה בסדר הריצה של תהליכים, דבר שעלול לגרום לתוצאות בלתי צפויות.</li>
+                    <li><strong>Deadlock:</strong> מצב שבו שני תהליכים או יותר ממתינים לגישה למשאבים שנתפסו על ידי תהליכים אחרים, וכך נוצר מעגל המתנה שאינו יכול להשתחרר.</li>
+                    <li><strong>Starvation:</strong> מצב בו תהליך אינו מקבל גישה לעולם למשאבים הנדרשים לו להמשך פעולתו.</li>
+                    <li><strong>קטע קריטי (Critical Section):</strong> חלק בקוד שבו ניגשים למשאבים משותפים ומבצעים שינויים בהם.</li>
+                </div>
+            </div>
+
+            <div class="concept-row">
+                <div class="concept-item">
+                    <h4>דרישות לפתרונות סנכרון:</h4>
+                    <p>
+                        1. <strong>הדרה הדדית (Mutual Exclusion):</strong> רק תהליך אחד יכול להיות בקטע הקריטי בכל זמן נתון.<br>
+                        2. <strong>התקדמות (Progress):</strong> תהליכים שאינם בקטע הקריטי לא יכולים למנוע מתהליכים אחרים להיכנס לקטע הקריטי.<br>
+                        3. <strong>המתנה מוגבלת (Bounded Waiting):</strong> חייב להיות גבול למספר הפעמים שתהליך יכול להמתין לפני שייכנס לקטע הקריטי.
+                    </p>
+                </div>
+                <div class="concept-item">
+                    <h4>תבניות בעיות קלאסיות:</h4>
+                    <p>
+                        במערכות הפעלה ישנן מספר בעיות סנכרון קלאסיות המשמשות כמודל לבעיות מעשיות:<br>
+                        • <strong>בעיית היצרן-צרכן</strong> - סנכרון בתהליכי ייצור וצריכת מידע<br>
+                        • <strong>בעיית הקוראים-כותבים</strong> - איזון בין גישה משותפת וגישה בלעדית<br>
+                        • <strong>בעיית הפילוסופים הסועדים</strong> - הימנעות מקיפאון בגישה למשאבים
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section" id="sync-primitives">
+            <h2>⚙️ מנגנוני סנכרון בסיסיים</h2>
+            <p>
+                מערכות הפעלה מספקות מספר מנגנוני סנכרון בסיסיים שמהווים את הבסיס לפתרון בעיות סנכרון מורכבות. הבנה של מנגנונים אלה חיונית לפני שניגשים לבעיות הקלאסיות.
+            </p>
+
+            <div class="visual-diagram">
+                <svg width="100%" height="380" viewBox="0 0 700 380">
+                    <!-- Background -->
+                    <rect x="0" y="0" width="700" height="380" fill="#f8f9fa" rx="15"/>
+                    
+                    <!-- Title -->
+                    <text x="350" y="30" font-size="18" text-anchor="middle" fill="#2c3e50" font-weight="bold">מנגנוני סנכרון בסיסיים</text>
+                    
+                    <!-- Atomic Operations Box -->
+                    <rect x="50" y="60" width="180" height="120" fill="#ecf0f1" stroke="#3498db" stroke-width="2" rx="10"/>
+                    <text x="140" y="85" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">פעולות אטומיות</text>
+                    <text x="140" y="115" font-size="14" text-anchor="middle" fill="#34495e">test_and_set()</text>
+                    <text x="140" y="145" font-size="14" text-anchor="middle" fill="#34495e">compare_and_swap()</text>
+                    
+                    <!-- Semaphore Box -->
+                    <rect x="260" y="60" width="180" height="120" fill="#ecf0f1" stroke="#9b59b6" stroke-width="2" rx="10"/>
+                    <text x="350" y="85" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">סמפורים</text>
+                    <text x="350" y="115" font-size="14" text-anchor="middle" fill="#34495e">wait(S) / P(S)</text>
+                    <text x="350" y="145" font-size="14" text-anchor="middle" fill="#34495e">signal(S) / V(S)</text>
+                    
+                    <!-- Monitor Box -->
+                    <rect x="470" y="60" width="180" height="120" fill="#ecf0f1" stroke="#e74c3c" stroke-width="2" rx="10"/>
+                    <text x="560" y="85" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">מוניטורים</text>
+                    <text x="560" y="115" font-size="14" text-anchor="middle" fill="#34495e">wait(condition)</text>
+                    <text x="560" y="145" font-size="14" text-anchor="middle" fill="#34495e">signal(condition)</text>
+                    
+                    <!-- Mutex Box -->
+                    <rect x="50" y="210" width="180" height="120" fill="#ecf0f1" stroke="#2ecc71" stroke-width="2" rx="10"/>
+                    <text x="140" y="235" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">מיוטקס</text>
+                    <text x="140" y="265" font-size="14" text-anchor="middle" fill="#34495e">lock()</text>
+                    <text x="140" y="295" font-size="14" text-anchor="middle" fill="#34495e">unlock()</text>
+                    
+                    <!-- Condition Variables Box -->
+                    <rect x="260" y="210" width="180" height="120" fill="#ecf0f1" stroke="#f39c12" stroke-width="2" rx="10"/>
+                    <text x="350" y="235" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">משתני תנאי</text>
+                    <text x="350" y="265" font-size="14" text-anchor="middle" fill="#34495e">wait(mutex)</text>
+                    <text x="350" y="295" font-size="14" text-anchor="middle" fill="#34495e">notify_one/all()</text>
+                    
+                    <!-- Message Passing Box -->
+                    <rect x="470" y="210" width="180" height="120" fill="#ecf0f1" stroke="#1abc9c" stroke-width="2" rx="10"/>
+                    <text x="560" y="235" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">העברת הודעות</text>
+                    <text x="560" y="265" font-size="14" text-anchor="middle" fill="#34495e">send(message)</text>
+                    <text x="560" y="295" font-size="14" text-anchor="middle" fill="#34495e">receive(message)</text>
+                </svg>
+                <div class="image-caption">מנגנוני סנכרון בסיסיים במערכות הפעלה</div>
+            </div>
+
+            <div class="info-box">
+                <h3>סמפורים (Semaphores):</h3>
+                <p>
+                    סמפור הוא מבנה נתונים שכולל ערך מספרי שלם ותור של תהליכים ממתינים. שתי פעולות בסיסיות:
+                </p>
+                <ul>
+                    <li><code>wait(S)</code> או <code>P(S)</code>: אם S > 0, הקטן את S ב-1. אחרת, השהה את התהליך הנוכחי והכנס אותו לתור הממתינים.</li>
+                    <li><code>signal(S)</code> או <code>V(S)</code>: הגדל את S ב-1. אם יש תהליכים ממתינים, העבר תהליך אחד למצב מוכן לריצה.</li>
+                </ul>
+                <p>
+                    <strong>סמפור בינארי:</strong> סמפור שערכו יכול להיות רק 0 או 1. משמש להדרה הדדית.<br>
+                    <strong>סמפור בעל ספירה:</strong> סמפור שיכול לקבל ערכים חיוביים כלשהם. משמש לסנכרון משאבים מרובים.
+                </p>
+            </div>
+
+            <div class="info-box">
+                <h3>מוניטורים (Monitors):</h3>
+                <p>
+                    מוניטור הוא מבנה תוכנה ברמה גבוהה יותר מסמפורים, המספק מנגנון נוח להדרה הדדית וסנכרון. הוא מקבץ משתנים ופרוצדורות תחת מבנה נתונים אחד עם מנגנון הדרה הדדית מובנה. 
+                </p>
+                <ul>
+                    <li><code>wait(condition)</code>: משהה את התהליך המבצע עד שתנאי מסוים מתקיים.</li>
+                    <li><code>signal(condition)</code>: מעיר תהליך אחד הממתין לתנאי.</li>
+                </ul>
+            </div>
+
+            <p>
+                המנגנונים הבסיסיים הללו משמשים לפתרון בעיות סנכרון מורכבות, כולל שלוש הבעיות הקלאסיות שנדון בהן בהמשך.
+            </p>
+        </div>
+
+        <!-- בעיית יצרן-צרכן -->
+        <div class="content-section" id="producer-consumer">
+            <h2>🏭 בעיית היצרן-צרכן (Producer-Consumer Problem)</h2>
+            <p>
+                בעיית היצרן-צרכן היא בעיית סנכרון קלאסית המתארת שני תהליכים - יצרן המייצר מידע וצרכן הצורך אותו. היצרן מכניס פריטי מידע לחוצץ משותף (buffer), והצרכן מוציא פריטים מחוצץ זה. הבעיה מאופיינת בצורך לסנכרן בין התהליכים כך שהצרכן לא ינסה לצרוך כאשר החוצץ ריק, והיצרן לא ינסה לייצר כאשר החוצץ מלא.
+            </p>
+
+            <div class="animation-container" style="display: flex; justify-content: space-around; margin: 20px 0; position: relative;">
+                <!-- וויזואליזציה של בעיית היצרן-צרכן -->
+                <svg width="700" height="300" viewBox="0 0 700 300">
+                    <!-- Background -->
+                    <rect x="0" y="0" width="700" height="300" fill="#f8f9fa" rx="15"/>
+                    
+                    <!-- Producer -->
+                    <rect x="50" y="120" width="100" height="60" fill="#e74c3c" stroke="#c0392b" stroke-width="2" rx="10"/>
+                    <text x="100" y="155" font-size="16" text-anchor="middle" fill="white" font-weight="bold">יצרן</text>
+                    
+                    <!-- Consumer -->
+                    <rect x="550" y="120" width="100" height="60" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="10"/>
+                    <text x="600" y="155" font-size="16" text-anchor="middle" fill="white" font-weight="bold">צרכן</text>
+                    
+                    <!-- Buffer -->
+                    <rect x="200" y="100" width="300" height="100" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2" rx="5"/>
+                    <text x="350" y="90" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">חוצץ (Buffer)</text>
+                    
+                    <!-- Buffer slots -->
+                    <rect x="220" y="125" width="50" height="50" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+                    <text x="245" y="155" font-size="14" text-anchor="middle" fill="white">1</text>
+                    
+                    <rect x="280" y="125" width="50" height="50" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+                    <text x="305" y="155" font-size="14" text-anchor="middle" fill="white">2</text>
+                    
+                    <rect x="340" y="125" width="50" height="50" fill="white" stroke="#bdc3c7" stroke-width="2"/>
+                    <text x="365" y="155" font-size="14" text-anchor="middle" fill="#bdc3c7">3</text>
+                    
+                    <rect x="400" y="125" width="50" height="50" fill="white" stroke="#bdc3c7" stroke-width="2"/>
+                    <text x="425" y="155" font-size="14" text-anchor="middle" fill="#bdc3c7">4</text>
+                    
+                    <!-- Arrows -->
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#7f8c8d"/>
+                        </marker>
+                    </defs>
+                    <line x1="150" y1="150" x2="190" y2="150" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <line x1="510" y1="150" x2="550" y2="150" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- Labels -->
+                    <text x="170" y="140" font-size="12" text-anchor="middle" fill="#7f8c8d">הוספה</text>
+                    <text x="530" y="140" font-size="12" text-anchor="middle" fill="#7f8c8d">הוצאה</text>
+                    
+                    <!-- Buffer states -->
+                    <text x="350" y="220" font-size="14" text-anchor="middle" fill="#2c3e50">מצב החוצץ: 2/4 מלא (תפוס חלקית)</text>
+                    
+                    <!-- Semaphores -->
+                    <rect x="250" y="240" width="80" height="30" fill="#f39c12" stroke="#e67e22" stroke-width="2" rx="15"/>
+                    <text x="290" y="260" font-size="12" text-anchor="middle" fill="white">empty: 2</text>
+                    
+                    <rect x="350" y="240" width="80" height="30" fill="#9b59b6" stroke="#8e44ad" stroke-width="2" rx="15"/>
+                    <text x="390" y="260" font-size="12" text-anchor="middle" fill="white">full: 2</text>
+                    
+                    <rect x="450" y="240" width="80" height="30" fill="#1abc9c" stroke="#16a085" stroke-width="2" rx="15"/>
+                    <text x="490" y="260" font-size="12" text-anchor="middle" fill="white">mutex: 1</text>
+                </svg>
+            </div>
+
+            <div class="info-box">
+                <h3>סוגי חוצצים:</h3>
+                <ul>
+                    <li><strong>חוצץ לא מוגבל (Unbounded Buffer):</strong> חוצץ בגודל תיאורטי אינסופי, היצרן יכול תמיד להכניס פריטים, והצרכן צריך לוודא שהחוצץ אינו ריק.</li>
+                    <li><strong>חוצץ מוגבל (Bounded Buffer):</strong> חוצץ בגודל סופי ומוגדר מראש (n). היצרן צריך לוודא שהחוצץ אינו מלא והצרכן צריך לוודא שהחוצץ אינו ריק.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- פתרון בעיית היצרן-צרכן עם סמפורים -->
+        <div class="content-section" id="pc-semaphore">
+            <h2>🔄 פתרון בעיית היצרן-צרכן עם סמפורים</h2>
+            <p>
+                אחת הדרכים הנפוצות לפתרון בעיית היצרן-צרכן היא באמצעות סמפורים. נשתמש בשלושה סמפורים:
+            </p>
+            <ul>
+                <li><strong>mutex</strong> - סמפור בינארי המגן על הגישה לחוצץ עצמו (הדרה הדדית)</li>
+                <li><strong>empty</strong> - סמפור המונה כמה מקומות ריקים יש בחוצץ</li>
+                <li><strong>full</strong> - סמפור המונה כמה מקומות מלאים יש בחוצץ</li>
+            </ul>
+            
+            
+                <h3>וויזואליזציה של סמפורים בזמן ריצה:</h3>
+                <div class="visual-diagram">
+                    <svg width="100%" height="350" viewBox="0 0 700 350">
+                        <!-- Background -->
+                        <rect x="0" y="0" width="700" height="350" fill="#f8f9fa" rx="15"/>
+                        
+                        <!-- Timeline -->
+                        <line x1="50" y1="80" x2="650" y2="80" stroke="#34495e" stroke-width="2"/>
+                        <text x="350" y="30" font-size="18" text-anchor="middle" fill="#2c3e50" font-weight="bold">מצב הסמפורים לאורך זמן</text>
+                        
+                        <!-- Time markers -->
+                        <line x1="50" y1="75" x2="50" y2="85" stroke="#34495e" stroke-width="2"/>
+                        <text x="50" y="65" font-size="12" text-anchor="middle" fill="#34495e">T0</text>
+                        
+                        <line x1="150" y1="75" x2="150" y2="85" stroke="#34495e" stroke-width="2"/>
+                        <text x="150" y="65" font-size="12" text-anchor="middle" fill="#34495e">T1</text>
+                        
+                        <line x1="250" y1="75" x2="250" y2="85" stroke="#34495e" stroke-width="2"/>
+                        <text x="250" y="65" font-size="12" text-anchor="middle" fill="#34495e">T2</text>
+                        
+                        <line x1="350" y1="75" x2="350" y2="85" stroke="#34495e" stroke-width="2"/>
+                        <text x="350" y="65" font-size="12" text-anchor="middle" fill="#34495e">T3</text>
+                        
+                        <line x1="450" y1="75" x2="450" y2="85" stroke="#34495e" stroke-width="2"/>
+                        <text x="450" y="65" font-size="12" text-anchor="middle" fill="#34495e">T4</text>
+                        
+                        <line x1="550" y1="75" x2="550" y2="85" stroke="#34495e" stroke-width="2"/>
+                        <text x="550" y="65" font-size="12" text-anchor="middle" fill="#34495e">T5</text>
+                        
+                        <line x1="650" y1="75" x2="650" y2="85" stroke="#34495e" stroke-width="2"/>
+                        <text x="650" y="65" font-size="12" text-anchor="middle" fill="#34495e">T6</text>
+                        
+                        <!-- Semaphore values over time -->
+                        <!-- mutex -->
+                        <text x="30" y="130" font-size="14" text-anchor="end" fill="#1abc9c">mutex:</text>
+                        <rect x="50" y="120" width="100" height="20" fill="#1abc9c" opacity="0.7"/>
+                        <text x="100" y="135" font-size="14" text-anchor="middle" fill="#fff">1</text>
+                        
+                        <rect x="150" y="120" width="100" height="20" fill="#e74c3c" opacity="0.7"/>
+                        <text x="200" y="135" font-size="14" text-anchor="middle" fill="#fff">0 (P)</text>
+                        
+                        <rect x="250" y="120" width="100" height="20" fill="#1abc9c" opacity="0.7"/>
+                        <text x="300" y="135" font-size="14" text-anchor="middle" fill="#fff">1 (V)</text>
+                        
+                        <rect x="350" y="120" width="100" height="20" fill="#e74c3c" opacity="0.7"/>
+                        <text x="400" y="135" font-size="14" text-anchor="middle" fill="#fff">0 (C)</text>
+                        
+                        <rect x="450" y="120" width="100" height="20" fill="#1abc9c" opacity="0.7"/>
+                        <text x="500" y="135" font-size="14" text-anchor="middle" fill="#fff">1</text>
+                        
+                        <rect x="550" y="120" width="100" height="20" fill="#1abc9c" opacity="0.7"/>
+                        <text x="600" y="135" font-size="14" text-anchor="middle" fill="#fff">1</text>
+                        
+                        <!-- empty -->
+                        <text x="30" y="180" font-size="14" text-anchor="end" fill="#f39c12">empty:</text>
+                        <rect x="50" y="170" width="100" height="20" fill="#f39c12" opacity="0.7"/>
+                        <text x="100" y="185" font-size="14" text-anchor="middle" fill="#fff">3</text>
+                        
+                        <rect x="150" y="170" width="100" height="20" fill="#f39c12" opacity="0.7"/>
+                        <text x="200" y="185" font-size="14" text-anchor="middle" fill="#fff">2</text>
+                        
+                        <rect x="250" y="170" width="100" height="20" fill="#f39c12" opacity="0.7"/>
+                        <text x="300" y="185" font-size="14" text-anchor="middle" fill="#fff">2</text>
+                        
+                        <rect x="350" y="170" width="100" height="20" fill="#f39c12" opacity="0.7"/>
+                        <text x="400" y="185" font-size="14" text-anchor="middle" fill="#fff">2</text>
+                        
+                        <rect x="450" y="170" width="100" height="20" fill="#f39c12" opacity="0.7"/>
+                        <text x="500" y="185" font-size="14" text-anchor="middle" fill="#fff">3</text>
+                        
+                        <rect x="550" y="170" width="100" height="20" fill="#f39c12" opacity="0.7"/>
+                        <text x="600" y="185" font-size="14" text-anchor="middle" fill="#fff">3</text>
+                        
+                        <!-- full -->
+                        <text x="30" y="230" font-size="14" text-anchor="end" fill="#9b59b6">full:</text>
+                        <rect x="50" y="220" width="100" height="20" fill="#9b59b6" opacity="0.7"/>
+                        <text x="100" y="235" font-size="14" text-anchor="middle" fill="#fff">0</text>
+                        
+                        <rect x="150" y="220" width="100" height="20" fill="#9b59b6" opacity="0.7"/>
+                        <text x="200" y="235" font-size="14" text-anchor="middle" fill="#fff">0</text>
+                        
+                        <rect x="250" y="220" width="100" height="20" fill="#9b59b6" opacity="0.7"/>
+                        <text x="300" y="235" font-size="14" text-anchor="middle" fill="#fff">1</text>
+                        
+                        <rect x="350" y="220" width="100" height="20" fill="#9b59b6" opacity="0.7"/>
+                        <text x="400" y="235" font-size="14" text-anchor="middle" fill="#fff">0</text>
+                        
+                        <rect x="450" y="220" width="100" height="20" fill="#9b59b6" opacity="0.7"/>
+                        <text x="500" y="235" font-size="14" text-anchor="middle" fill="#fff">0</text>
+                        
+                        <rect x="550" y="220" width="100" height="20" fill="#9b59b6" opacity="0.7"/>
+                        <text x="600" y="235" font-size="14" text-anchor="middle" fill="#fff">0</text>
+                        
+                        <!-- Events -->
+                        <text x="100" y="280" font-size="12" text-anchor="middle" fill="#34495e">התחלה</text>
+                        <text x="200" y="280" font-size="12" text-anchor="middle" fill="#e74c3c">יצרן נכנס לקטע קריטי</text>
+                        <text x="300" y="280" font-size="12" text-anchor="middle" fill="#e74c3c">יצרן מוסיף פריט</text>
+                        <text x="400" y="280" font-size="12" text-anchor="middle" fill="#3498db">צרכן נכנס לקטע קריטי</text>
+                        <text x="500" y="280" font-size="12" text-anchor="middle" fill="#3498db">צרכן מוציא פריט</text>
+                        <text x="600" y="280" font-size="12" text-anchor="middle" fill="#34495e">מצב יציב</text>
+                        
+                        <!-- Legend -->
+                        <rect x="50" y="310" width="15" height="15" fill="#e74c3c" opacity="0.7"/>
+                        <text x="70" y="323" font-size="12" text-anchor="start" fill="#34495e">תפוס/חסום</text>
+                        
+                        <rect x="150" y="310" width="15" height="15" fill="#1abc9c" opacity="0.7"/>
+                        <text x="170" y="323" font-size="12" text-anchor="start" fill="#34495e">פנוי</text>
+                        
+                        <text x="250" y="323" font-size="12" text-anchor="start" fill="#34495e">(P) - יצרן</text>
+                        <text x="350" y="323" font-size="12" text-anchor="start" fill="#34495e">(C) - צרכן</text>
+                    </svg>
+                </div>
+
+            <div class="expandable-section">
+                <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">פתרון בעיית היצרן-צרכן עם סמפורים <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                <div class="collapsible-content">
+                    <div class="code-example">
+                        <pre><code>/* אתחול הסמפורים */
+semaphore mutex = 1;    // מבטיח הדרה הדדית לגישה לחוצץ
+semaphore empty = n;    // מספר המקומות הריקים בחוצץ, באתחול שווה לגודל החוצץ
+semaphore full = 0;     // מספר הפריטים בחוצץ, באתחול שווה ל-0
+
+/* קוד היצרן */
+do {
+    // ייצור פריט
+    produce_item(&item);
+    
+    // המתנה למקום ריק בחוצץ
+    wait(empty);
+    
+    // כניסה לקטע הקריטי
+    wait(mutex);
+    
+    // הכנסת הפריט לחוצץ
+    insert_item(item);
+    
+    // יציאה מהקטע הקריטי
+    signal(mutex);
+    
+    // עדכון שיש פריט נוסף בחוצץ
+    signal(full);
+} while (true);
+
+/* קוד הצרכן */
+do {
+    // המתנה לפריט בחוצץ
+    wait(full);
+    
+    // כניסה לקטע הקריטי
+    wait(mutex);
+    
+    // הוצאת פריט מהחוצץ
+    remove_item(&item);
+    
+    // יציאה מהקטע הקריטי
+    signal(mutex);
+    
+    // עדכון שיש מקום ריק נוסף בחוצץ
+    signal(empty);
+    
+    // צריכת הפריט
+    consume_item(item);
+} while (true);</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h3>חשיבות סדר הפעולות!</h3>
+                <p>
+                    סדר הפעולות על הסמפורים הוא קריטי. אם נשנה את סדר הפעולות, עלולות להתרחש הבעיות הבאות:
+                </p>
+                <ol>
+                    <li>
+                        <strong>החלפת סדר wait(empty) ו-wait(mutex) ביצרן:</strong><br>
+                        היצרן יתפוס את ה-mutex תחילה, ולאחר מכן יבדוק אם יש מקום בחוצץ. אם החוצץ מלא, היצרן יחסום בעודו מחזיק את ה-mutex, דבר שימנע מהצרכנים לגשת לחוצץ כדי לצרוך פריטים. זה יוביל לקיפאון (deadlock).
+                    </li>
+                    <li>
+                        <strong>החלפת סדר wait(full) ו-wait(mutex) בצרכן:</strong><br>
+                        בדומה למקרה הקודם, אם הצרכן יתפוס את ה-mutex תחילה ואז יגלה שהחוצץ ריק, הוא יחסום בעודו מחזיק את ה-mutex, מה שימנע מהיצרנים להכניס פריטים לחוצץ. זה גם כן יוביל לקיפאון.
+                    </li>
+                    <li>
+                        <strong>החלפת סדר signal(mutex) ו-signal(full/empty):</strong><br>
+                        אם נשחרר את סמפור ה-full/empty לפני שחרור ה-mutex, תהליכים אחרים עלולים להתעורר ולנסות לגשת לחוצץ בזמן שה-mutex עדיין תפוס, מה שיגרום להם להמתין מיותרת.
+                    </li>
+                </ol>
+            </div>
+
+        </div>
+        
+
+        <!-- פתרון בעיית היצרן-צרכן עם מוניטורים -->
+        <div class="content-section" id="pc-monitor">
+            <h2>🔍 פתרון בעיית היצרן-צרכן עם מוניטורים</h2>
+            <p>
+                מוניטורים מספקים הפשטה גבוהה יותר מסמפורים ומקלים על פתרון בעיות סנכרון. הם מבטיחים הדרה הדדית באופן אוטומטי ומאפשרים שימוש במשתני תנאי לסנכרון מתקדם.
+            </p>
+
+            <h3>כיצד מוניטורים פותרים את בעיית היצרן-צרכן</h3>
+            <p>
+                בשונה מפתרון הסמפורים, שבו עלינו לנהל באופן מפורש את ההדרה ההדדית ואת סנכרון התנאים, המוניטורים מספקים מנגנון מובנה לכך:
+            </p>
+            
+            <div class="feature-box">
+                <h3>מרכיבי הפתרון עם מוניטור:</h3>
+                <div class="feature-list">
+                    <li><strong>הדרה הדדית אוטומטית:</strong> רק תהליך אחד יכול להפעיל פרוצדורה מתוך המוניטור בכל רגע נתון, מה שמבטיח שלא יהיו מירוצים (race conditions) בגישה לחוצץ.</li>
+                    <li><strong>משתני תנאי:</strong> המוניטור משתמש בשני משתני תנאי:
+                        <ul>
+                            <li><code>not_full</code>: תנאי המציין שהחוצץ אינו מלא (יצרן יכול להכניס פריט)</li>
+                            <li><code>not_empty</code>: תנאי המציין שהחוצץ אינו ריק (צרכן יכול להוציא פריט)</li>
+                        </ul>
+                    </li>
+                    <li><strong>תור המתנה:</strong> כאשר תהליך מחכה לתנאי מסוים (למשל, היצרן מחכה שהחוצץ לא יהיה מלא), הוא נכנס לתור המתנה של אותו תנאי ומשחרר את המנעול, מה שמאפשר לתהליכים אחרים לפעול.</li>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3>תהליך הסנכרון בפתרון המוניטור:</h3>
+                <div style="display: flex; justify-content: space-between; gap: 20px;">
+                    <div style="flex: 1;">
+                        <h4>פעולת היצרן:</h4>
+                        <ul>
+                            <li>כאשר היצרן מנסה להכניס פריט, הוא נכנס לפרוצדורת <code>insert</code> של המוניטור</li>
+                            <li>אם החוצץ מלא (<code>count == N</code>), היצרן קורא ל-<code>wait(not_full)</code>, נכנס לתור ההמתנה ומשחרר את המנעול</li>
+                            <li>כשהיצרן מתעורר (או אם החוצץ לא היה מלא), הוא מכניס פריט לחוצץ ומאותת לצרכנים על ידי קריאה ל-<code>signal(not_empty)</code></li>
+                        </ul>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4>פעולת הצרכן:</h4>
+                        <ul>
+                            <li>כאשר הצרכן מנסה להוציא פריט, הוא נכנס לפרוצדורת <code>remove</code> של המוניטור</li>
+                            <li>אם החוצץ ריק (<code>count == 0</code>), הצרכן קורא ל-<code>wait(not_empty)</code>, נכנס לתור ההמתנה ומשחרר את המנעול</li>
+                            <li>כשהצרכן מתעורר (או אם החוצץ לא היה ריק), הוא מוציא פריט מהחוצץ ומאותת ליצרנים על ידי קריאה ל-<code>signal(not_full)</code></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <p>
+                בפתרון מבוסס מוניטור, סדר הפעולות פחות קריטי מאשר בפתרון מבוסס סמפורים, שכן המוניטור מבטיח הדרה הדדית באופן אוטומטי. המתכנת צריך רק לוודא שהקריאות ל-<code>wait</code> ו-<code>signal</code> נמצאות במקומות הנכונים. כמו כן, יש לשים לב ש-<code>signal</code> אינו משחרר את המנעול (בניגוד ל-<code>wait</code> שמשחרר את המנעול), אלא רק מעיר תהליך אחד מתור ההמתנה.
+            </p>
+
+            <div class="animation-container" style="display: flex; justify-content: space-around; margin: 20px 0; position: relative;">
+                <svg width="700" height="350" viewBox="0 0 700 350">
+                    <!-- Background -->
+                    <rect x="0" y="0" width="700" height="350" fill="#f8f9fa" rx="15"/>
+                    <text x="350" y="40" font-size="20" text-anchor="middle" fill="#2c3e50" font-weight="bold">מוניטור יצרן-צרכן</text>
+                    
+                    <!-- Monitor Box -->
+                    <rect x="175" y="70" width="350" height="220" fill="#ecf0f1" stroke="#95a5a6" stroke-width="3" rx="10"/>
+                    <text x="350" y="90" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">Monitor ProducerConsumer</text>
+                    
+                    <!-- Buffer -->
+                    <rect x="225" y="110" width="250" height="70" fill="white" stroke="#bdc3c7" stroke-width="2" rx="5"/>
+                    <text x="350" y="105" font-size="14" text-anchor="middle" fill="#7f8c8d">buffer[N]</text>
+                    
+                    <!-- Buffer slots -->
+                    <rect x="235" y="120" width="40" height="50" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+                    <text x="255" y="150" font-size="14" text-anchor="middle" fill="white">1</text>
+                    
+                    <rect x="285" y="120" width="40" height="50" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+                    <text x="305" y="150" font-size="14" text-anchor="middle" fill="white">2</text>
+                    
+                    <rect x="335" y="120" width="40" height="50" fill="white" stroke="#bdc3c7" stroke-width="2"/>
+                    <text x="355" y="150" font-size="14" text-anchor="middle" fill="#bdc3c7">—</text>
+                    
+                    <rect x="385" y="120" width="40" height="50" fill="white" stroke="#bdc3c7" stroke-width="2"/>
+                    <text x="405" y="150" font-size="14" text-anchor="middle" fill="#bdc3c7">—</text>
+                    
+                    <rect x="435" y="120" width="40" height="50" fill="white" stroke="#bdc3c7" stroke-width="2"/>
+                    <text x="455" y="150" font-size="14" text-anchor="middle" fill="#bdc3c7">—</text>
+                    
+                    <!-- Condition variables -->
+                    <rect x="225" y="200" width="110" height="45" fill="#f39c12" stroke="#e67e22" stroke-width="2" rx="8"/>
+                    <text x="280" y="225" font-size="14" text-anchor="middle" fill="white">not_empty</text>
+                    
+                    <rect x="365" y="200" width="110" height="45" fill="#9b59b6" stroke="#8e44ad" stroke-width="2" rx="8"/>
+                    <text x="420" y="225" font-size="14" text-anchor="middle" fill="white">not_full</text>
+                    
+                    <!-- State variables -->
+                    <text x="225" y="265" font-size="12" text-anchor="start" fill="#2c3e50">in: 2</text>
+                    <text x="275" y="265" font-size="12" text-anchor="start" fill="#2c3e50">out: 0</text>
+                    <text x="325" y="265" font-size="12" text-anchor="start" fill="#2c3e50">count: 2</text>
+                    
+                    <!-- Producer -->
+                    <rect x="50" y="150" width="100" height="60" fill="#e74c3c" stroke="#c0392b" stroke-width="2" rx="10"/>
+                    <text x="100" y="185" font-size="16" text-anchor="middle" fill="white" font-weight="bold">יצרן</text>
+                    
+                    <!-- Consumer -->
+                    <rect x="550" y="150" width="100" height="60" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="10"/>
+                    <text x="600" y="185" font-size="16" text-anchor="middle" fill="white" font-weight="bold">צרכן</text>
+                    
+                    <!-- Arrows -->
+                    <defs>
+                        <marker id="arrowhead-monitor" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#7f8c8d"/>
+                        </marker>
+                    </defs>
+                    <line x1="150" y1="160" x2="175" y2="160" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrowhead-monitor)"/>
+                    <text x="162" y="150" font-size="12" text-anchor="middle" fill="#7f8c8d">insert()</text>
+                    
+                    <line x1="525" y1="160" x2="550" y2="160" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrowhead-monitor)"/>
+                    <text x="537" y="150" font-size="12" text-anchor="middle" fill="#7f8c8d">remove()</text>
+                    
+                    <!-- Status label -->
+                    <rect x="280" y="300" width="140" height="30" fill="#2ecc71" stroke="#27ae60" stroke-width="2" rx="15"/>
+                    <text x="350" y="320" font-size="14" text-anchor="middle" fill="white">הדרה הדדית אוטומטית</text>
+                </svg>
+            </div>
+            
+            <div class="expandable-section">
+                <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">פתרון עם מוניטורים <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                <div class="collapsible-content">
+                    <div class="code-example">
+                        <pre><code>monitor ProducerConsumer {
+    int buffer[N];      // חוצץ בגודל N
+    int count = 0;      // מספר הפריטים בחוצץ
+    int in = 0, out = 0;    // אינדקסים להכנסה והוצאה
+    
+    // משתני תנאי
+    condition not_full;     // תנאי שבודק אם החוצץ אינו מלא
+    condition not_empty;    // תנאי שבודק אם החוצץ אינו ריק
+    
+    // פעולת הכנסת פריט ע"י היצרן
+    procedure insert(item) {
+        // אם החוצץ מלא, המתן עד שיהיה מקום
+        if (count == N)
+            wait(not_full);
+            
+        // הכנס פריט לחוצץ
+        buffer[in] = item;
+        in = (in + 1) % N;  // קידום אינדקס ההכנסה במעגל
+        count++;
+        
+        // התר לצרכן לצרוך (אם היה ממתין)
+        signal(not_empty);
+    }
+    
+    // פעולת הוצאת פריט ע"י הצרכן
+    procedure remove() {
+        // אם החוצץ ריק, המתן עד שיהיה פריט
+        if (count == 0)
+            wait(not_empty);
+            
+        // הוצא פריט מהחוצץ
+        item = buffer[out];
+        out = (out + 1) % N;  // קידום אינדקס ההוצאה במעגל
+        count--;
+        
+        // התר ליצרן להכניס (אם היה ממתין)
+        signal(not_full);
+        
+        return item;
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="info-box">
+                <h3>יתרונות השימוש במוניטורים:</h3>
+                <ul>
+                    <li><strong>פשטות:</strong> קל יותר לכתוב קוד סנכרון נכון עם מוניטורים מאשר עם סמפורים.</li>
+                    <li><strong>בטיחות:</strong> המוניטור מבטיח הדרה הדדית באופן אוטומטי עבור כל הפרוצדורות שלו.</li>
+                    <li><strong>תחזוקתיות:</strong> הקוד מאורגן יותר וקל יותר להבנה.</li>
+                </ul>
+            </div>
+
+            <div class="feature-box">
+                <h3>הבדלים בין פתרון מבוסס סמפורים לפתרון מבוסס מוניטורים:</h3>
+                <div class="feature-list">
+                    <li><strong>הדרה הדדית:</strong> בסמפורים אנו מממשים זאת באופן מפורש עם סמפור mutex, במוניטורים זה מתקיים אוטומטית.</li>
+                    <li><strong>תנאים:</strong> בסמפורים אנו משתמשים בסמפורים empty ו-full, במוניטורים אנו משתמשים במשתני תנאי not_empty ו-not_full.</li>
+                    <li><strong>שגיאות תכנות:</strong> פתרון מבוסס מוניטורים בדרך כלל פחות מועד לשגיאות סדר פעולות מאשר פתרון מבוסס סמפורים.</li>
+                </div>
+            </div>
+        </div>
+
+        <!-- בעיות נפוצות בבעיית היצרן-צרכן -->
+        <div class="content-section" id="pc-issues">
+            <h2>⚠️ בעיות נפוצות ביישום פתרון היצרן-צרכן</h2>
+            <p>
+            ביישום פתרון לבעיית היצרן-צרכן יש מספר טעויות נפוצות שעלולות להוביל לבעיות סנכרון קריטיות.
+            </p>
+
+            <div class="expandable-section">
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">Race Conditions <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+                <p>
+                        מתרחשות כאשר שני תהליכים או יותר מנסים לגשת ולשנות משאב משותף (כמו החוצץ) ללא סנכרון נאות. עבור היצרן-צרכן, זה יכול להוביל למצב בו:צרכן, זה יכול להוביל למצב בו:
+                </p>
+                <ul>
+                <li>שני יצרנים כותבים לאותו מקום בחוצץ</li>
+                <li>שני צרכנים קוראים את אותו פריט</li>
+                <li>המונה של מספר הפריטים בחוצץ אינו מתעדכן נכון</li>
+                </ul>
+            </div>
+            </div>
+
+            <div class="expandable-section">
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">Deadlocks <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+                <p>
+                מצב בו תהליכים ממתינים לתמיד אחד לשני, כך שאף אחד אינו יכול להמשיך. בבעיית היצרן-צרכן, קיפאון יכול להתרחש אם:
+                </p>
+                <ul>
+                <li>סדר הפעולות על הסמפורים שגוי (למשל, הקטע הקריטי ננעל לפני בדיקת זמינות החוצץ)</li>
+                <li>שני תהליכים אוחזים במשאבים ודורשים משאבים נוספים שתהליך אחר מחזיק בהם</li>
+                </ul>
+            </div>
+            </div>
+
+            <div class="expandable-section">
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">טעויות נפוצות בקוד <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+                <div class="code-example">
+                <pre><code>/* טעות #1: סדר פעולות שגוי ביצרן */
+    // קוד שגוי - נעילת mutex לפני בדיקת empty
+    wait(mutex);    // קודם נועל את הקטע הקריטי
+    wait(empty);    // אם החוצץ מלא, נתקע עם mutex תפוס!
+    insert_item(item);
+    signal(mutex);
+    signal(full);
+
+    /* טעות #2: שכחת עדכון מונים */
+    // קוד שגוי - חסר עדכון של סמפור
+    wait(empty);
+    wait(mutex);
+    insert_item(item);
+    signal(mutex);
+    // חסר signal(full)! - הצרכן עלול לחשוב שהחוצץ ריק לנצח
+
+    /* טעות #3: שחרור לא נכון של lock */
+    // קוד שגוי - שחרור מוקדם מדי
+    wait(empty);
+    wait(mutex);
+    signal(mutex);  // שחרור מוקדם מדי של מנעול לפני גישה לחוצץ
+    insert_item(item);
+    signal(full);</code></pre>
+                </div>
+            </div>
+            </div>
+
+            <div class="expandable-section">
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">שינויי סדר קריטיים וההשלכות שלהם <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+                <div class="feature-list">
+                <li>
+                    <strong>החלפת wait(empty) ו-wait(mutex):</strong>
+                    <div class="visual-diagram" style="height: 200px;">
+                    <svg width="100%" height="150" viewBox="0 0 700 150">
+                        <!-- Background -->
+                        <rect x="0" y="0" width="700" height="150" fill="#f8f9fa" rx="10"/>
+                        
+                        <!-- Before -->
+                        <rect x="50" y="30" width="250" height="100" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2" rx="5"/>
+                        <text x="175" y="50" font-size="14" text-anchor="middle" fill="#2c3e50" font-weight="bold">נכון</text>
+                        
+                        <!-- Code Before -->
+                        <text x="175" y="80" font-size="12" text-anchor="start" fill="#34495e">1. wait(empty);</text>
+                        <text x="175" y="100" font-size="12" text-anchor="start" fill="#34495e">2. wait(mutex);</text>
+                        <text x="175" y="120" font-size="12" text-anchor="start" fill="#34495e">3. // גישה לחוצץ</text>
+                        
+                        <!-- After -->
+                        <rect x="400" y="30" width="250" height="100" fill="#ecf0f1" stroke="#e74c3c" stroke-width="2" rx="5"/>
+                        <text x="525" y="50" font-size="14" text-anchor="middle" fill="#2c3e50" font-weight="bold">לא נכון - קיפאון!</text>
+                        
+                        <!-- Code After -->
+                        <text x="525" y="80" font-size="12" text-anchor="start" fill="#e74c3c">1. wait(mutex);</text>
+                        <text x="525" y="100" font-size="12" text-anchor="start" fill="#e74c3c">2. wait(empty);</text>
+                        <text x="525" y="120" font-size="12" text-anchor="start" fill="#e74c3c">3. // גישה לחוצץ</text>
+                        
+                        <!-- Arrow -->
+                        <line x1="310" y1="80" x2="390" y2="80" stroke="#e74c3c" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    </svg>
+                    </div>
+                    <p>
+                    <strong>השלכות:</strong> היצרן יתפוס את המשאב המשותף (mutex) גם אם החוצץ מלא, ואז ימתין לריקון החוצץ. הצרכן לא יוכל לגשת לחוצץ כדי להוציא פריטים כי ה-mutex תפוס, מה שיוביל לקיפאון.
+                    </p>
+                </li>
+                <li>
+                    <strong>החלפת signal(mutex) ו-signal(full):</strong>
+                    <div class="visual-diagram" style="height: 200px;">
+                    <svg width="100%" height="150" viewBox="0 0 700 150">
+                        <!-- Background -->
+                        <rect x="0" y="0" width="700" height="150" fill="#f8f9fa" rx="10"/>
+                        
+                        <!-- Before -->
+                        <rect x="50" y="30" width="250" height="100" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2" rx="5"/>
+                        <text x="175" y="50" font-size="14" text-anchor="middle" fill="#2c3e50" font-weight="bold">נכון</text>
+                        
+                        <!-- Code Before -->
+                        <text x="175" y="80" font-size="12" text-anchor="start" fill="#34495e">1. signal(mutex);</text>
+                        <text x="175" y="100" font-size="12" text-anchor="start" fill="#34495e">2. signal(full);</text>
+                        
+                        <!-- After -->
+                        <rect x="400" y="30" width="250" height="100" fill="#ecf0f1" stroke="#e74c3c" stroke-width="2" rx="5"/>
+                        <text x="525" y="50" font-size="14" text-anchor="middle" fill="#2c3e50" font-weight="bold">לא יעיל</text>
+                        
+                        <!-- Code After -->
+                        <text x="525" y="80" font-size="12" text-anchor="start" fill="#e74c3c">1. signal(full);</text>
+                        <text x="525" y="100" font-size="12" text-anchor="start" fill="#e74c3c">2. signal(mutex);</text>
+                        
+                        <!-- Arrow -->
+                        <line x1="310" y1="80" x2="390" y2="80" stroke="#e74c3c" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    </svg>
+                    </div>
+                    <p>
+                    <strong>השלכות:</strong> אם משחררים את סמפור ה-full לפני שחרור ה-mutex, צרכן עלול להתעורר ולנסות לגשת לחוצץ בזמן שה-mutex עדיין תפוס. זה יגרום להמתנה מיותרת של הצרכן וחוסר יעילות במערכת, אך לא יגרום לקיפאון.
+                    </p>
+                </li>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <!-- בעיית הקוראים והכותבים -->
+        <div class="content-section" id="readers-writers">
+            <h2>📚 בעיית הקוראים והכותבים (Readers-Writers Problem)</h2>
+            <p>
+                בעיית הקוראים והכותבים היא בעיית סנכרון קלאסית העוסקת בגישה למשאב משותף (למשל, מסד נתונים או קובץ). בבעיה זו ישנם שני סוגי תהליכים: קוראים וכותבים. הקוראים רק קוראים מהמשאב המשותף ואינם משנים אותו, בעוד הכותבים גם קוראים וגם כותבים למשאב המשותף.
+            </p>
+
+            <div class="animation-container" style="display: flex; justify-content: space-around; margin: 20px 0; position: relative;">
+                <svg width="700" height="350" viewBox="0 0 700 350">
+                    <!-- Background -->
+                    <rect x="0" y="0" width="700" height="350" fill="#f8f9fa" rx="15"/>
+                    <text x="350" y="40" font-size="20" text-anchor="middle" fill="#2c3e50" font-weight="bold">בעיית הקוראים והכותבים</text>
+                    
+                    <!-- Shared Resource -->
+                    <rect x="250" y="100" width="200" height="150" fill="#ecf0f1" stroke="#95a5a6" stroke-width="3" rx="5"/>
+                    <text x="350" y="175" font-size="18" text-anchor="middle" fill="#2c3e50">מאגר מידע משותף</text>
+                    
+                    <!-- Readers -->
+                    <circle cx="150" cy="125" r="40" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                    <text x="150" y="125" font-size="14" text-anchor="middle" fill="white">קורא</text>
+                    <text x="150" y="145" font-size="12" text-anchor="middle" fill="white">Reader 1</text>
+                    
+                    <circle cx="150" cy="225" r="40" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                    <text x="150" y="225" font-size="14" text-anchor="middle" fill="white">קורא</text>
+                    <text x="150" y="245" font-size="12" text-anchor="middle" fill="white">Reader 2</text>
+                    
+                    <!-- Writer -->
+                    <circle cx="550" cy="175" r="40" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+                    <text x="550" y="175" font-size="14" text-anchor="middle" fill="white">כותב</text>
+                    <text x="550" y="195" font-size="12" text-anchor="middle" fill="white">Writer</text>
+                    
+                    <!-- Arrows -->
+                    <defs>
+                        <marker id="readerArrow" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#3498db"/>
+                        </marker>
+                        <marker id="writerArrow" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#e74c3c"/>
+                        </marker>
+                    </defs>
+                    
+                    <!-- Reader Arrows -->
+                    <line x1="190" y1="125" x2="240" y2="150" stroke="#3498db" stroke-width="2" marker-end="url(#readerArrow)"/>
+                    <text x="215" y="125" font-size="12" text-anchor="middle" fill="#3498db">קריאה</text>
+                    
+                    <line x1="190" y1="225" x2="240" y2="200" stroke="#3498db" stroke-width="2" marker-end="url(#readerArrow)"/>
+                    <text x="215" y="235" font-size="12" text-anchor="middle" fill="#3498db">קריאה</text>
+                    
+                    <!-- Writer Arrows (two-way) -->
+                    <line x1="510" y1="175" x2="460" y2="175" stroke="#e74c3c" stroke-width="2" marker-end="url(#writerArrow)"/>
+                    <text x="485" y="165" font-size="12" text-anchor="middle" fill="#e74c3c">קריאה</text>
+                    
+                    <line x1="460" y1="185" x2="510" y2="185" stroke="#e74c3c" stroke-width="2" marker-end="url(#writerArrow)"/>
+                    <text x="485" y="200" font-size="12" text-anchor="middle" fill="#e74c3c">כתיבה</text>
+                    
+                    <!-- Legend -->
+                    <rect x="50" y="300" width="150" height="30" fill="#3498db" rx="5"/>
+                    <text x="125" y="320" font-size="14" text-anchor="middle" fill="white">קוראים - גישה משותפת</text>
+                    
+                    <rect x="250" y="300" width="200" height="30" fill="#e74c3c" rx="5"/>
+                    <text x="350" y="320" font-size="14" text-anchor="middle" fill="white">כותבים - גישה בלעדית</text>
+                </svg>
+            </div>
+
+            <div class="info-box">
+                <h3>הגדרת הבעיה:</h3>
+                <p>
+                    כללי הגישה למשאב המשותף הם:
+                </p>
+                <ul>
+                    <li>מספר רב של קוראים יכולים לקרוא מהמשאב בו-זמנית (קריאה מקבילית).</li>
+                    <li>רק כותב אחד יכול לכתוב למשאב בכל זמן נתון (הדרה הדדית בין כותבים).</li>
+                    <li>כשכותב כותב למשאב, אסור לאף תהליך אחר (קורא או כותב) לגשת למשאב (הדרה הדדית בין קוראים וכותבים).</li>
+                </ul>
+                <p>
+                    האתגר הוא לפתח אלגוריתם שמקיים את הכללים הללו, תוך הימנעות מקיפאון ורעב של תהליכים כלשהם.
+                </p>
+            </div>
+
+            <div class="feature-box">
+                <h3>גרסאות של הבעיה:</h3>
+                <div class="feature-list">
+                    <li><strong>העדפת קוראים (Readers Preference):</strong> מתן עדיפות לקוראים על פני כותבים. כל עוד יש קוראים, כותבים ימתינו.</li>
+                    <li><strong>העדפת כותבים (Writers Preference):</strong> מתן עדיפות לכותבים על פני קוראים. אם יש כותב ממתין, קוראים חדשים לא ייכנסו.</li>
+                    <li><strong>פתרון הוגן (Fair Solution):</strong> מתן הזדמנות שווה לקוראים ולכותבים, למשל על בסיס סדר ההגעה.</li>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section" id="rw-solutions">
+            <h2>🧩 פתרונות לבעיית הקוראים והכותבים</h2>
+            <p>
+                נציג מספר פתרונות לבעיית הקוראים והכותבים, כל אחד עם היתרונות והחסרונות שלו.
+            </p>
+
+            <div class="expandable-section">
+                <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">פתרון #1: העדפת קוראים <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                <div class="collapsible-content">
+                    <p>
+                        פתרון זה מעדיף קוראים על פני כותבים. כל עוד יש לפחות קורא אחד הקורא מהמשאב, קוראים חדשים יכולים להצטרף. כותבים צריכים להמתין עד שכל הקוראים יסיימו.
+                    </p>
+
+                    <div class="code-example">
+                        <pre><code>/* פתרון עם העדפת קוראים (באמצעות סמפורים) */
+semaphore mutex = 1;      // מגן על משתנה readcount
+semaphore db = 1;         // מגן על מסד הנתונים עצמו
+int readcount = 0;        // מספר הקוראים הפעילים
+
+/* קוד הקורא */
+void reader() {
+    while(true) {
+        wait(mutex);              // נעילת גישה למשתנה readcount
+        readcount++;              // קורא נוסף מתחיל
+        if (readcount == 1)       // אם זהו הקורא הראשון
+            wait(db);             // תפוס את מסד הנתונים עבור הקוראים
+        signal(mutex);            // שחרור הגישה למשתנה readcount
+        
+        // קריאה ממסד הנתונים
+        read_database();
+        
+        wait(mutex);              // נעילת גישה למשתנה readcount
+        readcount--;              // קורא מסיים
+        if (readcount == 0)       // אם זהו הקורא האחרון
+            signal(db);           // שחרור מסד הנתונים
+        signal(mutex);            // שחרור הגישה למשתנה readcount
+    }
+}
+
+/* קוד הכותב */
+void writer() {
+    while(true) {
+        wait(db);                 // תפיסת מסד הנתונים בלעדית
+        
+        // כתיבה למסד הנתונים
+        write_database();
+        
+        signal(db);               // שחרור מסד הנתונים
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="info-box">
+                        <h3>יתרונות וחסרונות:</h3>
+                        <ul>
+                            <li><strong>יתרון:</strong> שימוש מקסימלי במשאב - קוראים רבים יכולים לגשת בו-זמנית.</li>
+                            <li><strong>חיסרון:</strong> כותבים עלולים לסבול מרעב (starvation) אם יש זרם מתמיד של קוראים.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="visual-diagram">
+                        <svg width="700" height="250" viewBox="0 0 700 250">
+                            <!-- Background -->
+                            <rect x="0" y="0" width="700" height="250" fill="#f8f9fa" rx="15"/>
+                            
+                            <!-- Timeline -->
+                            <line x1="100" y1="50" x2="650" y2="50" stroke="#34495e" stroke-width="2"/>
+                            <text x="350" y="30" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">תזמון גישה למשאב - העדפת קוראים</text>
+                            
+                            <!-- Time markers -->
+                            <line x1="100" y1="45" x2="100" y2="55" stroke="#34495e" stroke-width="2"/>
+                            <text x="100" y="70" font-size="12" text-anchor="middle" fill="#34495e">t0</text>
+                            
+                            <line x1="200" y1="45" x2="200" y2="55" stroke="#34495e" stroke-width="2"/>
+                            <text x="200" y="70" font-size="12" text-anchor="middle" fill="#34495e">t1</text>
+                            
+                            <line x1="300" y1="45" x2="300" y2="55" stroke="#34495e" stroke-width="2"/>
+                            <text x="300" y="70" font-size="12" text-anchor="middle" fill="#34495e">t2</text>
+                            
+                            <line x1="400" y1="45" x2="400" y2="55" stroke="#34495e" stroke-width="2"/>
+                            <text x="400" y="70" font-size="12" text-anchor="middle" fill="#34495e">t3</text>
+                            
+                            <line x1="500" y1="45" x2="500" y2="55" stroke="#34495e" stroke-width="2"/>
+                            <text x="500" y="70" font-size="12" text-anchor="middle" fill="#34495e">t4</text>
+                            
+                            <line x1="600" y1="45" x2="600" y2="55" stroke="#34495e" stroke-width="2"/>
+                            <text x="600" y="70" font-size="12" text-anchor="middle" fill="#34495e">t5</text>
+                            
+                            <!-- Reader 1 -->
+                            <text x="50" y="100" font-size="14" text-anchor="end" fill="#3498db">Reader 1:</text>
+                            <rect x="100" y="90" width="250" height="20" fill="#3498db" opacity="0.7"/>
+                            <text x="225" y="105" font-size="12" text-anchor="middle" fill="#fff">קורא</text>
+                            
+                            <!-- Reader 2 -->
+                            <text x="50" y="130" font-size="14" text-anchor="end" fill="#3498db">Reader 2:</text>
+                            <rect x="150" y="120" width="250" height="20" fill="#3498db" opacity="0.7"/>
+                            <text x="275" y="135" font-size="12" text-anchor="middle" fill="#fff">קורא</text>
+                            
+                            <!-- Writer 1 -->
+                            <text x="50" y="160" font-size="14" text-anchor="end" fill="#e74c3c">Writer 1:</text>
+                            <rect x="200" y="150" width="100" height="20" fill="#f39c12" opacity="0.7"/>
+                            <text x="250" y="165" font-size="12" text-anchor="middle" fill="#fff">ממתין</text>
+                            <rect x="400" y="150" width="100" height="20" fill="#e74c3c" opacity="0.7"/>
+                            <text x="450" y="165" font-size="12" text-anchor="middle" fill="#fff">כותב</text>
+                            
+                            <!-- Writer 2 -->
+                            <text x="50" y="190" font-size="14" text-anchor="end" fill="#e74c3c">Writer 2:</text>
+                            <rect x="300" y="180" width="200" height="20" fill="#f39c12" opacity="0.7"/>
+                            <text x="400" y="195" font-size="12" text-anchor="middle" fill="#fff">ממתין</text>
+                            <rect x="500" y="180" width="100" height="20" fill="#e74c3c" opacity="0.7"/>
+                            <text x="550" y="195" font-size="12" text-anchor="middle" fill="#fff">כותב</text>
+                            
+                            <!-- Legend -->
+                            <rect x="200" y="220" width="20" height="15" fill="#3498db" opacity="0.7"/>
+                            <text x="225" y="232" font-size="12" text-anchor="start" fill="#34495e">קורא פעיל</text>
+                            
+                            <rect x="300" y="220" width="20" height="15" fill="#e74c3c" opacity="0.7"/>
+                            <text x="325" y="232" font-size="12" text-anchor="start" fill="#34495e">כותב פעיל</text>
+                            
+                            <rect x="400" y="220" width="20" height="15" fill="#f39c12" opacity="0.7"/>
+                            <text x="425" y="232" font-size="12" text-anchor="start" fill="#34495e">ממתין</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="expandable-section">
+                <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">פתרון #2: העדפת כותבים <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                <div class="collapsible-content">
+                    <p>
+                        פתרון זה מעדיף כותבים על פני קוראים. אם יש כותב ממתין, קוראים חדשים לא יורשו להתחיל לקרוא.
+                    </p>
+
+                    <div class="code-example">
+                        <pre><code>/* פתרון עם העדפת כותבים (באמצעות סמפורים) */
+semaphore mutex = 1;        // מגן על משתני המונים
+semaphore db = 1;           // מגן על מסד הנתונים עצמו
+semaphore readTry = 1;      // מגן על קוראים מפני כותבים ממתינים
+int readcount = 0;          // מספר הקוראים הפעילים
+int writecount = 0;         // מספר הכותבים הממתינים
+
+/* קוד הקורא */
+void reader() {
+    while(true) {
+        wait(readTry);           // בקשת רשות להתחיל קריאה
+        wait(mutex);             // נעילת גישה למשתנה readcount
+        readcount++;             // קורא נוסף מתחיל
+        if (readcount == 1)      // אם זהו הקורא הראשון
+            wait(db);            // תפוס את מסד הנתונים עבור קוראים
+        signal(mutex);           // שחרור הגישה למשתנה readcount
+        signal(readTry);         // שחרור הרשות לקריאה
+        
+        // קריאה ממסד הנתונים
+        read_database();
+        
+        wait(mutex);             // נעילת גישה למשתנה readcount
+        readcount--;             // קורא מסיים
+        if (readcount == 0)      // אם זהו הקורא האחרון
+            signal(db);          // שחרור מסד הנתונים
+        signal(mutex);           // שחרור הגישה למשתנה readcount
+    }
+}
+
+/* קוד הכותב */
+void writer() {
+    while(true) {
+        wait(mutex);             // נעילת גישה למשתנה writecount
+        writecount++;            // כותב נוסף מתחיל/ממתין
+        if (writecount == 1)     // אם זהו הכותב הראשון
+            wait(readTry);       // חסום כניסת קוראים חדשים
+        signal(mutex);           // שחרור הגישה למשתנה writecount
+        
+        wait(db);                // תפיסת מסד הנתונים בלעדית
+        
+        // כתיבה למסד הנתונים
+        write_database();
+        
+        signal(db);              // שחרור מסד הנתונים
+        
+        wait(mutex);             // נעילת גישה למשתנה writecount
+        writecount--;            // כותב מסיים
+        if (writecount == 0)     // אם זהו הכותב האחרון
+            signal(readTry);     // אפשר לקוראים חדשים להיכנס
+        signal(mutex);           // שחרור הגישה למשתנה writecount
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="info-box">
+                        <h3>יתרונות וחסרונות:</h3>
+                        <ul>
+                            <li><strong>יתרון:</strong> מונע רעב של כותבים - כותבים יקבלו גישה למשאב בסופו של דבר.</li>
+                            <li><strong>חיסרון:</strong> קוראים עלולים לסבול מרעב אם יש זרם מתמיד של כותבים.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="visual-diagram">
+                        <svg width="700" height="250" viewBox="0 0 700 250">
+                            <!-- Background -->
+                            <rect x="0" y="0" width="700" height="250" fill="#f8f9fa" rx="15"/>
+                            
+                            <!-- Timeline -->
+                            <line x1="100" y1="50" x2="650" y2="50" stroke="#34495e" stroke-width="2"/>
+                            <text x="350" y="30" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">תזמון גישה למשאב - העדפת כותבים</text>
+                            
+                            <!-- Time markers -->
+                            <line x1="100" y1="45" x2="100" y2="55" stroke="#34495e" stroke-width="2"/>
+                            <text x="100" y="70" font-size="12" text-anchor="middle" fill="#34495e">t0</text>
+                            
+                            <line x1="200" y1="45" x2="200" y2="55" stroke="#34495e" stroke-width="2"/>
+                            <text x="200" y="70" font-size="12" text-anchor="middle" fill="#34495e">t1</text>
+                            
+                            <line x1="300" y1="45" x2="300" y2="55" stroke="#34495e" stroke-width="2"/>
+                            <text x="300" y="70" font-size="12" text-anchor="middle" fill="#34495e">t2</text>
+                            
+                            <line x1="400" y1="45" x2="400" y2="55" stroke="#34495e" stroke-width="2"/>
+                            <text x="400" y="70" font-size="12" text-anchor="middle" fill="#34495e">t3</text>
+                            
+                            <line x1="500" y1="45" x2="500" y2="55" stroke="#34495e" stroke-width="2"/>
+                            <text x="500" y="70" font-size="12" text-anchor="middle" fill="#34495e">t4</text>
+                            
+                            <line x1="600" y1="45" x2="600" y2="55" stroke="#34495e" stroke-width="2"/>
+                            <text x="600" y="70" font-size="12" text-anchor="middle" fill="#34495e">t5</text>
+                            
+                            <!-- Reader 1 -->
+                            <text x="50" y="100" font-size="14" text-anchor="end" fill="#3498db">Reader 1:</text>
+                            <rect x="100" y="90" width="150" height="20" fill="#3498db" opacity="0.7"/>
+                            <text x="175" y="105" font-size="12" text-anchor="middle" fill="#fff">קורא</text>
+                            
+                            <!-- Reader 2 -->
+                            <text x="50" y="130" font-size="14" text-anchor="end" fill="#3498db">Reader 2:</text>
+                            <rect x="150" y="120" width="50" height="20" fill="#3498db" opacity="0.7"/>
+                            <text x="175" y="135" font-size="12" text-anchor="middle" fill="#fff">קורא</text>
+                            <rect x="250" y="120" width="150" height="20" fill="#f39c12" opacity="0.7"/>
+                            <text x="325" y="135" font-size="12" text-anchor="middle" fill="#fff">ממתין</text>
+                            <rect x="400" y="120" width="150" height="20" fill="#3498db" opacity="0.7"/>
+                            <text x="475" y="135" font-size="12" text-anchor="middle" fill="#fff">קורא</text>
+                            
+                            <!-- Writer 1 -->
+                            <text x="50" y="160" font-size="14" text-anchor="end" fill="#e74c3c">Writer 1:</text>
+                            <rect x="200" y="150" width="150" height="20" fill="#e74c3c" opacity="0.7"/>
+                            <text x="275" y="165" font-size="12" text-anchor="middle" fill="#fff">כותב</text>
+                            
+                            <!-- Writer 2 -->
+                            <text x="50" y="190" font-size="14" text-anchor="end" fill="#e74c3c">Writer 2:</text>
+                            <rect x="250" y="180" width="150" height="20" fill="#f39c12" opacity="0.7"/>
+                            <text x="325" y="195" font-size="12" text-anchor="middle" fill="#fff">ממתין</text>
+                            <rect x="400" y="180" width="100" height="20" fill="#e74c3c" opacity="0.7"/>
+                            <text x="450" y="195" font-size="12" text-anchor="middle" fill="#fff">כותב</text>
+                            
+                            <!-- Legend -->
+                            <rect x="200" y="220" width="20" height="15" fill="#3498db" opacity="0.7"/>
+                            <text x="225" y="232" font-size="12" text-anchor="start" fill="#34495e">קורא פעיל</text>
+                            
+                            <rect x="300" y="220" width="20" height="15" fill="#e74c3c" opacity="0.7"/>
+                            <text x="325" y="232" font-size="12" text-anchor="start" fill="#34495e">כותב פעיל</text>
+                            
+                            <rect x="400" y="220" width="20" height="15" fill="#f39c12" opacity="0.7"/>
+                            <text x="425" y="232" font-size="12" text-anchor="start" fill="#34495e">ממתין</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="expandable-section">
+                <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">פתרון #3: פתרון הוגן <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                <div class="collapsible-content">
+                    <p>
+                        פתרון זה מנסה לספק גישה הוגנת למשאב הן לקוראים והן לכותבים, בדרך כלל על בסיס סדר ההגעה (FIFO).
+                    </p>
+
+                    <div class="code-example">
+                        <pre><code>/* פתרון הוגן לבעיית הקוראים והכותבים (באמצעות מוניטור) */
+monitor fair_rw_monitor {
+    int readers = 0;         // מספר קוראים פעילים
+    boolean writer_active = false;   // האם יש כותב פעיל
+    condition read_queue;    // תור קוראים ממתינים
+    condition write_queue;   // תור כותבים ממתינים
+    int waiting_writers = 0;  // מספר כותבים ממתינים
+    boolean reader_waiting = false;  // האם יש קוראים ממתינים
+
+    // כניסה לקריאה
+    void start_read() {
+        if (writer_active || waiting_writers > 0) {
+            reader_waiting = true;
+            wait(read_queue);
+            reader_waiting = false;
+        }
+        readers++;
+    }
+
+    // יציאה מקריאה
+    void end_read() {
+        readers--;
+        if (readers == 0 && waiting_writers > 0)
+            signal(write_queue);
+    }
+
+    // כניסה לכתיבה
+    void start_write() {
+        if (writer_active || readers > 0) {
+            waiting_writers++;
+            wait(write_queue);
+            waiting_writers--;
+        }
+        writer_active = true;
+    }
+
+    // יציאה מכתיבה
+    void end_write() {
+        writer_active = false;
+        if (reader_waiting)
+            signal_all(read_queue);  // התר לכל הקוראים הממתינים
+        else if (waiting_writers > 0)
+            signal(write_queue);     // התר לכותב הבא
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="info-box">
+                        <h3>יתרונות וחסרונות:</h3>
+                        <ul>
+                            <li><strong>יתרון:</strong> מספק גישה הוגנת יחסית הן לקוראים והן לכותבים.</li>
+                            <li><strong>יתרון:</strong> מקטין את הסיכון לרעב של תהליכים מסוג מסוים.</li>
+                            <li><strong>חיסרון:</strong> מורכב יותר לממש ולתחזק מהפתרונות האחרים.</li>
+                            <li><strong>חיסרון:</strong> יעילות נמוכה יותר בתרחישי קריאה-אינטנסיבית בהשוואה לפתרון העדפת קוראים.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="visual-diagram">
+                        <svg width="700" height="250" viewBox="0 0 700 250">
+                            <!-- Background -->
+                            <rect x="0" y="0" width="700" height="250" fill="#f8f9fa" rx="15"/>
+                            
+                            <!-- Timeline -->
+                            <line x1="100" y1="50" x2="650" y2="50" stroke="#34495e" stroke-width="2"/>
+                            <text x="350" y="30" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">תזמון גישה למשאב - פתרון הוגן (FIFO)</text>
+                            
+                            <!-- Time markers -->
+                            <line x1="100" y1="45" x2="100" y2="55" stroke="#34495e" stroke-width="2"/>
+                            <text x="100" y="70" font-size="12" text-anchor="middle" fill="#34495e">t0</text>
+                            
+                            <line x1="200" y1="45" x2="200" y2="55" stroke="#34495e" stroke-width="2"/>
+                            <text x="200" y="70" font-size="12" text-anchor="middle" fill="#34495e">t1</text>
+                            
+                            <line x1="300" y1="45" x2="300" y2="55" stroke="#34495e" stroke-width="2"/>
+                            <text x="300" y="70" font-size="12" text-anchor="middle" fill="#34495e">t2</text>
+                            
+                            <line x1="400" y1="45" x2="400" y2="55" stroke="#34495e" stroke-width="2"/>
+                            <text x="400" y="70" font-size="12" text-anchor="middle" fill="#34495e">t3</text>
+                            
+                            <line x1="500" y1="45" x2="500" y2="55" stroke="#34495e" stroke-width="2"/>
+                            <text x="500" y="70" font-size="12" text-anchor="middle" fill="#34495e">t4</text>
+                            
+                            <line x1="600" y1="45" x2="600" y2="55" stroke="#34495e" stroke-width="2"/>
+                            <text x="600" y="70" font-size="12" text-anchor="middle" fill="#34495e">t5</text>
+                            
+                            <!-- Reader 1 (1st arrival) -->
+                            <text x="50" y="100" font-size="14" text-anchor="end" fill="#3498db">Reader 1:</text>
+                            <rect x="100" y="90" width="150" height="20" fill="#3498db" opacity="0.7"/>
+                            <text x="175" y="105" font-size="12" text-anchor="middle" fill="#fff">קורא</text>
+                            
+                            <!-- Writer 1 (2nd arrival) -->
+                            <text x="50" y="130" font-size="14" text-anchor="end" fill="#e74c3c">Writer 1:</text>
+                            <rect x="125" y="120" width="75" height="20" fill="#f39c12" opacity="0.7"/>
+                            <text x="162" y="135" font-size="12" text-anchor="middle" fill="#fff">ממתין</text>
+                            <rect x="250" y="120" width="100" height="20" fill="#e74c3c" opacity="0.7"/>
+                            <text x="300" y="135" font-size="12" text-anchor="middle" fill="#fff">כותב</text>
+                            
+                            <!-- Reader 2 (3rd arrival) -->
+                            <text x="50" y="160" font-size="14" text-anchor="end" fill="#3498db">Reader 2:</text>
+                            <rect x="150" y="150" width="200" height="20" fill="#f39c12" opacity="0.7"/>
+                            <text x="250" y="165" font-size="12" text-anchor="middle" fill="#fff">ממתין</text>
+                            <rect x="350" y="150" width="150" height="20" fill="#3498db" opacity="0.7"/>
+                            <text x="425" y="165" font-size="12" text-anchor="middle" fill="#fff">קורא</text>
+                            
+                            <!-- Writer 2 (4th arrival) -->
+                            <text x="50" y="190" font-size="14" text-anchor="end" fill="#e74c3c">Writer 2:</text>
+                            <rect x="175" y="180" width="325" height="20" fill="#f39c12" opacity="0.7"/>
+                            <text x="337" y="195" font-size="12" text-anchor="middle" fill="#fff">ממתין</text>
+                            <rect x="500" y="180" width="100" height="20" fill="#e74c3c" opacity="0.7"/>
+                            <text x="550" y="195" font-size="12" text-anchor="middle" fill="#fff">כותב</text>
+                            
+                            <!-- Legend -->
+                            <rect x="200" y="220" width="20" height="15" fill="#3498db" opacity="0.7"/>
+                            <text x="225" y="232" font-size="12" text-anchor="start" fill="#34495e">קורא פעיל</text>
+                            
+                            <rect x="300" y="220" width="20" height="15" fill="#e74c3c" opacity="0.7"/>
+                            <text x="325" y="232" font-size="12" text-anchor="start" fill="#34495e">כותב פעיל</text>
+                            
+                            <rect x="400" y="220" width="20" height="15" fill="#f39c12" opacity="0.7"/>
+                            <text x="425" y="232" font-size="12" text-anchor="start" fill="#34495e">ממתין</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="content-section" id="rw-issues">
+            <h2>⚠️ בעיות נפוצות בפתרונות קוראים-כותבים</h2>
+            <p>
+                ביישום פתרונות לבעיית הקוראים והכותבים, יש מספר בעיות נפוצות שעלולות להתעורר:
+            </p>
+
+            <div class="warning-box">
+                <h3>בעיות נפוצות:</h3>
+                <ol>
+                    <li>
+                        <strong>רעב (Starvation):</strong>
+                        <p>
+                            בפתרון עם העדפת קוראים, כותבים עלולים "לרעוב" אם יש זרם מתמיד של קוראים. בדומה, בפתרון עם העדפת כותבים, קוראים עלולים לרעוב אם יש זרם מתמיד של כותבים.
+                        </p>
+                    </li>
+                    <li>
+                        <strong>מניעת התקדמות (Preventing Progress):</strong>
+                        <p>
+                            במקרים מסוימים, תהליכים שמגיעים בסדר מסוים עלולים למנוע מתהליכים אחרים להתקדם, גם אם תיאורטית היה אפשר לאפשר להם גישה.
+                        </p>
+                    </li>
+                    <li>
+                        <strong>Convoy Effect:</strong>
+                        <p>
+                            כאשר קוראים רבים ממתינים יחד, ברגע שהכותב מסיים, הם כולם "מתנפלים" על המשאב, מה שעלול למנוע מכותבים להשיג גישה במשך זמן ארוך.
+                        </p>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="concept-row">
+                <div class="concept-item">
+                    <h4>פתרונות מתקדמים:</h4>
+                    <p>
+                        מספר גישות שפותחו כדי להתמודד עם הבעיות הללו:
+                    </p>
+                    <ul>
+                        <li><strong>מכסות זמן (Time Quotas):</strong> הגבלת הזמן שקוראים יכולים להחזיק במשאב לפני שכותב מקבל גישה.</li>
+                        <li><strong>מתן עדיפות מבוססת זמן המתנה:</strong> תהליכים שהמתינו זמן רב יותר מקבלים עדיפות גבוהה יותר.</li>
+                        <li><strong>מנגנון תור הוגן (FIFO):</strong> שימוש בתור רגיל לכל סוגי הבקשות, ללא הבחנה בין קוראים וכותבים.</li>
+                        <li><strong>תורים מרובים מבוססי קטגוריה:</strong> ניהול תורים נפרדים עם מנגנון הוגן לבחירה ביניהם.</li>
+                    </ul>
+                </div>
+                <div class="concept-item">
+                    <h4>שיקולי תכנון:</h4>
+                    <p>
+                        בבחירת פתרון לבעיית הקוראים והכותבים, יש לשקול:
+                    </p>
+                    <ul>
+                        <li><strong>אופי האפליקציה:</strong> האם היא מוטית-קריאה או מוטית-כתיבה?</li>
+                        <li><strong>דרישות ביצועים:</strong> האם נדרש throughput גבוה או זמן תגובה מהיר?</li>
+                        <li><strong>רמת הוגנות:</strong> האם חשוב שכל התהליכים יקבלו גישה תוך זמן סביר?</li>
+                        <li><strong>פשטות יישום:</strong> האם היישום הפשוט יותר מספק או שנדרש פתרון מורכב יותר?</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="expandable-section">
+                <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">סיכום השוואתי של הפתרונות <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                <div class="collapsible-content">
+                    
+                    <div class="visual-comparison">
+                        <svg width="600" height="200" viewBox="0 0 600 200">
+                            <rect x="0" y="0" width="600" height="200" fill="#f8f9fa" rx="10"/>
+                            
+                            <!-- Title -->
+                            <text x="300" y="30" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">השוואה גרפית של הפתרונות</text>
+                            
+                            <!-- Legend -->
+                            <rect x="50" y="50" width="15" height="15" fill="#3498db"/>
+                            <text x="75" y="63" font-size="12" text-anchor="start" fill="#34495e">העדפת קוראים</text>
+                            
+                            <rect x="200" y="50" width="15" height="15" fill="#e74c3c"/>
+                            <text x="225" y="63" font-size="12" text-anchor="start" fill="#34495e">העדפת כותבים</text>
+                            
+                            <rect x="350" y="50" width="15" height="15" fill="#2ecc71"/>
+                            <text x="375" y="63" font-size="12" text-anchor="start" fill="#34495e">פתרון הוגן</text>
+                            
+                            <!-- Graph -->
+                            <line x1="50" y1="170" x2="550" y2="170" stroke="#7f8c8d" stroke-width="1"/>
+                            <line x1="50" y1="90" x2="50" y2="170" stroke="#7f8c8d" stroke-width="1"/>
+                            
+                            <!-- Labels -->
+                            <text x="120" y="185" font-size="10" text-anchor="middle" fill="#34495e">הוגנות לקוראים</text>
+                            <text x="220" y="185" font-size="10" text-anchor="middle" fill="#34495e">הוגנות לכותבים</text>
+                            <text x="320" y="185" font-size="10" text-anchor="middle" fill="#34495e">throughput קריאה</text>
+                            <text x="420" y="185" font-size="10" text-anchor="middle" fill="#34495e">throughput כתיבה</text>
+                            <text x="520" y="185" font-size="10" text-anchor="middle" fill="#34495e">פשטות מימוש</text>
+                            
+                            <!-- Bars - Readers preference -->
+                            <rect x="100" y="100" width="40" height="70" fill="#3498db" opacity="0.7"/>
+                            <rect x="200" y="140" width="40" height="30" fill="#3498db" opacity="0.7"/>
+                            <rect x="300" y="100" width="40" height="70" fill="#3498db" opacity="0.7"/>
+                            <rect x="400" y="140" width="40" height="30" fill="#3498db" opacity="0.7"/>
+                            <rect x="500" y="100" width="40" height="70" fill="#3498db" opacity="0.7"/>
+                            
+                            <!-- Bars - Writers preference -->
+                            <rect x="110" y="140" width="40" height="30" fill="#e74c3c" opacity="0.7"/>
+                            <rect x="210" y="100" width="40" height="70" fill="#e74c3c" opacity="0.7"/>
+                            <rect x="310" y="140" width="40" height="30" fill="#e74c3c" opacity="0.7"/>
+                            <rect x="410" y="100" width="40" height="70" fill="#e74c3c" opacity="0.7"/>
+                            <rect x="510" y="120" width="40" height="50" fill="#e74c3c" opacity="0.7"/>
+                            
+                            <!-- Bars - Fair solution -->
+                            <rect x="120" y="120" width="40" height="50" fill="#2ecc71" opacity="0.7"/>
+                            <rect x="220" y="120" width="40" height="50" fill="#2ecc71" opacity="0.7"/>
+                            <rect x="320" y="120" width="40" height="50" fill="#2ecc71" opacity="0.7"/>
+                            <rect x="420" y="120" width="40" height="50" fill="#2ecc71" opacity="0.7"/>
+                            <rect x="520" y="140" width="40" height="30" fill="#2ecc71" opacity="0.7"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       
+        
+                    
+                    <!-- בעיית הפילוסופים הסועדים -->
+                    <div class="content-section" id="dining-philosophers">
+                        <h2>🍽️ בעיית הפילוסופים הסועדים (Dining Philosophers Problem)</h2>
+                        <p>
+                            בעיית הפילוסופים הסועדים היא בעיית סנכרון קלאסית שנוסחה לראשונה על-ידי דייקסטרה בשנת 1965. הבעיה ממחישה את האתגרים בניהול משאבים משותפים במערכות מקביליות והדרכים למניעת קיפאון ורעב.
+                        </p>
+
+                        <div class="image-container">
+                            <div class="concept-image">
+                                <svg width="400" height="400" viewBox="0 0 400 400">
+                                    <!-- Table -->
+                                    <circle cx="200" cy="200" r="80" fill="#8B4513" stroke="#664229" stroke-width="5"/>
+                                    
+                                    <!-- Philosophers -->
+                                    <circle cx="200" cy="80" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                    <text x="200" y="85" font-size="14" text-anchor="middle" fill="white">P0</text>
+                                    
+                                    <circle cx="304" cy="142" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                    <text x="304" y="147" font-size="14" text-anchor="middle" fill="white">P1</text>
+                                    
+                                    <circle cx="264" cy="284" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                    <text x="264" y="289" font-size="14" text-anchor="middle" fill="white">P2</text>
+                                    
+                                    <circle cx="136" cy="284" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                    <text x="136" y="289" font-size="14" text-anchor="middle" fill="white">P3</text>
+                                    
+                                    <circle cx="96" cy="142" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                    <text x="96" y="147" font-size="14" text-anchor="middle" fill="white">P4</text>
+                                    
+                                    <!-- Forks -->
+                                    <line x1="190" y1="110" x2="150" y2="140" stroke="#555" stroke-width="4"/>
+                                    <circle cx="170" cy="125" r="8" fill="#C0C0C0" stroke="#555" stroke-width="1"/>
+                                    <text x="160" y="120" font-size="10" text-anchor="middle" fill="white">F4</text>
+                                    
+                                    <line x1="275" y1="142" x2="245" y2="110" stroke="#555" stroke-width="4"/>
+                                    <circle cx="260" cy="125" r="8" fill="#C0C0C0" stroke="#555" stroke-width="1"/>
+                                    <text x="260" y="125" font-size="10" text-anchor="middle" fill="white">F0</text>
+                                    
+                                    <line x1="285" y1="255" x2="305" y2="170" stroke="#555" stroke-width="4"/>
+                                    <circle cx="295" cy="213" r="8" fill="#C0C0C0" stroke="#555" stroke-width="1"/>
+                                    <text x="295" y="213" font-size="10" text-anchor="middle" fill="white">F1</text>
+                                    
+                                    <line x1="192" y1="270" x2="235" y2="270" stroke="#555" stroke-width="4"/>
+                                    <circle cx="213" cy="270" r="8" fill="#C0C0C0" stroke="#555" stroke-width="1"/>
+                                    <text x="213" y="270" font-size="10" text-anchor="middle" fill="white">F2</text>
+                                    
+                                    <line x1="126" y1="255" x2="95" y2="170" stroke="#555" stroke-width="4"/>
+                                    <circle cx="110" cy="213" r="8" fill="#C0C0C0" stroke="#555" stroke-width="1"/>
+                                    <text x="110" y="213" font-size="10" text-anchor="middle" fill="white">F3</text>
+                                    
+                                    <!-- States -->
+                                    <text x="200" y="35" font-size="12" text-anchor="middle" fill="#ecf0f1">חושב</text>
+                                    <text x="350" y="142" font-size="12" text-anchor="middle" fill="#ecf0f1">אוכל</text>
+                                    <text x="315" y="320" font-size="12" text-anchor="middle" fill="#ecf0f1">רעב</text>
+                                    <text x="85" y="320" font-size="12" text-anchor="middle" fill="#ecf0f1">חושב</text>
+                                    <text x="50" y="142" font-size="12" text-anchor="middle" fill="#ecf0f1">רעב</text>
+                                </svg>
+                                <figcaption>בעיית הפילוסופים הסועדים - 5 פילוסופים סביב שולחן עגול עם 5 מזלגות</figcaption>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; gap: 20px;">
+                            <div class="info-box" style="flex: 1;">
+                                <h3>הגדרת הבעיה:</h3>
+                                <ul>
+                                    <li>5 פילוסופים יושבים מסביב לשולחן עגול.</li>
+                                    <li>בין כל שני פילוסופים סמוכים מונח מזלג אחד (סה"כ 5 מזלגות).</li>
+                                    <li>כל פילוסוף זקוק לשני מזלגות (משמאלו ומימינו) כדי לאכול.</li>
+                                    <li>הפילוסוף עובר בין שלושה מצבים: חושב, רעב, ואוכל.</li>
+                                    <li>כאשר הפילוסוף רעב, הוא מנסה להרים את שני המזלגות כדי לאכול.</li>
+                                    <li>לאחר שסיים לאכול, הפילוסוף מניח את המזלגות ושב לחשוב.</li>
+                                </ul>
+                            </div>
+
+                            <div class="feature-box" style="flex: 1;">
+                                <h3>מחזור חיי פילוסוף:</h3>
+                                <div class="visual-diagram">
+                                    <svg width="450" height="300" viewBox="0 0 600 200" preserveAspectRatio="xMidYMid meet">
+                                        <!-- Background -->
+                                        <rect x="0" y="0" width="600" height="200" fill="#f8f9fa" rx="15"/>
+                                        
+                                        <!-- States -->
+                                        <circle cx="100" cy="100" r="50" fill="#3498db" stroke="#2980b9" stroke-width="3"/>
+                                        <text x="100" y="105" font-size="16" text-anchor="middle" fill="white">חושב</text>
+                                        
+                                        <circle cx="300" cy="100" r="50" fill="#e74c3c" stroke="#c0392b" stroke-width="3"/>
+                                        <text x="300" y="105" font-size="16" text-anchor="middle" fill="white">רעב</text>
+                                        
+                                        <circle cx="500" cy="100" r="50" fill="#2ecc71" stroke="#27ae60" stroke-width="3"/>
+                                        <text x="500" y="105" font-size="16" text-anchor="middle" fill="white">אוכל</text>
+                                        
+                                        <!-- Arrows -->
+                                        <defs>
+                                            <marker id="arrowhead2" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                                                <polygon points="0 0, 10 3.5, 0 7" fill="#7f8c8d"/>
+                                            </marker>
+                                        </defs>
+                                        
+                                        <path d="M 150 100 L 250 100" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                                        <text x="200" y="90" font-size="14" text-anchor="middle" fill="#7f8c8d">נהיה רעב</text>
+                                        
+                                        <path d="M 350 100 L 450 100" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                                        <text x="400" y="90" font-size="14" text-anchor="middle" fill="#7f8c8d">משיג 2 מזלגות</text>
+                                        
+                                        <path d="M 500 150 Q 300 250 100 150" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                                        <text x="300" y="170" font-size="14" text-anchor="middle" fill="#7f8c8d">סיים לאכול, מניח מזלגות</text>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p>
+                            האתגר בבעיה זו הוא לעצב אלגוריתם שיאפשר לכל פילוסוף לאכול מתישהו (כלומר, למנוע מצבי רעב), תוך הימנעות ממצב של קיפאון שבו אף פילוסוף אינו יכול להמשיך.
+                        </p>
+                    </div>
+
+                    <!-- בעיית הקיפאון בפילוסופים הסועדים -->
+                    <div class="content-section" id="dp-deadlock">
+                        <h2>⚠️ בעיית הקיפאון בפתרון הנאיבי</h2>
+                        <p>
+                            הפתרון הפשוט והנאיבי לבעיית הפילוסופים הסועדים הוא לתת לכל פילוסוף להרים תחילה את המזלג השמאלי שלו ואז את המזלג הימני. עם זאת, פתרון זה עלול להוביל למצב קיפאון קלאסי.
+                        </p>
+
+                        <div class="warning-box">
+                            <h3>מצב הקיפאון הקלאסי:</h3>
+                            <p>
+                                אם כל חמשת הפילוסופים ירימו בו-זמנית את המזלג השמאלי שלהם, אז לכל פילוסוף יהיה מזלג אחד, והם כולם יחכו לנצח למזלג הימני שלהם שתפוס על ידי הפילוסוף השכן.
+                            </p>
+                        </div>
+
+                        <div class="animation-container" style="display: flex; justify-content: space-around; margin: 20px 0; position: relative;">
+                            <svg width="700" height="400" viewBox="0 0 700 400">
+                                <!-- Background -->
+                                <rect x="0" y="0" width="700" height="400" fill="#f8f9fa" rx="15"/>
+                                <text x="500" y="40" font-size="20" text-anchor="middle" fill="#c0392b" font-weight="bold">מצב קיפאון (Deadlock)</text>
+                                
+                                <!-- Table -->
+                                <circle cx="350" cy="200" r="100" fill="#8B4513" stroke="#664229" stroke-width="5"/>
+                                
+                                <!-- Philosophers -->
+                                <circle cx="350" cy="50" r="40" fill="#e74c3c" stroke="#c0392b" stroke-width="3"/>
+                                <text x="350" y="55" font-size="16" text-anchor="middle" fill="white">P0</text>
+                                <text x="350" y="75" font-size="12" text-anchor="middle" fill="white">מחזיק F4</text>
+                                
+                                <circle cx="478" cy="125" r="40" fill="#e74c3c" stroke="#c0392b" stroke-width="3"/>
+                                <text x="478" y="130" font-size="16" text-anchor="middle" fill="white">P1</text>
+                                <text x="478" y="150" font-size="12" text-anchor="middle" fill="white">מחזיק F0</text>
+                                
+                                <circle cx="430" cy="300" r="40" fill="#e74c3c" stroke="#c0392b" stroke-width="3"/>
+                                <text x="430" y="305" font-size="16" text-anchor="middle" fill="white">P2</text>
+                                <text x="430" y="325" font-size="12" text-anchor="middle" fill="white">מחזיק F1</text>
+                                
+                                <circle cx="270" cy="300" r="40" fill="#e74c3c" stroke="#c0392b" stroke-width="3"/>
+                                <text x="270" y="305" font-size="16" text-anchor="middle" fill="white">P3</text>
+                                <text x="270" y="325" font-size="12" text-anchor="middle" fill="white">מחזיק F2</text>
+                                
+                                <circle cx="222" cy="125" r="40" fill="#e74c3c" stroke="#c0392b" stroke-width="3"/>
+                                <text x="222" y="130" font-size="16" text-anchor="middle" fill="white">P4</text>
+                                <text x="222" y="150" font-size="12" text-anchor="middle" fill="white">מחזיק F3</text>
+                                
+                                <!-- Forks (all being held) -->
+                                <line x1="318" y1="75" x2="250" y2="110" stroke="#C0C0C0" stroke-width="4"/>
+                                <text x="280" y="85" font-size="14" text-anchor="middle" fill="#ecf0f1">F4</text>
+                                
+                                <line x1="450" y1="110" x2="382" y2="75" stroke="#C0C0C0" stroke-width="4"/>
+                                <text x="420" y="85" font-size="14" text-anchor="middle" fill="#ecf0f1">F0</text>
+                                
+                                <line x1="462" y1="273" x2="467" y2="162" stroke="#C0C0C0" stroke-width="4"/>
+                                <text x="475" y="220" font-size="14" text-anchor="middle" fill="#ecf0f1">F1</text>
+                                
+                                <line x1="305" y1="278" x2="396" y2="278" stroke="#C0C0C0" stroke-width="4"/>
+                                <text x="350" y="265" font-size="14" text-anchor="middle" fill="#ecf0f1">F2</text>
+                                
+                                <line x1="233" y1="162" x2="238" y2="273" stroke="#C0C0C0" stroke-width="4"/>
+                                <text x="225" y="220" font-size="14" text-anchor="middle" fill="#ecf0f1">F3</text>
+                                
+                                <!-- Deadlock explanation -->
+                                <text x="350" y="370" font-size="16" text-anchor="middle" fill="#c0392b">כל פילוסוף מחזיק את המזלג השמאלי שלו וממתין לנצח למזלג הימני שלו</text>
+                            </svg>
+                        </div>
+
+                        <div class="concept-row">
+                            <div class="concept-item">
+                                <h4>תנאים להיווצרות קיפאון:</h4>
+                                <p>
+                                    1. <strong>הדרה הדדית (Mutual Exclusion):</strong> המשאבים (המזלגות) לא יכולים להיות משותפים - כל מזלג יכול להיות בשימוש פילוסוף אחד בלבד.<br>
+                                    2. <strong>החזק וחכה (Hold and Wait):</strong> פילוסופים מחזיקים במזלג אחד בזמן שהם ממתינים למזלג השני.<br>
+                                    3. <strong>אי-הפקעה (No Preemption):</strong> לא ניתן לקחת מזלג מפילוסוף, עליו להניח אותו מרצונו.<br>
+                                    4. <strong>המתנה מעגלית (Circular Wait):</strong> יש מעגל סגור של פילוסופים כאשר כל אחד מחזיק משאב שהבא בתור צריך.
+                                </p>
+                            </div>
+                            <div class="concept-item">
+                                <h4>קוד הפתרון הנאיבי (עם פוטנציאל לקיפאון):</h4>
+                                <pre><code>/* קוד הפילוסוף i (עם פוטנציאל לקיפאון) */
+            do {
+                think();  // חושב
+                
+                // נהיה רעב ומנסה לקחת מזלגות
+                wait(fork[i]);  // נסה לקחת את המזלג השמאלי
+                wait(fork[(i+1) % 5]);  // נסה לקחת את המזלג הימני
+                
+                eat();  // אוכל
+                
+                // סיים לאכול, משחרר את המזלגות
+                signal(fork[(i+1) % 5]);  // משחרר את המזלג הימני
+                signal(fork[i]);  // משחרר את המזלג השמאלי
+            } while (true);</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- פתרונות לבעיית הפילוסופים הסועדים -->
+                    <div class="content-section" id="dp-solutions">
+                        <h2>🔧 פתרונות לבעיית הפילוסופים הסועדים</h2>
+                        <p>
+                            קיימים מספר פתרונות לבעיית הפילוסופים הסועדים שמונעים קיפאון. כל אחד מהפתרונות מפר לפחות אחד מארבעת התנאים ליצירת קיפאון שהוזכרו קודם.
+                        </p>
+
+                        <div class="expandable-section">
+                            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">פתרון #1: סידור א-סימטרי <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                            <div class="collapsible-content">
+                                <p>
+                                    פתרון זה שובר את תנאי ההמתנה המעגלית על ידי שינוי הגישה אצל פילוסוף אחד לפחות.
+                                </p>
+
+                                <div class="code-example">
+                                    <pre><code>/* קוד הפילוסוף i (פתרון א-סימטרי) */
+            do {
+                think();  // חושב
+                
+                if (i == 4) {  // הפילוסוף האחרון פועל אחרת
+                    wait(fork[(i+1) % 5]);  // קודם לוקח את המזלג הימני
+                    wait(fork[i]);          // ואז את השמאלי
+                } else {
+                    wait(fork[i]);          // כל השאר לוקחים קודם את השמאלי
+                    wait(fork[(i+1) % 5]);  // ואז את הימני
+                }
+                
+                eat();  // אוכל
+                
+                // סיים לאכול, משחרר את המזלגות
+                signal(fork[(i+1) % 5]);  // משחרר את המזלג הימני
+                signal(fork[i]);  // משחרר את המזלג השמאלי
+            } while (true);</code></pre>
+                                </div>
+
+                                <div class="image-container">
+                                    <div class="concept-image">
+                                        <svg width="400" height="300" viewBox="0 0 400 300">
+                                            <!-- Background -->
+                                            <rect x="0" y="0" width="400" height="300" fill="#f8f9fa" rx="15"/>
+                                            
+                                            <!-- Table -->
+                                            <circle cx="200" cy="150" r="80" fill="#8B4513" stroke="#664229" stroke-width="5"/>
+                                            
+                                            <!-- Philosophers -->
+                                            <circle cx="200" cy="50" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                            <text x="200" y="55" font-size="14" text-anchor="middle" fill="white">P0</text>
+                                            <text x="200" y="20" font-size="12" text-anchor="middle" fill="white">שמאלי→ימני</text>
+                                            
+                                            <circle cx="284" cy="98" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                            <text x="284" y="103" font-size="14" text-anchor="middle" fill="white">P1</text>
+                                            <text x="320" y="103" font-size="12" text-anchor="middle" fill="white">שמאלי→ימני</text>
+                                            
+                                            <circle cx="254" cy="214" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                            <text x="254" y="219" font-size="14" text-anchor="middle" fill="white">P2</text>
+                                            <text x="290" y="234" font-size="12" text-anchor="middle" fill="white">שמאלי→ימני</text>
+                                            
+                                            <circle cx="146" cy="214" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                            <text x="146" y="219" font-size="14" text-anchor="middle" fill="white">P3</text>
+                                            <text x="110" y="234" font-size="12" text-anchor="middle" fill="white">שמאלי→ימני</text>
+                                            
+                                            <circle cx="116" cy="98" r="30" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+                                            <text x="116" y="103" font-size="14" text-anchor="middle" fill="white">P4</text>
+                                            <text x="80" y="103" font-size="12" text-anchor="middle" fill="white">ימני→שמאלי</text>
+                                            
+                                            <!-- Highlight for P4 -->
+                                            <circle cx="116" cy="98" r="35" fill="none" stroke="#f39c12" stroke-width="3" stroke-dasharray="5,5"/>
+                                        </svg>
+                                        <figcaption>פתרון א-סימטרי: פילוסוף 4 מרים את המזלגות בסדר הפוך</figcaption>
+                                    </div>
+                                </div>
+
+                                <div class="info-box">
+                                    <h3>יתרונות וחסרונות:</h3>
+                                    <ul>
+                                        <li><strong>יתרון:</strong> פתרון פשוט שמונע קיפאון.</li>
+                                        <li><strong>חיסרון:</strong> אינו מבטיח גישה הוגנת - עדיין ייתכן מצב של רעב (starvation) לפילוסופים מסוימים.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="expandable-section">
+                            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">פתרון #2: מספרי מושבים זוגיים/אי-זוגיים <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                            <div class="collapsible-content">
+                                <p>
+                                    פתרון זה מפר את תנאי ההחזק וחכה על ידי דרישה שפילוסוף ירים את שני המזלגות יחד או לא ירים כלל.
+                                </p>
+
+                                <div class="code-example">
+                                    <pre><code>/* קוד הפילוסוף i (פתרון זוגי/אי-זוגי) */
+            do {
+                think();  // חושב
+                
+                if (i % 2 == 0) {  // פילוסופים זוגיים
+                    wait(fork[i]);
+                    wait(fork[(i+1) % 5]);
+                } else {  // פילוסופים אי-זוגיים
+                    wait(fork[(i+1) % 5]);
+                    wait(fork[i]);
+                }
+                
+                eat();  // אוכל
+                
+                signal(fork[i]);
+                signal(fork[(i+1) % 5]);
+            } while (true);</code></pre>
+                                </div>
+
+                                <div class="image-container">
+                                    <div class="concept-image">
+                                        <svg width="400" height="300" viewBox="0 0 400 300">
+                                            <!-- Background -->
+                                            <rect x="0" y="0" width="400" height="300" fill="#f8f9fa" rx="15"/>
+                                            
+                                            <!-- Table -->
+                                            <circle cx="200" cy="150" r="80" fill="#8B4513" stroke="#664229" stroke-width="5"/>
+                                            
+                                            <!-- Philosophers -->
+                                            <circle cx="200" cy="50" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                            <text x="200" y="55" font-size="14" text-anchor="middle" fill="white">P0</text>
+                                            <text x="200" y="20" font-size="12" text-anchor="middle" fill="white">זוגי</text>
+                                            
+                                            <circle cx="284" cy="98" r="30" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+                                            <text x="284" y="103" font-size="14" text-anchor="middle" fill="white">P1</text>
+                                            <text x="310" y="80" font-size="12" text-anchor="middle" fill="white">אי-זוגי</text>
+                                            
+                                            <circle cx="254" cy="214" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                            <text x="254" y="219" font-size="14" text-anchor="middle" fill="white">P2</text>
+                                            <text x="280" y="238" font-size="12" text-anchor="middle" fill="white">זוגי</text>
+                                            
+                                            <circle cx="146" cy="214" r="30" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+                                            <text x="146" y="219" font-size="14" text-anchor="middle" fill="white">P3</text>
+                                            <text x="120" y="238" font-size="12" text-anchor="middle" fill="white">אי-זוגי</text>
+                                            
+                                            <circle cx="116" cy="98" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                            <text x="116" y="103" font-size="14" text-anchor="middle" fill="white">P4</text>
+                                            <text x="90" y="80" font-size="12" text-anchor="middle" fill="white">זוגי</text>
+                                        </svg>
+                                        <figcaption>פתרון זוגי/אי-זוגי: סדר הרמת המזלגות תלוי במספר הפילוסוף</figcaption>
+                                    </div>
+                                </div>
+
+                                <div class="info-box">
+                                    <h3>יתרונות וחסרונות:</h3>
+                                    <ul>
+                                        <li><strong>יתרון:</strong> פתרון פשוט שמונע קיפאון.</li>
+                                        <li><strong>יתרון:</strong> מבטיח גישה הוגנת יותר מהפתרון הא-סימטרי.</li>
+                                        <li><strong>חיסרון:</strong> עדיין קיים פוטנציאל לרעב במקרים מסוימים.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="expandable-section">
+                            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">פתרון #3: משאב מוניטור <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                            <div class="collapsible-content">
+                                <p>
+                                    הפתרון הזה משתמש במוניטור לניהול גישה לשולחן האוכל, ומבטיח שלא ייתכן קיפאון.
+                                </p>
+
+                                <div class="code-example">
+                                    <pre><code>/* פתרון מבוסס מוניטור */
+            monitor DiningPhilosophers {
+                enum {THINKING, HUNGRY, EATING} state[5];
+                condition self[5];
+                
+                // בדיקה אם פילוסוף יכול לאכול
+                void test(int i) {
+                    if (state[(i+4) % 5] != EATING && state[i] == HUNGRY && state[(i+1) % 5] != EATING) {
+                        state[i] = EATING;
+                        signal(self[i]);
+                    }
+                }
+                
+                // פילוסוף מבקש לקחת מזלגות
+                void pickup(int i) {
+                    state[i] = HUNGRY;
+                    test(i);
+                    if (state[i] != EATING)
+                        wait(self[i]);
+                }
+                
+                // פילוסוף מניח את המזלגות
+                void putdown(int i) {
+                    state[i] = THINKING;
+                    // בדיקה אם השכנים יכולים לאכול עכשיו
+                    test((i + 4) % 5);
+                    test((i + 1) % 5);
+                }
+                
+                // אתחול
+                void init() {
+                    for (int i = 0; i < 5; i++)
+                        state[i] = THINKING;
+                }
+            }</code></pre>
+                                </div>
+
+                                <div class="info-box">
+                                    <h3>יתרונות וחסרונות:</h3>
+                                    <ul>
+                                        <li><strong>יתרון:</strong> מונע קיפאון וגם רעב (starvation).</li>
+                                        <li><strong>יתרון:</strong> מנהל את גישת הפילוסופים באופן הוגן.</li>
+                                        <li><strong>חיסרון:</strong> יותר מורכב לממש מהפתרונות האחרים.</li>
+                                    </ul>
+                                </div>
+
+                                <div class="feature-box">
+                                    <h3>פעולת המוניטור:</h3>
+                                    <div class="visual-diagram">
+                                        <svg width="600" height="400" viewBox="0 0 600 400">
+                                            <!-- Background -->
+                                            <rect x="0" y="0" width="600" height="400" fill="#f8f9fa" rx="15"/>
+                                            
+                                            <!-- Title -->
+                                            <text x="300" y="40" font-size="20" text-anchor="middle" fill="#2c3e50" font-weight="bold">פעולת המוניטור</text>
+                                            
+                                            <!-- Table -->
+                                            <circle cx="300" cy="200" r="80" fill="#8B4513" stroke="#664229" stroke-width="5"/>
+                                            
+                                            <!-- Philosophers -->
+                                            <circle cx="300" cy="100" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                            <text x="300" y="105" font-size="14" text-anchor="middle" fill="white">P0</text>
+                                            
+                                            <circle cx="380" cy="150" r="30" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+                                            <text x="380" y="155" font-size="14" text-anchor="middle" fill="white">P1</text>
+                                            
+                                            <circle cx="350" cy="270" r="30" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+                                            <text x="350" y="275" font-size="14" text-anchor="middle" fill="white">P2</text>
+                                            
+                                            <circle cx="250" cy="270" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                            <text x="250" y="275" font-size="14" text-anchor="middle" fill="white">P3</text>
+                                            
+                                            <circle cx="220" cy="150" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                            <text x="220" y="155" font-size="14" text-anchor="middle" fill="white">P4</text>
+                                            
+                                            <!-- State Table -->
+                                            <rect x="450" y="100" width="120" height="200" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2" rx="5"/>
+                                            <text x="510" y="125" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">מצבים</text>
+                                            
+                                            <text x="470" y="155" font-size="14" text-anchor="start" fill="#3498db">P0: THINKING</text>
+                                            <text x="470" y="185" font-size="14" text-anchor="start" fill="#2ecc71">P1: EATING</text>
+                                            <text x="470" y="215" font-size="14" text-anchor="start" fill="#e74c3c">P2: HUNGRY</text>
+                                            <text x="470" y="245" font-size="14" text-anchor="start" fill="#3498db">P3: THINKING</text>
+                                            <text x="470" y="275" font-size="14" text-anchor="start" fill="#3498db">P4: THINKING</text>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="expandable-section">
+                            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">פתרון #4: מלצר <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                            <div class="collapsible-content">
+                                <p>
+                                    פתרון המלצר משתמש בשחקן נוסף (מלצר) שאחראי לחלוקת המזלגות. פילוסוף יכול לאכול רק כשהמלצר מעניק לו אישור.
+                                </p>
+
+                                <div class="code-example">
+                                    <pre><code>/* פתרון המלצר */
+semaphore mutex = 1;
+boolean fork[5] = {true, true, true, true, true};  // true = זמין, false = תפוס
+                        
+/* קוד המלצר */
+void waiter(int i) {
+    wait(mutex);
+    if (fork[i] && fork[(i+1) % 5]) {  // אם שני המזלגות זמינים
+        fork[i] = false;  // תפיסת המזלג השמאלי
+        fork[(i+1) % 5] = false;  // תפיסת המזלג הימני
+        signal(mutex);
+        return true;  // הפילוסוף יכול לאכול
+    }
+    signal(mutex);
+    return false;  // הפילוסוף צריך לחכות
+}
+                        
+void release_forks(int i) {
+    wait(mutex);
+    fork[i] = true;  // שחרור המזלג השמאלי
+    fork[(i+1) % 5] = true;  // שחרור המזלג הימני
+    signal(mutex);
+}
+                        
+/* קוד הפילוסוף */
+void philosopher(int i) {
+    while (true) {
+        think();
+        while (!waiter(i))  // מנסה לקבל אישור מהמלצר
+            ; // המתנה אם לא קיבל אישור
+        eat();
+        release_forks(i);
+    }
+}</code></pre>
+                                </div>
+
+                                <div class="image-container">
+                                    <div class="concept-image">
+                                        <svg width="500" height="350" viewBox="0 0 500 350">
+                                            <!-- Background -->
+                                            <rect x="0" y="0" width="500" height="350" fill="#f8f9fa" rx="15"/>
+                                            
+                                            <!-- Table -->
+                                            <circle cx="250" cy="200" r="80" fill="#8B4513" stroke="#664229" stroke-width="5"/>
+                                            
+                                            <!-- Philosophers -->
+                                            <circle cx="250" cy="100" r="25" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                            <text x="250" y="105" font-size="12" text-anchor="middle" fill="white">P0</text>
+                                            
+                                            <circle cx="330" cy="150" r="25" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                            <text x="330" y="155" font-size="12" text-anchor="middle" fill="white">P1</text>
+                                            
+                                            <circle cx="300" cy="270" r="25" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+                                            <text x="300" y="275" font-size="12" text-anchor="middle" fill="white">P2</text>
+                                            
+                                            <circle cx="200" cy="270" r="25" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                            <text x="200" y="275" font-size="12" text-anchor="middle" fill="white">P3</text>
+                                            
+                                            <circle cx="170" cy="150" r="25" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+                                            <text x="170" y="155" font-size="12" text-anchor="middle" fill="white">P4</text>
+                                            
+                                            <!-- Waiter -->
+                                            <circle cx="400" cy="200" r="30" fill="#9b59b6" stroke="#8e44ad" stroke-width="3"/>
+                                            <text x="400" y="205" font-size="14" text-anchor="middle" fill="white">מלצר</text>
+                                            
+                                            <!-- Connection lines -->
+                                            <line x1="370" y1="200" x2="330" y2="200" stroke="#95a5a6" stroke-width="1" stroke-dasharray="5,3"/>
+                                            <line x1="370" y1="200" x2="300" y2="245" stroke="#9b59b6" stroke-width="2"/>
+                                            <line x1="370" y1="200" x2="170" y2="165" stroke="#9b59b6" stroke-width="2"/>
+                                        </svg>
+                                        <figcaption>פתרון המלצר: המלצר מחליט מי מקבל גישה למזלגות</figcaption>
+                                    </div>
+                                </div>
+
+                                <div class="info-box">
+                                    <h3>יתרונות וחסרונות:</h3>
+                                    <ul>
+                                        <li><strong>יתרון:</strong> פשוט להבנה וליישום.</li>
+                                        <li><strong>יתרון:</strong> מונע קיפאון באופן מוחלט.</li>
+                                        <li><strong>יתרון:</strong> מאפשר מדיניות הוגנת בהקצאת משאבים.</li>
+                                        <li><strong>חיסרון:</strong> המלצר עלול להפוך לצוואר בקבוק במערכת.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-section" id="dp-implementation">
+                        <h2>💻 מימוש פתרון זוגי/אי-זוגי לבעיית הפילוסופים הסועדים</h2>
+                        <p>
+                            נציג את מימוש פתרון הזוגי/אי-זוגי לבעיית הפילוסופים הסועדים, שהוא פתרון פשוט ויעיל למניעת קיפאון.
+                        </p>
+
+                        <div class="expandable-section">
+                            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">הקוד המלא לפתרון זוגי/אי-זוגי <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                            <div class="collapsible-content">
+                                <div class="code-example">
+                                    <pre><code>/* קוד הפילוסוף i (פתרון זוגי/אי-זוגי) */
+                    do {
+                        think();  // הפילוסוף חושב
+                        
+                        if (i % 2 == 0) {  // פילוסופים זוגיים
+                            wait(fork[i]);          // קודם לוקח את המזלג השמאלי
+                            wait(fork[(i+1) % 5]);  // ואז את המזלג הימני
+                        } else {  // פילוסופים אי-זוגיים
+                            wait(fork[(i+1) % 5]);  // קודם לוקח את המזלג הימני
+                            wait(fork[i]);          // ואז את המזלג השמאלי
+                        }
+                        
+                        eat();  // הפילוסוף אוכל
+                        
+                        signal(fork[i]);          // משחרר את המזלג השמאלי
+                        signal(fork[(i+1) % 5]);  // משחרר את המזלג הימני
+                    } while (true);</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="image-container">
+                            <div class="concept-image">
+                                <svg width="400" height="300" viewBox="0 0 400 300">
+                                    <!-- Background -->
+                                    <rect x="0" y="0" width="400" height="300" fill="#f8f9fa" rx="15"/>
+                                    
+                                    <!-- Table -->
+                                    <circle cx="200" cy="150" r="80" fill="#8B4513" stroke="#664229" stroke-width="5"/>
+                                    
+                                    <!-- Philosophers -->
+                                    <circle cx="200" cy="50" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                    <text x="200" y="55" font-size="14" text-anchor="middle" fill="white">P0</text>
+                                    <text x="200" y="16" font-size="12" text-anchor="middle" fill="black">זוגי: שמאלי→ימני</text>
+                                    
+                                    <circle cx="284" cy="98" r="30" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+                                    <text x="284" y="103" font-size="14" text-anchor="middle" fill="white">P1</text>
+                                    <text x="310" y="60" font-size="12" text-anchor="middle" fill="black">אי-זוגי: ימני→שמאלי</text>
+                                    
+                                    <circle cx="254" cy="214" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                    <text x="254" y="219" font-size="14" text-anchor="middle" fill="white">P2</text>
+                                    <text x="280" y="260" font-size="12" text-anchor="middle" fill="black">זוגי: שמאלי→ימני</text>
+                                    
+                                    <circle cx="146" cy="214" r="30" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+                                    <text x="146" y="219" font-size="14" text-anchor="middle" fill="white">P3</text>
+                                    <text x="120" y="260" font-size="12" text-anchor="middle" fill="black">אי-זוגי: ימני→שמאלי</text>
+                                    
+                                    <circle cx="116" cy="98" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                    <text x="116" y="103" font-size="14" text-anchor="middle" fill="white">P4</text>
+                                    <text x="90" y="60" font-size="12" text-anchor="middle" fill="black">זוגי: שמאלי→ימני</text>
+                                </svg>
+                                <figcaption>פתרון זוגי/אי-זוגי: סדר הרמת המזלגות תלוי במספר הפילוסוף</figcaption>
+                            </div>
+                        </div>
+
+                        <div class="info-box">
+                            <h3>עקרונות הפתרון הזוגי/אי-זוגי:</h3>
+                            <ul>
+                                <li><strong>שבירת מעגל ההמתנה:</strong> הפילוסופים לא לוקחים את המזלגות באותו סדר, מה שמונע קיפאון.</li>
+                                <li><strong>פילוסופים זוגיים:</strong> מרימים קודם את המזלג השמאלי ואז את הימני.</li>
+                                <li><strong>פילוסופים אי-זוגיים:</strong> מרימים קודם את המזלג הימני ואז את השמאלי.</li>
+                                <li><strong>יעילות:</strong> מאפשר לשני פילוסופים שאינם שכנים לאכול במקביל.</li>
+                            </ul>
+                        </div>
+
+                        <div class="feature-box">
+                            <h3>יתרונות הפתרון הזוגי/אי-זוגי:</h3>
+                            <div class="feature-list">
+                                <li><strong>פשטות:</strong> קל להבנה וליישום, ללא צורך במבנים מורכבים.</li>
+                                <li><strong>מניעת קיפאון:</strong> שבירת הסימטריה מונעת מעגל המתנה.</li>
+                                <li><strong>יעילות בזיכרון:</strong> רק משתמש במספר קבוע של סמפורים.</li>
+                                <li><strong>הוגנות סבירה:</strong> לא גורם לרעב של תהליכים מסוימים.</li>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div class="footer">
+                <p>© כל הזכויות שמורות - מערכות הפעלה - סיכום</p>
+            </div>
+        </div>
+
+
+    </body>
+</html>

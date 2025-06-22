@@ -849,3 +849,84 @@
     font-size: 0.95em;
     line-height: 1.6;
 }
+.comparison-container {
+                margin: 20px 0;
+                overflow-x: auto;
+            }
+
+            .comparison-table {
+                width: 100%;
+                border-collapse: collapse;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+                border-radius: 10px;
+                overflow: hidden;
+            }
+
+            .comparison-table th, .comparison-table td {
+                padding: 12px 15px;
+                text-align: center;
+            }
+
+            .comparison-table th {
+                background-color: #34495e;
+                color: white;
+            }
+
+            .comparison-table tr:nth-child(even) {
+                background-color: #f8f9fa;
+            }
+
+            .solution-header {
+                padding: 8px;
+                border-radius: 5px;
+                font-weight: bold;
+            }
+
+            .readers-header {
+                background-color: rgba(52, 152, 219, 0.2);
+                border: 1px solid #3498db;
+            }
+
+            .writers-header {
+                background-color: rgba(231, 76, 60, 0.2);
+                border: 1px solid #e74c3c;
+            }
+
+            .fair-header {
+                background-color: rgba(46, 204, 113, 0.2);
+                border: 1px solid #2ecc71;
+            }
+
+            .rating-cell {
+                padding: 5px 10px;
+                border-radius: 5px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .rating-icon {
+                font-weight: bold;
+                margin-right: 5px;
+            }
+
+            .good {
+                background-color: rgba(46, 204, 113, 0.2);
+                color: #27ae60;
+            }
+
+            .medium {
+                background-color: rgba(243, 156, 18, 0.2);
+                color: #f39c12;
+            }
+
+            .bad {
+                background-color: rgba(231, 76, 60, 0.2);
+                color: #e74c3c;
+            }
+
+            .visual-comparison {
+                margin: 30px 0;
+                display: flex;
+                justify-content: center;
+            }
