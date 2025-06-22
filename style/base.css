@@ -761,3 +761,91 @@
         flex-direction: column;
     }
 }
+/* עדכון צבעים לחלונות ההרחבה */
+.concept-item {
+    background-color: rgba(30, 41, 59, 0.9); /* צבע כהה שמתאים לרקע הכללי */
+    border: 1px solid rgba(148, 163, 184, 0.3); /* גבול עדין */
+    color: #cbd5e1; /* טקסט בהיר */
+}
+
+.concept-item h3 {
+    color: #60a5fa; /* צבע טקסט לכותרות */
+}
+
+.concept-item:nth-child(odd) {
+    background-color: rgba(59, 130, 246, 0.1); /* צבע רקע עדין לכותרות */
+}
+
+.concept-item:nth-child(even) {
+    background-color: rgba(236, 72, 153, 0.1); /* צבע רקע עדין לכותרות */
+}
+
+.warning-box {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.8) 100%);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: #cbd5e1;
+}
+
+.warning-box h3 {
+    color: #f59e0b; /* צבע כותרת אזהרה */
+}
+
+.warning-box ul li {
+    color: #cbd5e1; /* טקסט בהיר */
+}
+/* Feature items styles */
+.feature-item {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.25);
+}
+
+.content-section:nth-child(3n+1) .feature-item {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.7), rgba(59, 130, 246, 0.08));
+    border-left: 3px solid rgba(59, 130, 246, 0.5);
+}
+
+.content-section:nth-child(3n+2) .feature-item {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.7), rgba(139, 92, 246, 0.08));
+    border-left: 3px solid rgba(139, 92, 246, 0.5);
+}
+
+.content-section:nth-child(3n+3) .feature-item {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.7), rgba(236, 72, 153, 0.08));
+    border-left: 3px solid rgba(236, 72, 153, 0.5);
+}
+
+.feature-item h4 {
+    font-size: 1.2em;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.content-section:nth-child(3n+1) .feature-item h4 {
+    color: #60a5fa;
+}
+
+.content-section:nth-child(3n+2) .feature-item h4 {
+    color: #c084fc;
+}
+
+.content-section:nth-child(3n+3) .feature-item h4 {
+    color: #f472b6;
+}
+
+.feature-item p {
+    color: #94a3b8;
+    font-size: 0.95em;
+    line-height: 1.6;
+}
