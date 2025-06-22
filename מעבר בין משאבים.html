@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מעבר בין משאבים - מערכות הפעלה</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style/base.css">
+    <script src="script/sidebar.js"></script>
+</head>
+<body>
+    <!-- סרגל ניווט צף -->
+    <div class="nav-sidebar">
+        <div class="nav-sidebar-title">תוכן העניינים</div>
+        <ul class="nav-main-menu">
+            <!-- קטגוריה: משאבים -->
+            <li class="nav-category">
+                <div class="category-title">💾 משאבים </div>
+                <ul class="nav-submenu">
+                    <li><a href="#resource-intro">מהו משאב?</a></li>
+                </ul>
+            </li>
+            
+            <!-- קטגוריה: קיפאון - יסודות -->
+            <li class="nav-category">
+                <div class="category-title">🔒 קיפאון: יסודות </div>
+                <ul class="nav-submenu">
+                    <li><a href="#deadlock-intro">מבוא לקיפאון</a></li>
+                    <li><a href="#deadlock-conditions">תנאים לקיפאון</a></li>
+                    <li><a href="#basic-facts">עובדות בסיסיות</a></li>
+                    <li><a href="#deadlock-handling">דרכי טיפול</a></li>
+                </ul>
+            </li>
+            <!-- קטגוריה: קיפאון - מניעה וזיהוי -->
+            <li class="nav-category">
+                <div class="category-title">🛡️ קיפאון: מניעה וזיהוי </div>
+                <ul class="nav-submenu"></ul>
+                    <li><a href="#deadlock-avoidance">הימנעות מקיפאון</a></li>
+                    <li><a href="#safe-state">מצב בטוח</a></li>
+                    <li><a href="#banker-algorithm">אלגוריתם הבנקאי</a></li>
+                    <li><a href="#deadlock-detection">זיהוי קיפאון</a></li>
+                    <li><a href="#deadlock-recovery">שחרור מקיפאון</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="back-home">
+            <a href="index.html">🏠 חזרה לדף הבית</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>מעבר בין משאבים –</h1>
+            <div class="subtitle">Resource Management & Deadlock</div>
+        </div>
+
+        <!-- מהו משאב? -->
+        <div class="content-section" id="resource-intro">
+            <h2>🔄 מהו משאב?</h2>
+            <p>משאב (Resource) במערכות הפעלה הוא כל אובייקט חומרתי או תוכנתי שתהליך זקוק לו לביצוע פעולה. מערכת הפעלה אחראית על ניהול משאבים אלה והקצאתם לתהליכים השונים באופן יעיל ובטוח.</p>
+            
+            <div class="concept-grid">
+                <div class="concept-row">
+                    <div class="concept-item">
+                        <h4>משאבים פיזיים</h4>
+                        <p>רכיבי חומרה כמו מעבד, זיכרון, כרטיס מסך, התקני I/O וכו'.</p>
+                    </div>
+                    <div class="concept-item">
+                        <h4>משאבים לוגיים</h4>
+                        <p>רכיבי תוכנה כמו קבצים, סמפורים, מוטקסים, חיבורי רשת וכו'.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+            
+          
+        <!-- מבוא לקיפאון -->
+        <div class="content-section" id="deadlock-intro">
+            <h2>🔒 מבוא לקיפאון (Deadlock)</h2>
+            <p>קיפאון (Deadlock) הוא מצב בו שני תהליכים או יותר מחכים אחד לשני, וכל אחד מחזיק במשאבים שהאחר זקוק להם, כך שנוצר מעגל המתנה שלא יכול להיפתר מאליו.</p>
+
+            <div class="image-container">
+                <div class="concept-image" style="width: 70%;">
+                    <svg width="500" height="300" viewBox="0 0 500 300">
+                        <!-- Background -->
+                        <rect x="10" y="10" width="480" height="280" rx="15" fill="#0F172A" stroke="#94A3B8" stroke-width="1" opacity="0.3"/>
+                        
+                        <!-- Processes -->
+                        <circle cx="150" cy="100" r="40" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                        <text x="150" y="105" text-anchor="middle" fill="#FFFFFF" font-size="16">תהליך A</text>
+                        
+                        <circle cx="350" cy="100" r="40" fill="#1E293B" stroke="#EC4899" stroke-width="2"/>
+                        <text x="350" y="105" text-anchor="middle" fill="#FFFFFF" font-size="16">תהליך B</text>
+                        
+                        <!-- Resources -->
+                        <rect x="130" y="200" width="60" height="40" rx="5" fill="#0F172A" stroke="#60A5FA" stroke-width="2"/>
+                        <text x="160" y="225" text-anchor="middle" fill="#60A5FA" font-size="14">משאב 1</text>
+                        
+                        <rect x="310" y="200" width="60" height="40" rx="5" fill="#0F172A" stroke="#EC4899" stroke-width="2"/>
+                        <text x="340" y="225" text-anchor="middle" fill="#EC4899" font-size="14">משאב 2</text>
+                        
+                        <!-- Process to Resource Allocation -->
+                        <path d="M150,140 L150,200" stroke="#60A5FA" stroke-width="2"/>
+                        <polygon points="150,190 145,180 155,180" fill="#60A5FA"/>
+                        <text x="130" y="170" text-anchor="middle" fill="#60A5FA" font-size="12">מחזיק</text>
+                        
+                        <path d="M350,140 L340,200" stroke="#EC4899" stroke-width="2"/>
+                        <polygon points="340,190 335,180 345,180" fill="#EC4899"/>
+                        <text x="370" y="170" text-anchor="middle" fill="#EC4899" font-size="12">מחזיק</text>
+                        
+                        <!-- Resource Request -->
+                        <path d="M170,100 L330,100" stroke="#F59E0B" stroke-width="2" stroke-dasharray="5,5"/>
+                        <polygon points="320,100 315,95 315,105" fill="#F59E0B"/>
+                        <text x="250" y="90" text-anchor="middle" fill="#F59E0B" font-size="12">צריך משאב 2</text>
+                        
+                        <path d="M330,120 L170,120" stroke="#F59E0B" stroke-width="2" stroke-dasharray="5,5"/>
+                        <polygon points="180,120 175,115 175,125" fill="#F59E0B"/>
+                        <text x="250" y="140" text-anchor="middle" fill="#F59E0B" font-size="12">צריך משאב 1</text>
+                        
+                        <!-- Deadlock Label -->
+                        <rect x="200" y="20" width="100" height="40" rx="20" fill="#0F172A" stroke="#EF4444" stroke-width="2"/>
+                        <text x="250" y="45" text-anchor="middle" fill="#EF4444" font-size="16" font-weight="bold">קיפאון!</text>
+                    </svg>
+                    <figcaption>איור 3: דוגמה פשוטה למצב קיפאון בין שני תהליכים</figcaption>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3>מאפייני קיפאון:</h3>
+                <ul>
+                    <li>מצב שלא משתנה מעצמו ללא התערבות חיצונית</li>
+                    <li>תהליכים נשארים במצב המתנה לנצח</li>
+                    <li>התקדמות המערכת נעצרת חלקית או לחלוטין</li>
+                    <li>יכול להיות מקומי (חלק מהתהליכים) או גלובלי (כל המערכת)</li>
+                </ul>
+            </div>
+
+            <div class="expandable-section">
+                <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">דוגמאות למצבי קיפאון מהחיים <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                <div class="collapsible-content">
+                    <div class="concept-grid">
+                        <div class="concept-row">
+                            <div class="concept-item">
+                                <h4>צומת כבישים</h4>
+                                <p>ארבע מכוניות מגיעות לצומת בו־זמנית, כל אחת מחכה שהאחרת תזוז</p>
+                            </div>
+                            <div class="concept-item">
+                                <h4>לוח זמנים של פגישות</h4>
+                                <p>אדם A מחכה לאדם B, שמחכה לאדם C, שמחכה לאדם A</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- תנאים הכרחיים לקיפאון -->
+        <div class="content-section" id="deadlock-conditions">
+            <h2>🔍 תנאים הכרחיים לקיפאון</h2>
+            <div class="important-note">
+                <p>קיפאון יכול להתרחש רק כאשר מתקיימים ארבעה תנאים הכרחיים במקביל. אם אחד מהתנאים אינו מתקיים, לא יכול להיווצר קיפאון.</p>
+            </div>
+            <div class="concept-grid">
+                <div class="concept-row">
+                    <div class="concept-item" id="condition-1">
+                        <h4>1. הדדיות בהדרה (Mutual Exclusion)</h4>
+                        <p>לפחות משאב אחד חייב להיות מוחזק באופן בלעדי על־ידי תהליך אחד בכל רגע נתון.</p>
+                        <div class="concept-image">
+                            <svg width="400" height="200" viewBox="0 0 340 200">
+                                <rect x="5" y="5" width="330" height="190" rx="10" fill="#0F172A" stroke="#94A3B8" stroke-width="1" opacity="0.3"/>
+                                <!-- Resource -->
+                                <rect x="130" y="80" width="80" height="40" rx="8" fill="#0F172A" stroke="#60A5FA" stroke-width="2"/>
+                                <text x="170" y="105" text-anchor="middle" fill="#FFFFFF" font-size="14">משאב</text>
+                                <!-- Process 1 - Has access -->
+                                <circle cx="70" cy="100" r="30" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                                <text x="70" y="105" text-anchor="middle" fill="#FFFFFF" font-size="12">תהליך A</text>
+                                <!-- Access arrow -->
+                                <path d="M100,100 L130,100" stroke="#60A5FA" stroke-width="2"/>
+                                <polygon points="125,100 120,95 120,105" fill="#60A5FA"/>
+                                <text x="115" y="90" text-anchor="middle" fill="#60A5FA" font-size="10">מחזיק</text>
+                                <!-- Process 2 - Blocked -->
+                                <circle cx="270" cy="100" r="30" fill="#1E293B" stroke="#EF4444" stroke-width="2"/>
+                                <text x="270" y="105" text-anchor="middle" fill="#FFFFFF" font-size="12">תהליך B</text>
+                                <!-- Blocked arrow -->
+                                <path d="M240,100 L210,100" stroke="#EF4444" stroke-width="2" stroke-dasharray="5,3"/>
+                                <text x="225" y="90" text-anchor="middle" fill="#EF4444" font-size="10">מחכה</text>
+                                <line x1="215" y1="85" x2="235" y2="115" stroke="#EF4444" stroke-width="2"/>
+                                <line x1="215" y1="115" x2="235" y2="85" stroke="#EF4444" stroke-width="2"/>
+                            </svg>
+                            <figcaption>רק תהליך אחד יכול להשתמש במשאב בכל זמן נתון</figcaption>
+                        </div>
+                    </div>
+                    <div class="concept-item" id="condition-2">
+                        <h4>2. החזק וחכה (Hold and Wait)</h4>
+                        <p>תהליכים מחזיקים במשאבים בזמן שהם ממתינים למשאבים נוספים שמוחזקים על־ידי תהליכים אחרים.</p>
+                        <div class="concept-image">
+                            <svg width="400" height="200" viewBox="0 0 340 200">
+                                <rect x="5" y="5" width="330" height="190" rx="10" fill="#0F172A" stroke="#94A3B8" stroke-width="1" opacity="0.3"/>
+                                <!-- Process -->
+                                <circle cx="170" cy="80" r="30" fill="#1E293B" stroke="#EC4899" stroke-width="2"/>
+                                <text x="170" y="85" text-anchor="middle" fill="#FFFFFF" font-size="12">תהליך</text>
+                                <!-- Resource 1 - Held -->
+                                <rect x="70" y="140" width="70" height="35" rx="8" fill="#0F172A" stroke="#EC4899" stroke-width="2"/>
+                                <text x="105" y="162" text-anchor="middle" fill="#FFFFFF" font-size="12">משאב 1</text>
+                                <!-- Has arrow -->
+                                <path d="M150,110 L120,140" stroke="#EC4899" stroke-width="2"/>
+                                <polygon points="125,135 115,145 130,145" fill="#EC4899"/>
+                                <text x="140" y="140" text-anchor="middle" fill="#EC4899" font-size="10">מחזיק</text>
+                                <!-- Resource 2 - Wanted -->
+                                <rect x="220" y="140" width="70" height="35" rx="8" fill="#0F172A" stroke="#94A3B8" stroke-width="2"/>
+                                <text x="255" y="162" text-anchor="middle" fill="#FFFFFF" font-size="12">משאב 2</text>
+                                <!-- Wait arrow -->
+                                <path d="M190,110 L240,140" stroke="#F59E0B" stroke-width="2" stroke-dasharray="5,3"/>
+                                <text x="220" y="140" text-anchor="middle" fill="#F59E0B" font-size="10">מחכה</text>
+                            </svg>
+                            <figcaption>תהליך ממשיך להחזיק משאב 1 בזמן שהוא מחכה למשאב 2</figcaption>
+                        </div>
+                    </div>
+                
+                    <div class="concept-row">
+                        <div class="concept-item" id="condition-3">
+                            <h4>3. אי־הפקעה (No Preemption)</h4>
+                            <p>משאבים לא ניתנים להפקעה מתהליך – הם יכולים להשתחרר רק מרצונו של התהליך המחזיק בהם.</p>
+                            <div class="concept-image">
+                                <svg width="400" height="200" viewBox="0 0 340 200">
+                                    <rect x="5" y="5" width="330" height="190" rx="10" fill="#0F172A" stroke="#94A3B8" stroke-width="1" opacity="0.3"/>
+                                    <!-- Process 1 -->
+                                    <circle cx="90" cy="80" r="30" fill="#1E293B" stroke="#F59E0B" stroke-width="2"/>
+                                    <text x="90" y="85" text-anchor="middle" fill="#FFFFFF" font-size="12">תהליך A</text>
+                                    <!-- Resource -->
+                                    <rect x="140" y="130" width="70" height="35" rx="8" fill="#0F172A" stroke="#F59E0B" stroke-width="2"/>
+                                    <text x="175" y="152" text-anchor="middle" fill="#FFFFFF" font-size="12">משאב</text>
+                                    <!-- Process 2 -->
+                                    <circle cx="250" cy="80" r="30" fill="#1E293B" stroke="#94A3B8" stroke-width="2"/>
+                                    <text x="250" y="85" text-anchor="middle" fill="#FFFFFF" font-size="12">תהליך B</text>
+                                    <!-- Connection arrows -->
+                                    <path d="M90,110 L150,130" stroke="#F59E0B" stroke-width="2"/>
+                                    <polygon points="145,130 135,125 140,135" fill="#F59E0B"/>
+                                    <text x="110" y="130" text-anchor="middle" fill="#F59E0B" font-size="10">מחזיק</text>
+                                    <!-- Failed attempt to take -->
+                                    <path d="M250,110 L200,130" stroke="#EF4444" stroke-width="2" stroke-dasharray="5,3"/>
+                                    <text x="235" y="130" text-anchor="middle" fill="#EF4444" font-size="10">לא יכול להפקיע</text>
+                                    <line x1="215" y1="115" x2="225" y2="125" stroke="#EF4444" stroke-width="2"/>
+                                    <line x1="225" y1="115" x2="215" y2="125" stroke="#EF4444" stroke-width="2"/>
+                                </svg>
+                                <figcaption>משאב יכול להשתחרר רק על ידי התהליך שמחזיק בו</figcaption>
+                            </div>
+                        </div>
+
+                        <div class="concept-item" id="condition-4">    
+                            <h4>4. המתנה מעגלית (Circular Wait)</h4>
+                            <p>קיימת שרשרת של תהליכים שבה כל תהליך מחזיק במשאב אחד או יותר שנדרשים על־ידי התהליך הבא בשרשרת.</p>
+                            <div class="concept-image">
+                                <svg width="400" height="200" viewBox="0 0 340 200" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="0" y="0" width="340" height="190" rx="10" fill="#0F172A" stroke="#94A3B8" stroke-width="1" opacity="0.3"/>
+                                    
+                                    <!-- Process A -->
+                                    <circle cx="70" cy="80" r="25" fill="#1E293B" stroke="#10B981" stroke-width="2"/>
+                                    <text x="70" y="85" text-anchor="middle" fill="#FFFFFF" font-size="12">תהליך A</text>
+                                    
+                                    <!-- Process B -->
+                                    <circle cx="170" cy="80" r="25" fill="#1E293B" stroke="#10B981" stroke-width="2"/>
+                                    <text x="170" y="85" text-anchor="middle" fill="#FFFFFF" font-size="12">תהליך B</text>
+                                    
+                                    <!-- Process C -->
+                                    <circle cx="270" cy="80" r="25" fill="#1E293B" stroke="#10B981" stroke-width="2"/>
+                                    <text x="270" y="85" text-anchor="middle" fill="#FFFFFF" font-size="12">תהליך C</text>
+                                    
+                                    <!-- Resources -->
+                                    <rect x="40" y="140" width="60" height="30" rx="8" fill="#0F172A" stroke="#10B981" stroke-width="2"/>
+                                    <text x="70" y="160" text-anchor="middle" fill="#FFFFFF" font-size="12">משאב 1</text>
+                                    
+                                    <rect x="140" y="140" width="60" height="30" rx="8" fill="#0F172A" stroke="#10B981" stroke-width="2"/>
+                                    <text x="170" y="160" text-anchor="middle" fill="#FFFFFF" font-size="12">משאב 2</text>
+                                    
+                                    <rect x="240" y="140" width="60" height="30" rx="8" fill="#0F172A" stroke="#10B981" stroke-width="2"/>
+                                    <text x="270" y="160" text-anchor="middle" fill="#FFFFFF" font-size="12">משאב 3</text>
+                                    
+                                    <!-- Hold arrows -->
+                                    <path d="M70,105 L70,140" stroke="#10B981" stroke-width="2"/>
+                                    <polygon points="70,135 65,130 75,130" fill="#10B981"/>
+                                    <text x="50" y="125" text-anchor="middle" fill="#10B981" font-size="10">מחזיק</text>
+                                    
+                                    <path d="M170,105 L170,140" stroke="#10B981" stroke-width="2"/>
+                                    <polygon points="170,135 165,130 175,130" fill="#10B981"/>
+                                    <text x="150" y="125" text-anchor="middle" fill="#10B981" font-size="10">מחזיק</text>
+                                    
+                                    <path d="M270,105 L270,140" stroke="#10B981" stroke-width="2"/>
+                                    <polygon points="270,135 265,130 275,130" fill="#10B981"/>
+                                    <text x="250" y="125" text-anchor="middle" fill="#10B981" font-size="10">מחזיק</text>
+                                    
+                                    <!-- Wait arrows - creating a cycle -->
+                                    <path d="M95,80 L145,80" stroke="#F59E0B" stroke-width="2" stroke-dasharray="5,3"/>
+                                    <polygon points="140,80 135,75 135,85" fill="#F59E0B"/>
+                                    <text x="120" y="70" text-anchor="middle" fill="#F59E0B" font-size="10">מחכה למשאב 2</text>
+                                    
+                                    <path d="M195,80 L245,80" stroke="#F59E0B" stroke-width="2" stroke-dasharray="5,3"/>
+                                    <polygon points="240,80 235,75 235,85" fill="#F59E0B"/>
+                                    <text x="220" y="70" text-anchor="middle" fill="#F59E0B" font-size="10">מחכה למשאב 3</text>
+                                    
+                                    <!-- Circular arrow from C to A -->
+                                    <path d="M270,55 Q170,10 70,55" stroke="#F59E0B" stroke-width="2" stroke-dasharray="5,3"/>
+                                    <polygon points="75,55 70,50 80,50" fill="#F59E0B"/>
+                                    <text x="170" y="30" text-anchor="middle" fill="#F59E0B" font-size="10">מחכה למשאב 1</text>
+                                </svg>
+                                <figcaption>המתנה מעגלית: כל תהליך מחזיק במשאב שהתהליך הבא בסדר זקוק לו</figcaption>
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      
+
+        <!-- עובדות בסיסיות -->
+        <div class="content-section" id="basic-facts">
+            <h2>📖 עובדות בסיסיות (Basic Facts)</h2>
+            <p>אם יש לנו תהליך שצריך רק משאב אחד הוא בחיים לא יהיה חלק מקיפאון, כי או שהוא יקבל ואז יעשה מה שצריך וישחרר או שהוא יחכה, נקרא בלתי הוגן.</p>
+            <ul>
+            <li>אם אין מעגלים בגרוף שאין קיפאון.</li>
+            <li>אם יש מעגל:</li>
+            <li>אם יש רק מופע אחד מכל משאב, בגרוף שיש קיפאון.</li>
+            <li>אם יש כמה, יכול להיות שכן ויכול להיות שלא.</li>
+            </ul>
+        </div>
+
+        <!-- דרכים לטפל בקיפאון -->
+        <div class="content-section" id="deadlock-handling">
+            <h2>🛠️ דרכים לטפל בקיפאון (Methods for Handling Deadlocks)</h2>
+            <div class="concept-grid">
+            <div class="concept-row">
+            <div class="concept-item">
+            <h4>1. מניעת קיפאון (Deadlock prevention)</h4>
+            <p>כל פעם בודא שאין קיפאון (גרעין סימולציה).</p>
+            </div>
+            <div class="concept-item">
+            <h4>2. התחמקות קיפאון (Deadlock avoidance)</h4>
+            <p>נתחמק מהבעיה, המדיניות שלנו לא הסכים לגרום לאחד מארבעת התנאים, לא נותנים לו להתקיים (לדוגמא תהליך בכל נקודת זמן תהליך יכול להחזיק רק משאב אחד).</p>
+            </div>
+            </div>
+            <div class="concept-row">
+            <div class="concept-item">
+            <h4>3. לתת למערכת להיכנס לקיפאון, לשחזר את המצב שהתהליך רץ בו ואז לצאת מהקיפאון על ידי הריגת מה שתופס משאבים (מאוד לא טוב).</h4>
+            </div>
+            <div class="concept-item">
+            <h4>4. להתעלם (די מפגר מילים של אוריה מפורש).</h4>
+            </div>
+            </div>
+            </div>
+        </div>
+        <!-- הימנעות מקיפאון -->
+        <div class="content-section" id="deadlock-avoidance">
+            <h2>🔄 הימנעות מקיפאון (Deadlock Avoidance)</h2>
+            <p>הימנעות מקיפאון היא גישה שבה המערכת מחליטה אם להקצות משאבים לתהליך או לתת לו להמתין, בהתבסס על מידע נוסף כמו דרישות המשאבים המרביות של התהליך.</p>
+            
+            <div class="info-box key-principles">
+                <h3>
+                    <span style="font-size:1.2em;vertical-align:middle;">⭐</span>
+                    עקרונות מפתח בהימנעות מקיפאון
+                </h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+                        <span style="color:#60A5FA;font-size:1.3em;margin-left:8px;">•</span>
+                        <span>המערכת יודעת מראש את מספר המשאבים המקסימלי שכל תהליך עשוי לבקש</span>
+                    </li>
+                    <li style="margin-bottom: 12px; display: flex; align-items: flex-start;">
+                        <span style="color:#10B981;font-size:1.3em;margin-left:8px;">•</span>
+                        <span>בכל רגע נתון, המערכת מקבלת החלטות הקצאה רק אם ההקצאה לא תגרום למערכת להגיע למצב לא בטוח</span>
+                    </li>
+                    <li style="display: flex; align-items: flex-start;">
+                        <span style="color:#F59E0B;font-size:1.3em;margin-left:8px;">•</span>
+                        <span>מקצים משאבים רק אם נשארים במצב בטוח אחרי ההקצאה</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="concept-image" style="width: 70%;">
+                <svg width="600" height="300" viewBox="0 0 600 300">
+                    <!-- Background -->
+                    <rect x="10" y="10" width="580" height="280" rx="15" fill="#0F172A" stroke="#94A3B8" stroke-width="1" opacity="0.3"/>
+                    
+                    <!-- Decision Tree -->
+                    <circle cx="300" cy="50" r="35" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="300" y="55" text-anchor="middle" fill="#FFFFFF" font-size="16">בקשת משאב</text>
+                    
+                    <!-- Main branches -->
+                    <path d="M300,85 L200,135" stroke="#60A5FA" stroke-width="2"/>
+                    <path d="M300,85 L400,135" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="175" y="105" text-anchor="middle" fill="#60A5FA" font-size="14">האם להקצות?</text>
+                    <text x="400" y="105" text-anchor="middle" fill="#60A5FA" font-size="14">דחייה מידית</text>
+                    
+                    <!-- Left branch - Check state -->
+                    <rect x="150" y="135" width="100" height="50" rx="8" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="200" y="165" text-anchor="middle" fill="#FFFFFF" font-size="14">בדיקת מצב</text>
+                    
+                    <!-- Right branch - Reject -->
+                    <rect x="350" y="135" width="100" height="50" rx="8" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="400" y="165" text-anchor="middle" fill="#FFFFFF" font-size="14">ביטול בקשה</text>
+                    
+                    <!-- Bottom branches -->
+                    <path d="M200,185 L140,235" stroke="#60A5FA" stroke-width="2"/>
+                    <path d="M200,185 L260,235" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="150" y="210" text-anchor="middle" fill="#10B981" font-size="14">אישור</text>
+                    <text x="250" y="210" text-anchor="middle" fill="#EF4444" font-size="14">דחייה</text>
+                    
+                    <!-- Final states -->
+                    <rect x="90" y="235" width="100" height="45" rx="8" fill="#1E293B" stroke="#10B981" stroke-width="2"/>
+                    <text x="140" y="263" text-anchor="middle" fill="#FFFFFF" font-size="14">מצב בטוח</text>
+                    
+                    <rect x="210" y="235" width="100" height="45" rx="8" fill="#1E293B" stroke="#EF4444" stroke-width="2"/>
+                    <text x="260" y="263" text-anchor="middle" fill="#FFFFFF" font-size="14">מצב לא בטוח</text>
+                    
+                    <!-- Reject line -->
+                    <path d="M400,185 L400,235" stroke="#60A5FA" stroke-width="2"/>
+                    <polygon points="400,230 395,225 405,225" fill="#60A5FA"/>
+                    <rect x="350" y="235" width="100" height="45" rx="8" fill="#1E293B" stroke="#F59E0B" stroke-width="2"/>
+                    <text x="400" y="263" text-anchor="middle" fill="#FFFFFF" font-size="14">דחיית בקשה</text>
+                    
+                    <!-- Arrows -->
+                    <polygon points="200,130 195,122 205,122" fill="#60A5FA"/>
+                    <polygon points="400,130 395,122 405,122" fill="#60A5FA"/>
+                    <polygon points="140,230 135,222 145,222" fill="#10B981"/>
+                    <polygon points="260,230 255,222 265,222" fill="#EF4444"/>
+                </svg>
+                <figcaption>איור: תהליך קבלת החלטות בהימנעות מקיפאון</figcaption>
+            </div>
+        </div>
+
+        <!-- מצב בטוח -->
+        <div class="content-section" id="safe-state">
+            <h2>🔒 מצב בטוח (Safe State)</h2>
+            <p>מצב בטוח הוא מצב במערכת שבו קיים סדר של הרצת תהליכים שמבטיח שכל תהליך יוכל להשלים את פעולתו ללא קיפאון, גם אם כל התהליכים יבקשו את המקסימום של המשאבים שלהם.</p>
+
+            <div class="expandable-section">
+                <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">מאפייני מצב בטוח <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                <div class="collapsible-content">
+                    <ul>
+                        <li>קיים <strong>לפחות סדר אחד</strong> של תהליכים שיכולים לסיים את הריצה שלהם ללא קיפאון</li>
+                        <li>המערכת תמיד יכולה לספק את כל דרישות המשאבים של לפחות תהליך אחד</li>
+                        <li>כשהתהליך מסיים, המשאבים שלו משתחררים ונכנסים חזרה למאגר המשאבים הזמינים</li>
+                        <li>ניתן להמשיך בתהליך זה עם כל התהליכים הנותרים</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="concept-image" style="width: 100%;">
+                <svg width="900" height="400" viewBox="0 0 900 400">
+                    <!-- Background -->
+                    <rect x="10" y="10" width="880" height="380" rx="15" fill="#0F172A" stroke="#94A3B8" stroke-width="1" opacity="0.3"/>
+                    
+                    <!-- Section Headers -->
+                    <text x="225" y="40" text-anchor="middle" fill="#10B981" font-size="20" font-weight="bold">מצב בטוח</text>
+                    <text x="675" y="40" text-anchor="middle" fill="#EF4444" font-size="20" font-weight="bold">מצב לא בטוח</text>
+                    
+                    <!-- Dividing Line -->
+                    <line x1="450" y1="60" x2="450" y2="380" stroke="#94A3B8" stroke-width="2" stroke-dasharray="5,5"/>
+                    
+                    <!-- SAFE STATE (LEFT SIDE) -->
+                    <rect x="50" y="70" width="350" height="45" rx="5" fill="#1E293B" stroke="#10B981" stroke-width="2"/>
+                    <text x="225" y="100" text-anchor="middle" fill="#FFFFFF" font-size="16">סדר בטוח: P1 → P2 → P3 → P4</text>
+                    
+                    <!-- Processes in Safe State (arranged vertically) -->
+                    <circle cx="120" cy="170" r="28" fill="#1E293B" stroke="#10B981" stroke-width="3"/>
+                    <text x="120" y="175" text-anchor="middle" fill="#FFFFFF" font-size="16">P1</text>
+                    
+                    <circle cx="120" cy="240" r="28" fill="#1E293B" stroke="#10B981" stroke-width="3"/>
+                    <text x="120" y="245" text-anchor="middle" fill="#FFFFFF" font-size="16">P2</text>
+                    
+                    <circle cx="120" cy="310" r="28" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="120" y="315" text-anchor="middle" fill="#FFFFFF" font-size="16">P3</text>
+                    
+                    <circle cx="120" cy="380" r="18" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="120" y="385" text-anchor="middle" fill="#FFFFFF" font-size="14">P4</text>
+                    
+                    <!-- Resources in Safe State (right of each process) -->
+                    <rect x="200" y="155" width="45" height="30" rx="5" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="222" y="175" text-anchor="middle" fill="#FFFFFF" font-size="14">A:2</text>
+                    
+                    <rect x="200" y="225" width="45" height="30" rx="5" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="222" y="245" text-anchor="middle" fill="#FFFFFF" font-size="14">B:3</text>
+                    
+                    <rect x="200" y="295" width="45" height="30" rx="5" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="222" y="315" text-anchor="middle" fill="#FFFFFF" font-size="14">C:1</text>
+                    
+                    <rect x="200" y="365" width="45" height="30" rx="5" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="222" y="385" text-anchor="middle" fill="#FFFFFF" font-size="14">D:1</text>
+                    
+                    <!-- Arrows: Process to Resource (safe allocation) -->
+                    <path d="M148,170 Q170,170 200,170" stroke="#10B981" stroke-width="2" marker-end="url(#arrow-green)"/>
+                    <path d="M148,240 Q170,240 200,240" stroke="#10B981" stroke-width="2" marker-end="url(#arrow-green)"/>
+                    <path d="M148,310 Q170,310 200,310" stroke="#10B981" stroke-width="2" marker-end="url(#arrow-green)"/>
+                    <path d="M138,380 Q170,380 200,380" stroke="#10B981" stroke-width="2" marker-end="url(#arrow-green)"/>
+                    
+                    <!-- Down arrows: Safe sequence -->
+                    <path d="M120,198 L120,212" stroke="#10B981" stroke-width="2" marker-end="url(#arrow-green)"/>
+                    <path d="M120,268 L120,282" stroke="#10B981" stroke-width="2" marker-end="url(#arrow-green)"/>
+                    <path d="M120,338 L120,362" stroke="#10B981" stroke-width="2" marker-end="url(#arrow-green)"/>
+                    
+                    <!-- Safe state explanation -->
+                    <text x="330" y="360" text-anchor="middle" fill="#10B981" font-size="14">המערכת במצב בטוח:</text>
+                    <text x="330" y="380" text-anchor="middle" fill="#FFFFFF" font-size="12">קיים סדר ביצוע שמונע קיפאון</text>
+                    
+                    <!-- UNSAFE STATE (RIGHT SIDE) -->
+                    <rect x="500" y="70" width="350" height="45" rx="5" fill="#1E293B" stroke="#EF4444" stroke-width="2"/>
+                    <text x="675" y="100" text-anchor="middle" fill="#FFFFFF" font-size="16">אין סדר בטוח! אפשרות לקיפאון</text>
+                    
+                    <!-- Processes in Unsafe State (circle) -->
+                    <circle cx="675" cy="200" r="32" fill="#1E293B" stroke="#EF4444" stroke-width="3"/>
+                    <text x="675" y="205" text-anchor="middle" fill="#FFFFFF" font-size="16">P1</text>
+                    
+                    <circle cx="755" cy="260" r="28" fill="#1E293B" stroke="#EF4444" stroke-width="2"/>
+                    <text x="755" y="265" text-anchor="middle" fill="#FFFFFF" font-size="16">P2</text>
+                    
+                    <circle cx="595" cy="260" r="28" fill="#1E293B" stroke="#EF4444" stroke-width="2"/>
+                    <text x="595" y="265" text-anchor="middle" fill="#FFFFFF" font-size="16">P3</text>
+                    
+                    <circle cx="675" cy="320" r="22" fill="#1E293B" stroke="#EF4444" stroke-width="2"/>
+                    <text x="675" y="325" text-anchor="middle" fill="#FFFFFF" font-size="14">P4</text>
+                    
+                    <!-- Resources in Unsafe State (top) -->
+                    <rect x="635" y="120" width="45" height="30" rx="5" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="657" y="140" text-anchor="middle" fill="#FFFFFF" font-size="14">A:0</text>
+                    
+                    <rect x="715" y="120" width="45" height="30" rx="5" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="737" y="140" text-anchor="middle" fill="#FFFFFF" font-size="14">B:1</text>
+                    
+                    <rect x="555" y="120" width="45" height="30" rx="5" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="577" y="140" text-anchor="middle" fill="#FFFFFF" font-size="14">C:0</text>
+                    
+                    <!-- Arrows: Resource needs (dashed, less cluttered) -->
+                    <path d="M675,168 Q675,150 657,150" stroke="#EF4444" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow-red)"/>
+                    <path d="M675,168 Q675,150 737,150" stroke="#EF4444" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow-red)"/>
+                    <path d="M755,232 Q755,150 737,150" stroke="#EF4444" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow-red)"/>
+                    <path d="M595,232 Q595,150 577,150" stroke="#EF4444" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow-red)"/>
+                    <path d="M675,342 Q675,370 675,370" stroke="#EF4444" stroke-width="2" stroke-dasharray="5,3"/>
+                    
+                   
+                    
+                    <!-- Unsafe state explanation -->
+                    <text x="675" y="360" text-anchor="middle" fill="#EF4444" font-size="14">המערכת במצב לא בטוח:</text>
+                    <text x="675" y="380" text-anchor="middle" fill="#FFFFFF" font-size="12">כל התהליכים ממתינים למשאבים שאינם זמינים</text>
+                    
+                    
+                </svg>
+                <figcaption>איור: השוואה בין מצב בטוח (משמאל) ומצב לא בטוח (מימין) במערכת</figcaption>
+            
+
+            <div class="important-note">
+                <p>מערכת במצב בטוח מבטיחה שלא יהיה קיפאון, אך מערכת במצב לא בטוח אינה בהכרח מובילה לקיפאון - היא רק מציינת שקיפאון הוא אפשרי.</p>
+            </div>
+        </div>
+    </div>
+    
+
+        <!-- אלגוריתם הבנקאי -->
+        <div class="content-section" id="banker-algorithm">
+            <h2>💹 אלגוריתם הבנקאי (Banker's Algorithm)</h2>
+            <p>אלגוריתם הבנקאי הוא אלגוריתם להימנעות מקיפאון שפותח על-ידי אדסגר דייקסטרה (Edsger Dijkstra). האלגוריתם מדמה את הדרך שבה בנק מנהל את הקצאת הכסף שלו כך שכל הלקוחות יוכלו להשלים את העסקאות שלהם.</p>
+            
+            <div class="expandable-section">
+                <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">מבנה נתונים באלגוריתם הבנקאי <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                <div class="collapsible-content">
+                    <div class="concept-grid">
+                        <div class="concept-row">
+                            <div class="concept-item">
+                                <h4>וקטור משאבים זמינים (Available)</h4>
+                                <p>מציין כמה משאבים מכל סוג זמינים במערכת</p>
+                            </div>
+                            <div class="concept-item">
+                                <h4>מטריצת הקצאה (Allocation)</h4>
+                                <p>מציינת כמה משאבים מוקצים לכל תהליך</p>
+                            </div>
+                        </div>
+                        <div class="concept-row">
+                            <div class="concept-item">
+                                <h4>מטריצת מקסימום (Max)</h4>
+                                <p>מציינת את הדרישה המקסימלית של משאבים לכל תהליך</p>
+                            </div>
+                            <div class="concept-item">
+                                <h4>מטריצת צורך (Need)</h4>
+                                <p>מציינת כמה משאבים נוספים עשוי תהליך לבקש</p>
+                                <p>Need[i,j] = Max[i,j] - Allocation[i,j]</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="concept-image" style="width: 100%;">
+                <svg width="850" height="400" viewBox="0 0 850 400">
+                    <!-- Background -->
+                    <rect x="10" y="10" width="830" height="380" rx="15" fill="#0F172A" stroke="#94A3B8" stroke-width="1" opacity="0.3"/>
+                    
+                    <!-- Title -->
+                    <text x="425" y="40" text-anchor="middle" fill="#FFFFFF" font-size="18" font-weight="bold">אלגוריתם הבנקאי - שלבי פעולה</text>
+                    
+                    <!-- Banking Metaphor (Left Side) -->
+                    <rect x="40" y="70" width="240" height="300" rx="10" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="160" y="90" text-anchor="middle" fill="#FFFFFF" font-size="16" font-weight="bold">המטאפורה הבנקאית</text>
+                    
+                    <!-- Banker -->
+                    <circle cx="160" cy="130" r="25" fill="#0F172A" stroke="#10B981" stroke-width="2"/>
+                    <text x="160" y="135" text-anchor="middle" fill="#FFFFFF" font-size="14">בנקאי</text>
+                    
+                    <!-- Resources/Money -->
+                    <text x="160" y="190" text-anchor="middle" fill="#FFFFFF" font-size="12">משאבים/כסף</text>
+                    
+                    <!-- Clients -->
+                    <circle cx="80" cy="240" r="20" fill="#0F172A" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="80" y="245" text-anchor="middle" fill="#FFFFFF" font-size="12">לקוח 1</text>
+                    
+                    <circle cx="160" cy="240" r="20" fill="#0F172A" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="160" y="245" text-anchor="middle" fill="#FFFFFF" font-size="12">לקוח 2</text>
+                    
+                    <circle cx="240" cy="240" r="20" fill="#0F172A" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="240" y="245" text-anchor="middle" fill="#FFFFFF" font-size="12">לקוח 3</text>
+                    
+                    <!-- Connection lines -->
+                    <path d="M160,155 L160,170" stroke="#FFFFFF" stroke-width="1"/>
+                    <path d="M80,220 L80,195 L160,195" stroke="#FFFFFF" stroke-width="1" stroke-dasharray="3,2"/>
+                    <path d="M160,220 L160,200" stroke="#FFFFFF" stroke-width="1" stroke-dasharray="3,2"/>
+                    <path d="M240,220 L240,195 L160,195" stroke="#FFFFFF" stroke-width="1" stroke-dasharray="3,2"/>
+                    
+                    <!-- Explanation text -->
+                    <text x="160" y="280" text-anchor="middle" fill="#FFFFFF" font-size="12">בנקאי מחליט אם להלוות</text>
+                    <text x="160" y="295" text-anchor="middle" fill="#FFFFFF" font-size="12">כסף ללקוחות, רק אם</text>
+                    <text x="160" y="310" text-anchor="middle" fill="#FFFFFF" font-size="12">כל הלקוחות יוכלו</text>
+                    <text x="160" y="325" text-anchor="middle" fill="#FFFFFF" font-size="12">להחזיר את ההלוואות</text>
+                    <text x="160" y="340" text-anchor="middle" fill="#FFFFFF" font-size="12">(מניעת פשיטת רגל)</text>
+                    
+                    <!-- Algorithm Steps (Right Side) -->
+                    <!-- Step 1 -->
+                    <rect x="310" y="70" width="500" height="60" rx="5" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="750" y="95" text-anchor="start" fill="#FFFFFF" font-size="14" font-weight="bold">1. אתחול</text>
+                    <text x="750" y="115" text-anchor="start" fill="#FFFFFF" font-size="12">יצירת מבני הנתונים: Available, Max, Allocation, Need</text>
+                    
+                    <!-- Step 2 -->
+                    <rect x="310" y="140" width="500" height="60" rx="5" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="750" y="165" text-anchor="start" fill="#FFFFFF" font-size="14" font-weight="bold">2. בדיקת הבקשה</text>
+                    <text x="750" y="185" text-anchor="start" fill="#FFFFFF" font-size="12">וידוא שהבקשה אינה חורגת מהצרכים ומהמשאבים הזמינים</text>
+                    
+                    <!-- Step 3 -->
+                    <rect x="310" y="210" width="500" height="70" rx="5" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="750" y="235" text-anchor="start" fill="#FFFFFF" font-size="14" font-weight="bold">3. סימולציית הקצאה</text>
+                    <text x="750" y="255" text-anchor="start" fill="#FFFFFF" font-size="12">הקצאה זמנית של המשאבים המבוקשים</text>
+                    <text x="750" y="270" text-anchor="start" fill="#FFFFFF" font-size="12">עדכון מצב Available, Allocation, Need</text>
+                    
+                    <!-- Step 4 -->
+                    <rect x="310" y="290" width="500" height="80" rx="5" fill="#1E293B" stroke="#10B981" stroke-width="2"/>
+                    <text x="750" y="315" text-anchor="start" fill="#FFFFFF" font-size="14" font-weight="bold">4. בדיקת בטיחות (Safety Algorithm)</text>
+                    <text x="750" y="335" text-anchor="start" fill="#FFFFFF" font-size="12">בדיקה האם המערכת נשארת במצב בטוח אחרי הקצאת המשאבים</text>
+                    <text x="750" y="355" text-anchor="start" fill="#FFFFFF" font-size="12">חיפוש סדר תהליכים שיכול לסיים ללא קיפאון</text>
+                    
+                    <!-- Connection arrows -->
+                    <path d="M285, 200 L310, 200" stroke="#60A5FA" stroke-width="2"/>
+                    <polygon points="305,200 300,195 300,205" fill="#60A5FA"/>
+                </svg>
+                <figcaption>איור: שלבי הפעולה של אלגוריתם הבנקאי</figcaption>
+            </div>
+            
+            
+
+            <div class="content-section" id="safety-algorithm">
+                <h3>אלגוריתם בדיקת בטיחות (Safety Algorithm)</h3>
+                
+                <div class="concept-image" style="width: 85%;">
+                    <svg width="600" height="350" viewBox="0 0 600 350">
+                        <!-- Background -->
+                        <rect x="10" y="10" width="580" height="330" rx="15" fill="#0F172A" stroke="#94A3B8" stroke-width="1" opacity="0.3"/>
+                        
+                        <!-- Flow Chart -->
+                        <!-- Start -->
+                        <rect x="250" y="30" width="100" height="40" rx="20" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                        <text x="300" y="55" text-anchor="middle" fill="#FFFFFF" font-size="14">התחלה</text>
+                        
+                        <!-- Initialize -->
+                        <rect x="225" y="90" width="150" height="40" rx="5" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                        <text x="300" y="115" text-anchor="middle" fill="#FFFFFF" font-size="12">אתחול Work = Available</text>
+                        
+                        <!-- Find Process -->
+                        <path d="M300,130 L300,160" stroke="#60A5FA" stroke-width="2"/>
+                        <polygon points="300,155 295,150 305,150" fill="#60A5FA"/>
+                        
+                        <rect x="150" y="160" width="300" height="50" rx="5" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                        <text x="300" y="175" text-anchor="middle" fill="#FFFFFF" font-size="12">חפש תהליך i שעדיין לא הסתיים</text>
+                        <text x="300" y="195" text-anchor="middle" fill="#FFFFFF" font-size="12">וצריך משאבים פחות או שווה למשאבים הזמינים</text>
+                        
+                        <!-- Decision -->
+                        <path d="M300,210 L300,240" stroke="#60A5FA" stroke-width="2"/>
+                        <polygon points="300,235 295,230 305,230" fill="#60A5FA"/>
+                        
+                        <polygon points="300,240 350,270 300,300 250,270" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                        <text x="300" y="275" text-anchor="middle" fill="#FFFFFF" font-size="12">נמצא תהליך?</text>
+                        
+                        <!-- Yes branch -->
+                        <path d="M350,270 L400,270" stroke="#10B981" stroke-width="2"/>
+                        <text x="370" y="260" text-anchor="middle" fill="#10B981" font-size="12">כן</text>
+                        
+                        <rect x="400" y="250" width="150" height="40" rx="5" fill="#1E293B" stroke="#10B981" stroke-width="2"/>
+                        <text x="475" y="270" text-anchor="middle" fill="#FFFFFF" font-size="12">Work += Allocation[i]</text>
+                        <text x="475" y="285" text-anchor="middle" fill="#FFFFFF" font-size="12">סמן תהליך i כמסיים</text>
+                        
+                        <!-- Loop back -->
+                        <path d="M475,250 L475,190" stroke="#10B981" stroke-width="2"/>
+                        <path d="M475,190 L300,190" stroke="#10B981" stroke-width="2"/>
+                        <polygon points="305,190 300,185 300,195" fill="#10B981"/>
+                        
+                        <!-- No branch -->
+                        <path d="M250,270 L200,270" stroke="#EF4444" stroke-width="2"/>
+                        <text x="230" y="260" text-anchor="middle" fill="#EF4444" font-size="12">לא</text>
+                        
+                        <!-- Check completion -->
+                        <rect x="50" y="250" width="150" height="40" rx="5" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                        <text x="125" y="275" text-anchor="middle" fill="#FFFFFF" font-size="12">בדוק אם כל התהליכים סומנו</text>
+                        
+                        <!-- Final decision -->
+                        <path d="M125,290 L125,320" stroke="#60A5FA" stroke-width="2"/>
+                        <polygon points="125,315 120,310 130,310" fill="#60A5FA"/>
+                        
+                        <!-- Results -->
+                        <rect x="40" y="320" width="100" height="30" rx="5" fill="#1E293B" stroke="#10B981" stroke-width="2"/>
+                        <text x="90" y="340" text-anchor="middle" fill="#FFFFFF" font-size="12">מצב בטוח</text>
+                        
+                        <rect x="160" y="320" width="100" height="30" rx="5" fill="#1E293B" stroke="#EF4444" stroke-width="2"/>
+                        <text x="210" y="340" text-anchor="middle" fill="#FFFFFF" font-size="12">מצב לא בטוח</text>
+                        
+                        <path d="M125,320 L90,320" stroke="#10B981" stroke-width="2"/>
+                        <text x="105" y="315" text-anchor="middle" fill="#10B981" font-size="10">כן</text>
+                        
+                        <path d="M125,320 L160,320" stroke="#EF4444" stroke-width="2"/>
+                        <text x="145" y="315" text-anchor="middle" fill="#EF4444" font-size="10">לא</text>
+                    </svg>
+                    <figcaption>איור: תרשים זרימה של אלגוריתם בדיקת בטיחות</figcaption>
+                </div>
+                <div class="important-note">
+                    <p>יתרונות וחסרונות של אלגוריתם הבנקאי:</p>
+                    <p><strong>יתרונות:</strong> מונע קיפאון, מאפשר ניהול משאבים דינמי, מוכח מתמטית</p>
+                    <p><strong>חסרונות:</strong> דורש ידיעה מראש של מספר המשאבים המקסימלי, עלול לגרום לניצולת נמוכה של משאבים, עלות חישובית גבוהה</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- זיהוי קיפאון -->
+        <div class="content-section" id="deadlock-detection">
+            <h2>🔍 זיהוי קיפאון (Deadlock Detection)</h2>
+            <p>זיהוי קיפאון הוא גישה שבה המערכת מאפשרת למצבי קיפאון להתרחש, אך היא בודקת מפעם לפעם האם המערכת נמצאת במצב של קיפאון, ואם כן – היא מפעילה אמצעים לשחרור הקיפאון.</p>
+            
+            <div class="concept-grid">
+                <div class="concept-row">
+                    <div class="concept-item">
+                        <h4>אלגוריתם זיהוי הקיפאון</h4>
+                        <p>דומה מאוד לאלגוריתם הבטיחות של הבנקאי, אך פועל על מצב הקיים של המערכת.</p>
+                        <ol>
+                            <li>מאתחל וקטור עבודה (Work) לערך של Available</li>
+                            <li>מחפש תהליך שיכול לסיים את הריצה עם המשאבים הזמינים הנוכחיים</li>
+                            <li>אם תהליך כזה נמצא, מוסיף את המשאבים שלו למשאבים הזמינים וחוזר על החיפוש</li>
+                            <li>אם לא נמצאו תהליכים כאלה וישנם תהליכים שטרם סיימו - המערכת נמצאת במצב קיפאון</li>
+                        </ol>
+                    </div>
+                    <div class="concept-item">
+                        <h4>זיהוי באמצעות גרף הקצאת משאבים</h4>
+                        <p>משתמשים בגרף הקצאת משאבים (RAG - Resource Allocation Graph) כדי לזהות קיפאון:</p>
+                        <ul>
+                            <li>אם הגרף אינו מכיל מעגלים, אין קיפאון</li>
+                            <li>אם הגרף מכיל מעגל ויש רק מופע אחד מכל סוג משאב, יש קיפאון</li>
+                            <li>אם הגרף מכיל מעגל ויש מופעים מרובים מחלק מהמשאבים, ייתכן שיש קיפאון</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="info-box">
+                <h3>הסבר פשוט על זיהוי קיפאון:</h3>
+                <p>
+                    תארו לעצמכם שיש כמה ילדים וכל ילד מחזיק צעצוע אחד, אבל רוצה לשחק גם בצעצוע של ילד אחר. כל ילד מחכה שהילד השני יסיים, אבל אף אחד לא מוותר על הצעצוע שלו. אם נצייר חץ מכל ילד לצעצוע שהוא רוצה, ונראה שיש מעגל – זה אומר שכולם מחכים אחד לשני ואף אחד לא יוכל להמשיך לשחק. ככה מזהים קיפאון: מחפשים מעגלים ב"שרשרת ההמתנה".
+                </p>
+            </div>
+
+          
+            
+            <div class="info-box">
+                <h3>שיקולים בזיהוי קיפאון:</h3>
+                <ul>
+                    <li><strong>תדירות הזיהוי:</strong> כמה פעמים לבצע את אלגוריתם הזיהוי? תדירות גבוהה גורמת לתקורה, תדירות נמוכה עלולה לגרום לקיפאון להימשך זמן רב</li>
+                    <li><strong>זיהוי מותנה:</strong> לזהות קיפאון רק כאשר יש חשד (למשל, כשמשאב נדרש ואינו זמין)</li>
+                    <li><strong>מורכבות החישוב:</strong> לאלגוריתם זיהוי הקיפאון יש סיבוכיות של O(m × n²), כאשר m הוא מספר סוגי המשאבים ו-n הוא מספר התהליכים</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- שחרור מקיפאון -->
+        <div class="content-section" id="deadlock-recovery">
+            <h2>🔓 שחרור מקיפאון (Deadlock Recovery)</h2>
+            <p>כאשר מזוהה קיפאון במערכת, יש צורך לשחרר אותו באמצעות אחת מהגישות הבאות:</p>
+            
+            <div class="concept-grid">
+                <div class="concept-row">
+                    <div class="concept-item">
+                        <h4>1. חיסול תהליכים (Process Termination)</h4>
+                        <p>מסיימים אחד או יותר מהתהליכים המעורבים בקיפאון:</p>
+                        <ul>
+                            <li><strong>חיסול כל התהליכים:</strong> פתרון רדיקלי אך פשוט</li>
+                            <li><strong>חיסול תהליך אחר תהליך:</strong> חיסול סלקטיבי עד לשבירת הקיפאון</li>
+                        </ul>
+                    </div>
+                    <div class="concept-item">
+                        <h4>2. הפקעת משאבים (Resource Preemption)</h4>
+                        <p>לקיחה זמנית של משאבים מתהליכים:</p>
+                        <ul>
+                            <li><strong>בחירת הקורבן:</strong> איזה תהליך לפגוע בו עם מינימום עלות</li>
+                            <li><strong>rollback:</strong> החזרת התהליך למצב בטוח קודם</li>
+                            <li><strong>מניעת הרעבה:</strong> וידוא שאותו תהליך לא מופקע תמיד</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="concept-image" style="width: 80%;">
+                <svg width="600" height="350" viewBox="0 0 600 350">
+                    <!-- Background -->
+                    <rect x="10" y="10" width="580" height="330" rx="15" fill="#0F172A" stroke="#94A3B8" stroke-width="1" opacity="0.3"/>
+                    
+                    <!-- Title -->
+                    <text x="300" y="40" text-anchor="middle" fill="#FFFFFF" font-size="18" font-weight="bold">תהליך שחרור מקיפאון</text>
+                    
+                    <!-- Detection box -->
+                    <rect x="100" y="70" width="400" height="60" rx="10" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="300" y="95" text-anchor="middle" fill="#FFFFFF" font-size="16">זיהוי קיפאון</text>
+                    <text x="300" y="115" text-anchor="middle" fill="#FFFFFF" font-size="12">המערכת מזהה שקיים מצב קיפאון</text>
+                    
+                    <!-- Arrow down -->
+                    <path d="M300,130 L300,160" stroke="#FFFFFF" stroke-width="2"/>
+                    <polygon points="300,155 295,150 305,150" fill="#FFFFFF"/>
+                    
+                    <!-- Recovery Decision -->
+                    <rect x="100" y="160" width="400" height="60" rx="10" fill="#1E293B" stroke="#60A5FA" stroke-width="2"/>
+                    <text x="300" y="185" text-anchor="middle" fill="#FFFFFF" font-size="16">בחירת שיטת שחרור</text>
+                    <text x="300" y="205" text-anchor="middle" fill="#FFFFFF" font-size="12">החלטה על חיסול תהליכים או הפקעת משאבים</text>
+                    
+                    <!-- Arrow splits -->
+                    <path d="M300,220 L300,240" stroke="#FFFFFF" stroke-width="2"/>
+                    <path d="M300,240 L200,240" stroke="#FFFFFF" stroke-width="2"/>
+                    <path d="M300,240 L400,240" stroke="#FFFFFF" stroke-width="2"/>
+                    
+                    <path d="M200,240 L200,260" stroke="#FFFFFF" stroke-width="2"/>
+                    <polygon points="200,255 195,250 205,250" fill="#FFFFFF"/>
+                    
+                    <path d="M400,240 L400,260" stroke="#FFFFFF" stroke-width="2"/>
+                    <polygon points="400,255 395,250 405,250" fill="#FFFFFF"/>
+                    
+                    <!-- Process Termination -->
+                    <rect x="100" y="260" width="200" height="70" rx="10" fill="#1E293B" stroke="#EF4444" stroke-width="2"/>
+                    <text x="200" y="280" text-anchor="middle" fill="#FFFFFF" font-size="16">חיסול תהליכים</text>
+                    <text x="200" y="300" text-anchor="middle" fill="#FFFFFF" font-size="12">בחירת תהליכים לסיום</text>
+                    <text x="200" y="320" text-anchor="middle" fill="#FFFFFF" font-size="12">בהתבסס על עדיפות, זמן שנותר, משאבים</text>
+                    
+                    <!-- Resource Preemption -->
+                    <rect x="300" y="260" width="200" height="70" rx="10" fill="#1E293B" stroke="#F59E0B" stroke-width="2"/>
+                    <text x="400" y="280" text-anchor="middle" fill="#FFFFFF" font-size="16">הפקעת משאבים</text>
+                    <text x="400" y="300" text-anchor="middle" fill="#FFFFFF" font-size="12">בחירת משאבים להפקעה</text>
+                    <text x="400" y="320" text-anchor="middle" fill="#FFFFFF" font-size="12">שמירת מצב התהליך לשחזור עתידי</text>
+                </svg>
+                <figcaption>איור: תהליך שחרור מקיפאון</figcaption>
+            </div>
+            
+            <div class="expandable-section">
+                <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">שיקולים בבחירת תהליך לחיסול <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                <div class="collapsible-content">
+                    <ol>
+                        <li><strong>עדיפות התהליך:</strong> עדיף לסיים תהליכים בעדיפות נמוכה</li>
+                        <li><strong>זמן ריצה וזמן שנותר:</strong> עדיף לסיים תהליכים שרצו זמן קצר או שנותר להם עוד הרבה זמן</li>
+                        <li><strong>משאבים בשימוש:</strong> עדיף לסיים תהליכים שמשתמשים ביותר משאבים</li>
+                        <li><strong>מספר תהליכים שיש לסיים:</strong> עדיף לסיים מספר מינימלי של תהליכים</li>
+                        <li><strong>האם התהליך אינטראקטיבי או אצווה:</strong> עדיף לסיים תהליכי אצווה שניתן להריץ מחדש</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="important-note">
+                <p>כל שיטות שחרור הקיפאון כרוכות בעלות, כגון:</p>
+                <ul>
+                    <li>אובדן עבודה כתוצאה מחיסול תהליכים</li>
+                    <li>עלות השמירה והשחזור של מצבים קודמים</li>
+                    <li>תקורה הקשורה לניהול התהליך (בחירת "קורבן", שחזור וכו')</li>
+                    <li>אפשרות להרעבה של תהליכים מסוימים</li>
+                </ul>
+            </div>
+        </div>
+
+    </body>
+</html>
+
+            
+         
+

@@ -930,3 +930,33 @@
                 display: flex;
                 justify-content: center;
             }
+    .important-note {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(239, 68, 68, 0.8));
+        border: 1px solid rgba(245, 158, 11, 0.5);
+        border-radius: 15px;
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        color: #cbd5e1;
+        font-size: 1.1em;
+        line-height: 1.6;
+        position: relative;
+    }
+
+    .important-note::before {
+        content: '❗';
+        position: absolute;
+        top: -15px;
+        right: 20px;
+        background: rgba(15, 23, 42, 0.9);
+        padding: 5px 10px;
+        border-radius: 50%;
+        font-size: 1.2em;
+        color: #f59e0b;
+    }
+
+    .important-note:hover {
+        background: rgba(245, 158, 11, 0.9);
+        box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+        transform: translateY(-5px);
+    }
