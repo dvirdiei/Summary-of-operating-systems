@@ -8,14 +8,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style/main.css">
+    <script src="script/topic.js"></script>
 </head>
 <body>
     <div class="container">
         <!-- Sidebar: דבר העורך -->
-        <div class="sidebar">
-            <h2>דבר העורך</h2>
-            <p>
-                האתר נבנה במטרה לספק סיכום מהיר ופשוט, המיועד בעיקר לרענון ידע בנושאים מוכרים ופחות ללימוד מאפס.
+        <div class="sidebar" id="editor-note">
+        <h2>דבר העורך</h2>
+        <p id="editor-text">
+                האתר נבנה במט</a>רה לספק סיכום מהיר ופשוט, המיועד בעיקר לרענון ידע בנושאים מוכרים ופחות ללימוד מאפס.
             </p>
             <p>
                 במידה ונתקלתם בטעות, עיצוב לא נכון, או פשוט רוצים להגיד וואי איזה מלך שאתה יושב לילות יקרים מפז עלזה אוהבים אותך יגבר  - אשמח לשמוע מכם! אם יש לכם הסבר טוב יותר מהרשום, אשמח גם לקבל אותו.
@@ -45,44 +46,136 @@
                 <h1>מערכות הפעלה</h1>
                 <div class="subtitle">Operating Systems Course</div>
             </div>
-
             <!-- גריד של כרטיסי נושאים -->
             <div class="topics-grid">
-                <a href="מבוא.html" class="topic-card">
+                <a href="מבוא.html" class="topic-card" data-subtopics='[
+                    {"emoji": "🔍", "title": "מה זה מערכת הפעלה?"},
+                    {"emoji": "🧩", "title": "חלקים עיקריים"},
+                    {"emoji": "📋", "title": "תפקידי המערכת"},
+                    {"emoji": "⚠️", "title": "בעיות במערכת"},
+                    {"emoji": "🏗️", "title": "מבנה המחשב"},
+                    {"emoji": "🔗", "title": "דרייברים ופסיקות"},
+                    {"emoji": "⚡", "title": "טיפול בפסיקות"},
+                    {"emoji": "🎯", "title": "מלכודות וחריגות"},
+                    {"emoji": "💾", "title": "מבנה אחסון"},
+                    {"emoji": "🔄", "title": "הפעלת המחשב"}
+                ]'>
                     <div class="emoji">🖥️</div>
                     <h3>מבוא למערכות הפעלה</h3>
                 </a>
-                <a href="סקירה כללית.html" class="topic-card">
+                <a href="סקירה כללית.html" class="topic-card" data-subtopics='[
+                    {"emoji": "📊", "title": "ריבוי תכנותי"},
+                    {"emoji": "🔄", "title": "ריבוי משימות"},
+                    {"emoji": "🔒", "title": "פעולה במצב ריבוי"},
+                    {"emoji": "⏲️", "title": "שעון עצר"},
+                    {"emoji": "🔧", "title": "ניהול תהליכים"},
+                    {"emoji": "⚙️", "title": "פעילות ניהול תהליכים"},
+                    {"emoji": "🧠", "title": "ניהול זיכרון"},
+                    {"emoji": "📁", "title": "ניהול מערכות קבצים"},
+                    {"emoji": "💽", "title": "ניהול אחסון המוני"},
+                    {"emoji": "⚡", "title": "מטמון"},
+                    {"emoji": "🔌", "title": "מערכת קלט/פלט"},
+                    {"emoji": "🔒", "title": "אבטחה והגנה"},
+                    {"emoji": "🌐", "title": "סביבת מחשב"}
+                ]'>
                     <div class="emoji">📊</div>
                     <h3>שרותי מערכת הפעלה - א </h3>
                 </a>
-                <a href="שירותי מערכצ .html" class="topic-card">
+                <a href="שירותי מערכצ .html" class="topic-card" data-subtopics='[
+                    {"emoji": "⌨️", "title": "ממשק שורת פקודה"},
+                    {"emoji": "🖥️", "title": "ממשק גרפי"},
+                    {"emoji": "📱", "title": "ממשק מסך מגע"},
+                    {"emoji": "🔧", "title": "קריאות מערכת"},
+                    {"emoji": "📚", "title": "ספרייה של שפות תכנות"},
+                    {"emoji": "🔗", "title": "מחברים ומעמיסים"},
+                    {"emoji": "❓", "title": "למה אפליקציות שונות לכל מערכת הפעלה"},
+                    {"emoji": "⚙️", "title": "עיצוב ומימוש: מדיניות ומנגנון"}
+                ]'>
                     <div class="emoji">⚙️</div>
                     <h3>שרותי מערכת הפעלה - ב</h3>
                 </a>
-                <a href="תהליכים .html" class="topic-card">
+                <a href="תהליכים .html" class="topic-card" data-subtopics='[
+                    {"emoji": "❓", "title": "מהו תהליך?"},
+                    {"emoji": "💾", "title": "זיכרון והקצאת משאבים"},
+                    {"emoji": "🔄", "title": "מצבי תהליך וגרף מעבר"},
+                    {"emoji": "🗂️", "title": "גוף ניהול זיכרון"},
+                    {"emoji": "⏱️", "title": "תיזמון תהליכים"},
+                    {"emoji": "🔄", "title": "החלפת הקשר"},
+                    {"emoji": "📱", "title": "ריבוי משימות במערכות טלפונים"},
+                    {"emoji": "➕", "title": "יצירת תהליך"},
+                    {"emoji": "❌", "title": "סיום תהליך"},
+                    {"emoji": "🔗", "title": "תקשורת בין תהליכים"},
+                    {"emoji": "⚠️", "title": "בעיית יצרן-צרכן"}
+                ]'>
                     <div class="emoji">👥</div>
                     <h3>ניהול תהליכים</h3>
                 </a>
-                <a href="תהליכונים.html" class="topic-card">
+                <a href="תהליכונים.html" class="topic-card" data-subtopics='[
+                    {"emoji": "❓", "title": "מה זה תהליכון?"},
+                    {"emoji": "🧵", "title": "הבדלים בין תהליכונים לתהליכים"},
+                    {"emoji": "⚡", "title": "מקביליות וביצועים"},
+                    {"emoji": "🧠", "title": "מודלי תהליכונים: רבים-לאחד, אחד-לאחד, רבים-לרבים, דו-רמתי"},
+                    {"emoji": "📊", "title": "חוק אמדאל"},
+                    {"emoji": "🔄", "title": "תכנות ריבוי ליבות"}
+                ]'>
                     <div class="emoji">🧵</div>
                     <h3>תהליכונים והקבלה </h3>
                 </a>
-                <a href="תזמון מעבד.html" class="topic-card">
+                <a href="תזמון מעבד.html" class="topic-card" data-subtopics='[
+                    {"emoji": "⏱️", "title": "אלגוריתם FCFS"},
+                    {"emoji": "📊", "title": "אלגוריתם SJF"},
+                    {"emoji": "⚡", "title": "אלגוריתם SRTF"},
+                    {"emoji": "🔄", "title": "אלגוריתם Round Robin"},
+                    {"emoji": "🔢", "title": "תזמון עדיפות"},
+                    {"emoji": "📚", "title": "תזמון ריבוי רמות"},
+                    {"emoji": "🔄", "title": "תור רמות עם משוב"},
+                    {"emoji": "🧵", "title": "תזמון תהליכונים"},
+                    {"emoji": "💻", "title": "תזמון במערכות מרובות מעבדים"},
+                    {"emoji": "🧲", "title": "העדפת מעבד"},
+                    {"emoji": "📊", "title": "נוסחת ליטל"}
+                ]'>
                     <div class="emoji">⏱️</div>
                     <h3>תזמון מעבד</h3>
                 </a>
-                <a href="קטע קריטי.html" class="topic-card">
+                <a href="קטע קריטי.html" class="topic-card" data-subtopics='[
+                    {"emoji": "🔐", "title": "הקדמה לקטע קריטי"},
+                    {"emoji": "🏃‍♂️", "title": "מרוץ תהליכים"},
+                    {"emoji": "⚡", "title": "בעיית קטע קריטי"},
+                    {"emoji": "📋", "title": "דרישות לפתרון"},
+                    {"emoji": "⚙️", "title": "פתרון בעזרת פסיקות"},
+                    {"emoji": "💻", "title": "פתרונות תוכנה"},
+                    {"emoji": "🔒", "title": "מנגנוני סנכרון"},
+                    {"emoji": "🏗️", "title": "פתרונות חומרה"}
+                ]'>
                     <div class="emoji">⚠️</div>
                     <h3>קטע קריטי</h3>
                 </a>
-                <a href="דוגמאות לסנכרון.html" class="topic-card">
+                <a href="דוגמאות לסנכרון.html" class="topic-card" data-subtopics='[
+                    {"emoji": "🔄", "title": "בעיית יצרן-צרכן"},
+                    {"emoji": "🔍", "title": "פתרון עם סמפורים"},
+                    {"emoji": "🔒", "title": "פתרון עם מוניטורים"},
+                    {"emoji": "⚠️", "title": "בעיות נפוצות"},
+                    {"emoji": "📚", "title": "בעיית קוראים-כותבים"},
+                    {"emoji": "🍴", "title": "בעיית הפילוסופים"}
+                ]'>
                     <div class="emoji">🔄</div>
                     <h3>דוגמאות לסנכרון</h3>
                 </a>
-                <a href="מעבר בין משאבים.html" class="topic-card">
+                <a href="מעבר בין משאבים.html" class="topic-card" data-subtopics='[
+                    {"emoji": "🔄", "title": "מהו משאב?"},
+                    {"emoji": "🔒", "title": "מבוא לקיפאון"},
+                    {"emoji": "🔍", "title": "תנאים הכרחיים לקיפאון"},
+                    {"emoji": "📖", "title": "עובדות בסיסיות"},
+                    {"emoji": "🛠️", "title": "דרכים לטפל בקיפאון"},
+                    {"emoji": "🔄", "title": "הימנעות מקיפאון"},
+                    {"emoji": "🔒", "title": "מצב בטוח"},
+                    {"emoji": "💹", "title": "אלגוריתם הבנקאי"},
+                    {"emoji": "🔍", "title": "זיהוי קיפאון"},
+                    {"emoji": "🔓", "title": "שחרור מקיפאון"}
+                ]'>
                     <div class="emoji">💀</div>
                     <h3>מעבר בין משאבים (deadlock)</h3>
+                </a>
                 </a>
                 <a href="pages/distributed.html" class="topic-card">
                     <div class="emoji">🌐</div>
