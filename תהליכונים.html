@@ -20,27 +20,28 @@
         <div class="nav-sidebar-title">תוכן העניינים</div>
         <ul class="nav-main-menu">
             <li class="nav-category">
-                <a href="#what-is-thread" class="category-title">📝 יסודות תהליכונים</a>
-                <ul class="nav-submenu">
-                    <li><a href="#what-is-thread">מה זה תהליכון?</a></li>
-                    <li><a href="#multi-threaded-servers">שרתי ריבוי תהליכונים</a></li>
-                </ul>
+            <a href="#what-is-thread" class="category-title">📝 יסודות תהליכונים</a>
+            <ul class="nav-submenu">
+                <li><a href="#what-is-thread">מה זה תהליכון?</a></li>
+                <li><a href="#multi-threaded-servers">שרתי ריבוי תהליכונים</a></li>
+            </ul>
             </li>
             <li class="nav-category">
-                <a href="#multi-core-programming" class="category-title">⚡ מקביליות וביצועים</a>
-                <ul class="nav-submenu">
-                    <li><a href="#multi-core-programming">תכנות ריבוי ליבות</a></li>
-                    <li><a href="#amdahl-law">חוק אמדאל</a></li>
-                </ul>
+            <a href="#multi-core-programming" class="category-title">⚡ מקביליות וביצועים</a>
+            <ul class="nav-submenu">
+                <li><a href="#multi-core-programming">תכנות ריבוי ליבות</a></li>
+                <li><a href="#amdahl-law">חוק אמדאל</a></li>
+            </ul>
             </li>
             <li class="nav-category">
-                <a href="#kernel-threads" class="category-title">🧠 מודלי תהליכונים</a>
-                <ul class="nav-submenu">
-                    <li><a href="#kernel-threads">תהליכי גרעין ומודלים</a></li>
-                    <li><a href="#kernel-threads" onclick="document.getElementById('kernel-threads').scrollIntoView();">מודל רבים-לאחד</a></li>
-                    <li><a href="#kernel-threads" onclick="document.getElementById('kernel-threads').scrollIntoView();">מודל אחד-לאחד</a></li>
-                    <li><a href="#kernel-threads" onclick="document.getElementById('kernel-threads').scrollIntoView();">מודל רבים-לרבים</a></li>
-                </ul>
+            <a href="#kernel-threads" class="category-title">🧠 מודלי תהליכונים</a>
+            <ul class="nav-submenu">
+                <li><a href="#kernel-threads">תהליכי גרעין ומודלים</a></li>
+                <li><a href="#kernel-threads" onclick="document.getElementById('kernel-threads').scrollIntoView();">מודל רבים-לאחד</a></li>
+                <li><a href="#kernel-threads" onclick="document.getElementById('kernel-threads').scrollIntoView();">מודל אחד-לאחד</a></li>
+                <li><a href="#kernel-threads" onclick="document.getElementById('kernel-threads').scrollIntoView();">מודל רבים-לרבים</a></li>
+                <li><a href="#kernel-threads" onclick="document.getElementById('kernel-threads').scrollIntoView();">מודל דו-רמתי</a></li>
+            </ul>
             </li>
         </ul>
         <div class="back-home">
@@ -619,6 +620,95 @@
                     <p style="text-align: center;">מודל רבים-לרבים: תהליכוני משתמש רבים ממופים למספר תהליכוני גרעין</p>
                 </div>
             </div>
+
+            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">מודל דו-רמתי (Two-Level) <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+            <div class="collapsible-content">
+                <p>
+                    מודל המשלב את היתרונות של מודל אחד-לאחד ומודל רבים-לרבים. חלק מתהליכוני המשתמש ממופים ישירות לתהליכוני גרעין (אחד-לאחד), בעוד אחרים משתמשים במיפוי רבים-לרבים.
+                </p>
+                <ul class="feature-list"></ul>
+                    <li><strong>יתרונות:</strong> גמישות מרבית, שליטה טובה יותר בתהליכונים קריטיים, ניצול יעיל של משאבי המערכת.</li>
+                    <li><strong>חסרונות:</strong> מורכבות גבוהה בניהול ותזמון, דורש תכנון מוקדם לקביעת אילו תהליכונים ישתמשו באיזה מודל.</li>
+                </ul>
+                
+                <div class="visual-diagram">
+                    <div style="display: flex; justify-content: center; margin: 20px 0;">
+                        <div style="width: 450px; height: 320px; position: relative; background: rgba(30, 41, 59, 0.4); border-radius: 10px; padding: 20px;">
+                            <!-- User-Level Threads -->
+                            <div style="position: absolute; top: 20px; left: 30px; right: 30px; border-bottom: 1px dashed #94a3b8; padding-bottom: 10px;">
+                                <div style="color: #cbd5e1; text-align: center; margin-bottom: 15px; font-weight: bold;">תהליכוני משתמש</div>
+                                <div style="display: flex; justify-content: space-around;">
+                                    <div style="width: 40px; height: 40px; background-color: #f472b6; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold;">U₁</div>
+                                    <div style="width: 40px; height: 40px; background-color: #f472b6; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold;">U₂</div>
+                                    <div style="width: 40px; height: 40px; background-color: #f472b6; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold;">U₃</div>
+                                    <div style="width: 40px; height: 40px; background-color: #93c5fd; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold;">U₄</div>
+                                    <div style="width: 40px; height: 40px; background-color: #93c5fd; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold;">U₅</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Arrows -->
+                            <div style="position: absolute; top: 120px; left: 50px; right: 50px; height: 60px;">
+                                <svg width="100%" height="100%" viewBox="0 0 350 60">
+                                    <defs>
+                                        <marker id="arrowhead-turquoise" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                                            <polygon points="0 0, 10 3.5, 0 7" fill="#06b6d4" />
+                                        </marker>
+                                        <marker id="arrowhead-rose" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                                            <polygon points="0 0, 10 3.5, 0 7" fill="#f472b6" />
+                                        </marker>
+                                    </defs>
+                                    <!-- Direct mapping (One-to-One) -->
+                                    <line x1="30" y1="10" x2="30" y2="50" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrowhead-turquoise)" />
+                                    <line x1="95" y1="10" x2="95" y2="50" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrowhead-turquoise)" />
+                                    
+                                    <!-- Many-to-Many mapping -->
+                                  
+                                    <line x1="320" y1="10" x2="145" y2="50" stroke="#f472b6" stroke-width="2" marker-end="url(#arrowhead-rose)" />
+                                    <line x1="320" y1="10" x2="205" y2="50" stroke="#f472b6" stroke-width="2" marker-end="url(#arrowhead-rose)" />
+                                    <line x1="320" y1="10" x2="320" y2="50" stroke="#f472b6" stroke-width="2" marker-end="url(#arrowhead-rose)" />
+
+                                    <line x1="260" y1="10" x2="145" y2="50" stroke="#f472b6" stroke-width="2" marker-end="url(#arrowhead-rose)" />
+                                    <line x1="260" y1="10" x2="320" y2="50" stroke="#f472b6" stroke-width="2" marker-end="url(#arrowhead-rose)" />
+                                    <line x1="175" y1="10" x2="145" y2="50" stroke="#f472b6" stroke-width="2" marker-end="url(#arrowhead-rose)" />
+                                    <line x1="260" y1="10" x2="205" y2="50" stroke="#f472b6" stroke-width="2" marker-end="url(#arrowhead-rose)" />
+                                    <line x1="175" y1="10" x2="205" y2="50" stroke="#f472b6" stroke-width="2" marker-end="url(#arrowhead-rose)" />
+                                </svg>
+                            </div>
+                            
+                            <!-- Kernel Threads -->
+                            <div style="position: absolute; bottom: 20px; left: 30px; right: 30px; border-top: 1px dashed #94a3b8; padding-top: 20px;">
+                                <div style="color: #cbd5e1; text-align: center; margin-bottom: 15px; font-weight: bold;">תהליכוני גרעין</div>
+                                <div style="display: flex; justify-content: space-around;">
+                                    <div style="width: 40px; height: 40px; background-color: #fb923c; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold; border: 2px solid #f59e0b;">K₁</div>
+                                    <div style="width: 40px; height: 40px; background-color: #fb923c; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold; border: 2px solid #f59e0b;">K₂</div>
+                                    <div style="width: 40px; height: 40px; background-color: #fb923c; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold; border: 2px solid #f59e0b;">K₃</div>
+                                    <div style="width: 40px; height: 40px; background-color: #fb923c; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold; border: 2px solid #f59e0b;">K₄</div>
+                                    <div style="width: 40px; height: 40px; background-color: #fb923c; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #1e293b; font-weight: bold; border: 2px solid #f59e0b;">K₅</div>
+                                </div>
+                            </div>
+
+                            <!-- Legend -->
+                            <div style="position: absolute; bottom: 5px; right: 5px; display: flex; gap: 10px;">
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 10px; height: 10px; background-color: #06b6d4; margin-right: 5px;"></div>
+                                    <span style="font-size: 12px; color: #cbd5e1;">אחד-לאחד</span>
+                                </div>
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 10px; height: 10px; background-color: #f472b6; margin-right: 5px;"></div>
+                                    <span style="font-size: 12px; color: #cbd5e1;">רבים-לרבים</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="text-align: center;">מודל דו-רמתי: שילוב של מיפוי אחד-לאחד (כחול-ירוק) ורבים-לרבים (ורוד)</p>
+                </div>
+                
+                <div class="highlight-box">
+                    <p>
+                        <strong>שימושים נפוצים:</strong> המודל הדו-רמתי מאפשר לתהליכונים קריטיים לקבל תהליכון גרעין ייעודי (אחד-לאחד), בעוד תהליכונים פחות קריטיים או קצרי טווח משתמשים במאגר משותף של תהליכוני גרעין (רבים-לרבים). גישה זו נפוצה במערכות הפעלה מודרניות כמו Solaris וגרסאות מסוימות של Linux.
+                    </p>
+                </div>
+            </div>
             
             <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">השוואה בין המודלים <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
             <div class="collapsible-content">
@@ -629,6 +719,7 @@
                             <th style="padding: 12px; text-align: right; border: 1px solid #475569;">רבים-לאחד</th>
                             <th style="padding: 12px; text-align: right; border: 1px solid #475569;">אחד-לאחד</th>
                             <th style="padding: 12px; text-align: right; border: 1px solid #475569;">רבים-לרבים</th>
+                            <th style="padding: 12px; text-align: right; border: 1px solid #475569;">דו-רמתי</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -637,30 +728,42 @@
                             <td style="padding: 12px; border: 1px solid #475569;">❌ לא</td>
                             <td style="padding: 12px; border: 1px solid #475569;">✅ כן</td>
                             <td style="padding: 12px; border: 1px solid #475569;">✅ כן</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">✅ כן</td>
                         </tr>
                         <tr style="background-color: rgba(30, 41, 59, 0.4);">
                             <td style="padding: 12px; border: 1px solid #475569; font-weight: bold;">עלות יצירת תהליכון</td>
                             <td style="padding: 12px; border: 1px solid #475569;">נמוכה</td>
                             <td style="padding: 12px; border: 1px solid #475569;">גבוהה</td>
                             <td style="padding: 12px; border: 1px solid #475569;">בינונית</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">משתנה</td>
                         </tr>
                         <tr style="background-color: rgba(30, 41, 59, 0.4);">
                             <td style="padding: 12px; border: 1px solid #475569; font-weight: bold;">השפעת חסימת תהליכון</td>
                             <td style="padding: 12px; border: 1px solid #475569;">חוסם את כל התהליכונים</td>
                             <td style="padding: 12px; border: 1px solid #475569;">חוסם רק את התהליכון הנוכחי</td>
                             <td style="padding: 12px; border: 1px solid #475569;">תלוי במימוש</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">חלקית בלבד</td>
                         </tr>
                         <tr style="background-color: rgba(30, 41, 59, 0.4);">
                             <td style="padding: 12px; border: 1px solid #475569; font-weight: bold;">מורכבות המימוש</td>
                             <td style="padding: 12px; border: 1px solid #475569;">נמוכה</td>
                             <td style="padding: 12px; border: 1px solid #475569;">בינונית</td>
                             <td style="padding: 12px; border: 1px solid #475569;">גבוהה</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">גבוהה מאוד</td>
                         </tr>
                         <tr style="background-color: rgba(30, 41, 59, 0.4);">
                             <td style="padding: 12px; border: 1px solid #475569; font-weight: bold;">גמישות</td>
                             <td style="padding: 12px; border: 1px solid #475569;">נמוכה</td>
                             <td style="padding: 12px; border: 1px solid #475569;">בינונית</td>
                             <td style="padding: 12px; border: 1px solid #475569;">גבוהה</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">גבוהה מאוד</td>
+                        </tr>
+                        <tr style="background-color: rgba(30, 41, 59, 0.4);">
+                            <td style="padding: 12px; border: 1px solid #475569; font-weight: bold;">התאמה לתהליכונים קריטיים</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">גרועה</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">טובה</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">בינונית</td>
+                            <td style="padding: 12px; border: 1px solid #475569;">מצוינת</td>
                         </tr>
                     </tbody>
                 </table>
@@ -736,6 +839,7 @@
                 <ul class="feature-list">
                     <li><strong>Windows:</strong> מימוש אחד-לאחד מלא, דגש על קלות שימוש ואינטגרציה עם מרכיבי המערכת.</li>
                     <li><strong>Linux:</strong> בגרסאות מוקדמות היה שימוש במודל רבים-לרבים עם מנגנון התאמה (scheduler activations). בגרסאות מודרניות המעבר למודל אחד-לאחד עם NPTL שיפר את הביצועים משמעותית.</li>
+                    <li><strong>Solaris:</strong> אחת המערכות הראשונות שיישמה מודל דו-רמתי, המשלב בין תהליכוני משתמש קלי-משקל (LWPs) לתהליכוני גרעין.</li>
                     <li><strong>מימושי User-Level:</strong> ספריות כמו GNU Portable Threads יכולות לספק מימושי תהליכונים ברמת משתמש מעל תהליכונים ברמת גרעין.</li>
                 </ul>
             </div>
@@ -776,7 +880,7 @@
                     </p>
                 </div>
             </div>
-        </div>
+        </div></div>
         
 
     </div>
