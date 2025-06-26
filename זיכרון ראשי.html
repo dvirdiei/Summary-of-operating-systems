@@ -1,0 +1,1873 @@
+
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>זיכרון ראשי - מערכות הפעלה</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style/base.css">
+    <script src="script/sidebar.js"></script>
+</head>
+<body></body>
+    <!-- סרגל ניווט צף -->
+    <div class="nav-sidebar">
+        <div class="nav-sidebar-title">תוכן העניינים</div>
+        <ul class="nav-main-menu">
+            <!-- קטגוריה: יסודות זיכרון ראשי -->
+            <li class="nav-category">
+                <a href="#memory-basics" class="category-title">🧠 יסודות זיכרון ראשי</a>
+                <ul class="nav-submenu">
+                    <li><a href="#memory-basics">יסודות זיכרון ראשי</a></li>
+                    <li><a href="#memory-protection">הגנת זיכרון</a></li>
+                    <li><a href="#address-types">כתובות לוגיות ופיזיות</a></li>
+                    <li><a href="#address-translation">תרגום כתובות</a></li>
+                    <li><a href="#mmu-basics">יחידת ניהול זיכרון (MMU)</a></li>
+                </ul>
+            </li>
+            <!-- קטגוריה: טעינה והקצאה -->
+            <li class="nav-category">
+                <a href="#dynamic-loading" class="category-title">📥 טעינה והקצאה</a>
+                <ul class="nav-submenu">
+                    <li><a href="#dynamic-loading">טעינה דינמאית</a></li>
+                    <li><a href="#contiguous-allocation">הקצאה רציפה</a></li>
+                </ul>
+            </li>
+            <!-- קטגוריה: שיברור זיכרון -->
+            <li class="nav-category">
+                <a href="#memory-fragmentation" class="category-title">🧩 שיברור זיכרון</a>
+                <ul class="nav-submenu">
+                    <li><a href="#memory-fragmentation">שיברור זיכרון</a></li>
+                </ul>
+            </li>
+            <!-- קטגוריה: דפדוף (Paging) -->
+            <li class="nav-category">
+                <a href="#paging" class="category-title">📄 דפדוף (Paging)</a>
+                <ul class="nav-submenu">
+                    <li><a href="#paging">שיטת דפדוף</a></li>
+                    <li><a href="#address-structure">מבנה כתובת בדפדוף</a></li>
+                    <li><a href="#page-table-base-register">PTBR</a></li>
+                    <li><a href="#page-table-length-register">PTLR</a></li>
+                    <li><a href="#two-memory-accesses">גישה כפולה לזיכרון &amp; TLB</a></li>
+                    <li><a href="#paging-protection">הגנה בדפדוף</a></li>
+                    <li><a href="#page-table-size">חישוב גודל טבלת דפים</a></li>
+                    <li><a href="#shared-code">קוד משותף</a></li>
+                    <li><a href="#page-table-structure">מבנה טבלת דפים</a></li>
+                </ul>
+            </li>
+            <!-- קטגוריה: החלפה (Swap) -->
+            <li class="nav-category">
+                <a href="#swap" class="category-title">💾 החלפה (Swap)</a>
+                <ul class="nav-submenu">
+                    <li><a href="#swap">מה זה Swap?</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="back-home">
+            <a href="index.html">🏠 חזרה לדף הבית</a>
+        </div>
+    </div>
+
+
+    <div class="container">
+        <div class="header">
+            <h1>זיכרון ראשי –</h1>
+            <div class="subtitle">Main Memory</div>
+        </div>
+
+        <!-- יסודות זיכרון ראשי -->
+        <div class="content-section" id="memory-basics">
+            <h2>🧠 יסודות זיכרון ראשי</h2>
+            <p>זיכרון ראשי (Main Memory) הוא המקום בו נשמרות התוכניות והנתונים שהמעבד משתמש בהם באופן פעיל. זיכרון זה מאפשר גישה מהירה למידע, אך מוגבל בגודלו. מערכת ההפעלה אחראית על ניהול יעיל של משאב זה לטובת כל התהליכים במערכת.</p>
+            
+            <div class="feature-box">
+                <h3>אתגרי ניהול זיכרון:</h3>
+                <ul class="feature-list" style="display: flex; flex-wrap: wrap; gap: 16px; background: none; box-shadow: none;">
+                    <li class="feature-item" style="flex: 1 1 45%; min-width: 180px; text-align: center;">
+                        ⚡ גישה מהירה למידע
+                    </li>
+                    <li class="feature-item" style="flex: 1 1 45%; min-width: 180px; text-align: center;">
+                        📊 חלוקה יעילה בין תהליכים
+                    </li>
+                    <li class="feature-item" style="flex: 1 1 45%; min-width: 180px; text-align: center;">
+                        🔒 הגנה על אזורי זיכרון
+                    </li>
+                    <li class="feature-item" style="flex: 1 1 45%; min-width: 180px; text-align: center;">
+                        🔄 ניהול זיכרון במערכות רב-תהליכיות
+                    </li>
+                    <li class="feature-item" style="flex: 1 1 45%; min-width: 180px; text-align: center;">
+                        📈 התמודדות עם מגבלת גודל הזיכרון
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    
+        <!-- הגנת זיכרון -->
+        <div class="content-section" id="memory-protection">
+            <h2>🔒 הגנת זיכרון ומנגנוני הגנה</h2>
+            <p>הגנת זיכרון היא מנגנון חיוני במערכות הפעלה, שמטרתו למנוע מתהליכים לגשת או לשנות מידע בזיכרון של תהליכים אחרים או של מערכת ההפעלה. מנגנון זה מבטיח יציבות ואבטחה במערכת.</p>
+
+            <div class="image-container">
+                <div class="concept-image">
+                    <svg width="100%" height="300" viewBox="0 0 600 300">
+                        <!-- Memory Layout -->
+                        <rect x="150" y="30" width="300" height="240" fill="#f0f0f0" stroke="#333" stroke-width="2"/>
+                        
+                        <!-- OS Memory -->
+                        <rect x="150" y="30" width="300" height="60" fill="#ffcccc" stroke="#333" stroke-width="2"/>
+                        <text x="300" y="65" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">זיכרון מערכת ההפעלה</text>
+                        
+                        <!-- Process 1 Memory -->
+                        <rect x="150" y="90" width="300" height="60" fill="#ccffcc" stroke="#333" stroke-width="2"/>
+                        <text x="300" y="125" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">זיכרון תהליך 1</text>
+                        
+                        <!-- Process 2 Memory -->
+                        <rect x="150" y="150" width="300" height="60" fill="#ccccff" stroke="#333" stroke-width="2"/>
+                        <text x="300" y="185" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">זיכרון תהליך 2</text>
+                        
+                        <!-- Process 3 Memory -->
+                        <rect x="150" y="210" width="300" height="60" fill="#ffffcc" stroke="#333" stroke-width="2"/>
+                        <text x="300" y="245" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">זיכרון תהליך 3</text>
+                        
+                        <!-- Protection Barriers -->
+                        <line x1="150" y1="90" x2="450" y2="90" stroke="#ff0000" stroke-width="3" stroke-dasharray="5,5"/>
+                        <line x1="150" y1="150" x2="450" y2="150" stroke="#ff0000" stroke-width="3" stroke-dasharray="5,5"/>
+                        <line x1="150" y1="210" x2="450" y2="210" stroke="#ff0000" stroke-width="3" stroke-dasharray="5,5"/>
+                    </svg>
+                    <div class="image-caption">הגנת זיכרון - הפרדה בין אזורי זיכרון של תהליכים שונים ומערכת ההפעלה</div>
+                </div>
+            
+
+            <div class="info-box">
+                <h3>מי אחראי על הגנת הזיכרון?</h3>
+                <div style="display: flex; flex-direction: row-reverse; align-items: flex-start; gap: 20px;">
+                    <div style="flex: 1;">
+                        <p>ההגנה על הזיכרון מתבצעת באמצעות שילוב של חומרה ותוכנה:</p>
+                        <ul>
+                            <li><strong>חומרה - יחידת ניהול זיכרון (MMU):</strong> רכיב חומרה שבודק כל פניה לזיכרון בזמן ריצה</li>
+                            <li><strong>רגיסטרים מיוחדים:</strong>
+                                <ul>
+                                    <li><strong>רגיסטר בסיס (base):</strong> מכיל את כתובת ההתחלה של אזור הזיכרון המוקצה לתהליך</li>
+                                    <li><strong>רגיסטר גבול (limit):</strong> מכיל את גודל אזור הזיכרון המוקצה לתהליך</li>
+                                </ul>
+                            </li>
+                            <li><strong>בדיקת גבולות:</strong> בכל גישה לזיכרון, ה-MMU בודק שהכתובת נמצאת בטווח המותר</li>
+                        </ul>
+                    </div>
+
+                    <div class="concept-image" style="flex: 1.2;">
+                        <svg width="100%" height="360" viewBox="0 0 600 360">
+                            <!-- Base Register -->
+                            <rect x="250" y="30" width="100" height="50" fill="#d3d3d3" stroke="#333" stroke-width="2"/>
+                            <text x="300" y="60" font-size="16" fill="#333" text-anchor="middle">base</text>
+                            
+                            <!-- Base+Limit Register -->
+                            <rect x="500" y="30" width="100" height="50" fill="#d3d3d3" stroke="#333" stroke-width="2"/>
+                            <text x="550" y="60" font-size="16" fill="#333" text-anchor="middle">base + limit</text>
+                            
+                            <!-- CPU -->
+                            <rect x="80" y="200" width="100" height="50" fill="#d3d3d3" stroke="#333" stroke-width="2"/>
+                            <text x="130" y="230" font-size="16" fill="#333" text-anchor="middle">CPU</text>
+                            
+                            <!-- Address Arrow -->
+                            <line x1="180" y1="215" x2="250" y2="215" stroke="#333" stroke-width="2"/>
+                            <text x="215" y="205" font-size="14" fill="#333" text-anchor="middle">address</text>
+                            
+                            <!-- First Diamond - Greater or Equal -->
+                            <polygon points="300,180 350,215 300,250 250,215" fill="#b3d9ff" stroke="#333" stroke-width="2"/>
+                            <text x="300" y="220" font-size="16" fill="#333" text-anchor="middle">≥</text>
+                            
+                            <!-- Arrow Down from First Diamond -->
+                            <line x1="300" y1="250" x2="300" y2="330" stroke="#333" stroke-width="2"/>
+                            <text x="300" y="270" font-size="14" fill="#333" text-anchor="middle">no</text>
+                            
+                            <!-- Arrow Right from First Diamond -->
+                            <line x1="350" y1="215" x2="450" y2="215" stroke="#333" stroke-width="2"/>
+                            <text x="400" y="200" font-size="14" fill="#333" text-anchor="middle">yes</text>
+                            
+                            <!-- Second Diamond - Less Than -->
+                            <polygon points="500,180 550,215 500,250 450,215" fill="#b3d9ff" stroke="#333" stroke-width="2"/>
+                            <text x="500" y="220" font-size="16" fill="#333" text-anchor="middle"></text>
+                            
+                            <!-- Arrow Down from Second Diamond -->
+                            <line x1="500" y1="250" x2="500" y2="330" stroke="#333" stroke-width="2"/>
+                            <text x="500" y="270" font-size="14" fill="#333" text-anchor="middle">no</text>
+                            
+                            <!-- Arrow Right from Second Diamond -->
+                            <line x1="550" y1="215" x2="625" y2="215" stroke="#333" stroke-width="2"/>
+                            <text x="575" y="200" font-size="14" fill="#333" text-anchor="middle">yes</text>
+                            
+                            <!-- Error Text -->
+                            <text x="400" y="350" font-size="14" fill="#333" text-anchor="middle">trap to operating system</text>
+                            <text x="400" y="370" font-size="14" fill="#333" text-anchor="middle">illegal addressing error</text>
+                            
+                            <!-- Memory Box - Fixed to be visible -->
+                            <rect x="625" y="115" width="125" height="200" fill="none" stroke="#333" stroke-width="2"/>
+                            <text x="685" y="230" font-size="16" fill="#333" text-anchor="middle">memory</text>
+                            
+                            <!-- Connect arrow from base register to first diamond -->
+                            <line x1="300" y1="80" x2="300" y2="180" stroke="#333" stroke-width="2"/>
+                            
+                            <!-- Connect arrow from base+limit register to second diamond -->
+                            <line x1="550" y1="80" x2="500" y2="180" stroke="#333" stroke-width="2"/>
+                        </svg>
+                        <div class="image-caption">מנגנון בדיקת גבולות הזיכרון - בדיקה שהכתובת נמצאת בין רגיסטר הבסיס לבין סוף אזור הזיכרון</div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            </div>
+        
+
+
+        <!-- כתובות לוגיות ופיזיות -->
+        <div class="content-section" id="address-types">
+            <h2>🔢 כתובות לוגיות ופיזיות</h2>
+            <p>במערכות מחשב מודרניות קיימת הפרדה בין כתובות לוגיות (וירטואליות) שבהן משתמשות התוכניות לבין כתובות פיזיות המתייחסות למיקום הממשי בזיכרון. מנגנון זה מספק שכבת הפשטה המאפשרת ניהול זיכרון גמיש ומאובטח יותר.</p>
+            
+            <div class="image-container">
+                <div class="concept-image">
+                    <svg width="100%" height="320" viewBox="0 0 600 320">
+                        <!-- Logical Address Space - Process 1 -->
+                        <rect x="50" y="40" width="160" height="240" fill="#e6f2ff" stroke="#333" stroke-width="2"/>
+                        <text x="130" y="30" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">מרחב כתובות לוגי (תהליך 1)</text>
+                        
+                        <rect x="70" y="60" width="120" height="40" fill="#99ccff" stroke="#333" stroke-width="1"/>
+                        <text x="130" y="85" font-size="12" fill="#333" text-anchor="middle">קוד (0x0000)</text>
+                        
+                        <rect x="70" y="110" width="120" height="40" fill="#99ccff" stroke="#333" stroke-width="1"/>
+                        <text x="130" y="135" font-size="12" fill="#333" text-anchor="middle">נתונים (0x1000)</text>
+                        
+                        <rect x="70" y="160" width="120" height="40" fill="#99ccff" stroke="#333" stroke-width="1"/>
+                        <text x="130" y="185" font-size="12" fill="#333" text-anchor="middle">מחסנית (0x2000)</text>
+                        
+                        <rect x="70" y="210" width="120" height="40" fill="#99ccff" stroke="#333" stroke-width="1"/>
+                        <text x="130" y="235" font-size="12" fill="#333" text-anchor="middle">ערימה (0x3000)</text>
+                        
+                        <!-- Logical Address Space - Process 2 -->
+                        <rect x="230" y="40" width="160" height="240" fill="#e6ffe6" stroke="#333" stroke-width="2"/>
+                        <text x="310" y="30" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">מרחב כתובות לוגי (תהליך 2)</text>
+                        
+                        <rect x="250" y="60" width="120" height="40" fill="#99ff99" stroke="#333" stroke-width="1"/>
+                        <text x="310" y="85" font-size="12" fill="#333" text-anchor="middle">קוד (0x0000)</text>
+                        
+                        <rect x="250" y="110" width="120" height="40" fill="#99ff99" stroke="#333" stroke-width="1"/>
+                        <text x="310" y="135" font-size="12" fill="#333" text-anchor="middle">נתונים (0x1000)</text>
+                        
+                        <rect x="250" y="160" width="120" height="40" fill="#99ff99" stroke="#333" stroke-width="1"/>
+                        <text x="310" y="185" font-size="12" fill="#333" text-anchor="middle">מחסנית (0x2000)</text>
+                        
+                        <rect x="250" y="210" width="120" height="40" fill="#99ff99" stroke="#333" stroke-width="1"/>
+                        <text x="310" y="235" font-size="12" fill="#333" text-anchor="middle">ערימה (0x3000)</text>
+                        
+                        <!-- Physical Memory -->
+                        <rect x="440" y="40" width="160" height="240" fill="#fff2e6" stroke="#333" stroke-width="2"/>
+                        <text x="520" y="30" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">זיכרון פיזי</text>
+                        
+                        <rect x="460" y="60" width="120" height="30" fill="#ffcc99" stroke="#333" stroke-width="1"/>
+                        <text x="520" y="80" font-size="12" fill="#333" text-anchor="middle">מערכת הפעלה (0x00000)</text>
+                        
+                        <rect x="460" y="100" width="120" height="30" fill="#99ccff" stroke="#333" stroke-width="1"/>
+                        <text x="520" y="120" font-size="12" fill="#333" text-anchor="middle">קוד תהליך 1 (0x10000)</text>
+                        
+                        <rect x="460" y="140" width="120" height="25" fill="#99ff99" stroke="#333" stroke-width="1"/>
+                        <text x="520" y="157" font-size="12" fill="#333" text-anchor="middle">קוד תהליך 2 (0x20000)</text>
+                        
+                        <rect x="460" y="175" width="120" height="25" fill="#99ccff" stroke="#333" stroke-width="1"/>
+                        <text x="520" y="192" font-size="12" fill="#333" text-anchor="middle">נתוני תהליך 1 (0x30000)</text>
+                        
+                        <rect x="460" y="210" width="120" height="25" fill="#99ff99" stroke="#333" stroke-width="1"/>
+                        <text x="520" y="227" font-size="12" fill="#333" text-anchor="middle">נתוני תהליך 2 (0x40000)</text>
+                        
+                        <rect x="460" y="245" width="120" height="25" fill="#cccccc" stroke="#333" stroke-width="1"/>
+                        <text x="520" y="262" font-size="12" fill="#333" text-anchor="middle">זיכרון פנוי</text>
+                        
+                        <!-- Arrows -->
+                        <line x1="190" y1="80" x2="440" y2="115" stroke="#333" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow)"/>
+                        <line x1="190" y1="130" x2="440" y2="187" stroke="#333" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow)"/>
+                        <line x1="370" y1="80" x2="440" y2="153" stroke="#333" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow)"/>
+                        <line x1="370" y1="130" x2="440" y2="223" stroke="#333" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow)"/>
+                        
+                        <!-- Arrow Marker -->
+                        <defs>
+                            <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                <path d="M0,0 L0,6 L9,3 z" fill="#333" />
+                            </marker>
+                        </defs>
+                    </svg>
+                    <div class="image-caption">מרחבי כתובות לוגיות (וירטואליות) וכיצד הם ממופים לזיכרון הפיזי</div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                            <h3>השוואה בין כתובות לוגיות ופיזיות:</h3>
+                            <table class="comparison-table" style="width:100%; border-collapse: collapse; margin: 15px 0; background: rgba(15, 23, 42, 0.7); border-radius: 10px; overflow: hidden;">
+                                    <tr>
+                                        <th style="padding: 10px; text-align: right; border: 1px solid rgba(148, 163, 184, 0.2); background-color: rgba(51, 65, 85, 0.9); color: #60a5fa;">היבט</th>
+                                        <th style="padding: 10px; text-align: right; border: 1px solid rgba(148, 163, 184, 0.2); background-color: rgba(51, 65, 85, 0.9); color: #60a5fa;">כתובת לוגית (וירטואלית)</th>
+                                        <th style="padding: 10px; text-align: right; border: 1px solid rgba(148, 163, 184, 0.2); background-color: rgba(51, 65, 85, 0.9); color: #60a5fa;">כתובת פיזית</th>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px; text-align: right; border: 1px solid rgba(148, 163, 184, 0.2); background-color: rgba(30, 41, 59, 0.8);">הגדרה</td>
+                                        <td style="padding: 10px; text-align: right; border: 1px solid rgba(148, 163, 184, 0.2); background-color: rgba(30, 41, 59, 0.8);">הכתובת שרואה התוכנית/תהליך</td>
+                                        <td style="padding: 10px; text-align: right; border: 1px solid rgba(148, 163, 184, 0.2); background-color: rgba(30, 41, 59, 0.8);">המיקום האמיתי בזיכרון הפיזי</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px; text-align: right; border: 1px solid rgba(148, 163, 184, 0.2); background-color: rgba(15, 23, 42, 0.8);">נוצרת על-ידי</td>
+                                        <td style="padding: 10px; text-align: right; border: 1px solid rgba(148, 163, 184, 0.2); background-color: rgba(15, 23, 42, 0.8);">מהדר, תוכנית</td>
+                                        <td style="padding: 10px; text-align: right; border: 1px solid rgba(148, 163, 184, 0.2); background-color: rgba(15, 23, 42, 0.8);">יחידת ניהול הזיכרון (MMU)</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px; text-align: right; border: 1px solid rgba(148, 163, 184, 0.2); background-color: rgba(30, 41, 59, 0.8);">נראות</td>
+                                        <td style="padding: 10px; text-align: right; border: 1px solid rgba(148, 163, 184, 0.2); background-color: rgba(30, 41, 59, 0.8);">נראית לתהליך (0 עד גודל מרחב הכתובות)</td>
+                                        <td style="padding: 10px; text-align: right; border: 1px solid rgba(148, 163, 184, 0.2); background-color: rgba(30, 41, 59, 0.8);">נסתרת מהתהליך, נראית למערכת ההפעלה</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px; text-align: right; border: 1px solid rgba(148, 163, 184, 0.2); background-color: rgba(15, 23, 42, 0.8);">רציפות</td>
+                                        <td style="padding: 10px; text-align: right; border: 1px solid rgba(148, 163, 184, 0.2); background-color: rgba(15, 23, 42, 0.8);">נראית כמרחב רציף לתהליך</td>
+                                        <td style="padding: 10px; text-align: right; border: 1px solid rgba(148, 163, 184, 0.2); background-color: rgba(15, 23, 42, 0.8);">יכולה להיות מפוזרת או רציפה בזיכרון הפיזי</td>
+                                    </tr>
+                            </table>
+                        </div>
+        </div>
+
+        <!-- תרגום כתובות -->
+        <div class="content-section" id="address-translation">
+            <h2>🔄 תרגום כתובות</h2>
+            <p>תרגום כתובות הוא התהליך בו כתובת לוגית (וירטואלית) מומרת לכתובת פיזית. תהליך זה מבוצע אוטומטית על ידי חומרה ייעודית בשם יחידת ניהול זיכרון (Memory Management Unit - MMU).</p>
+
+            <div class="animation-container" style="display: flex; justify-content: space-around; margin: 20px 0; position: relative;">
+                            <div class="address-step" style="text-align: center;">
+                                <h3>המרה בסיסית</h3>
+                                <svg width="270" height="240" viewBox="0 0 270 240">
+                                    <!-- Arrow Definitions -->
+                                    <defs>
+                                        <marker id="arrow1" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                            <path d="M0,0 L0,6 L9,3 z" fill="#333" />
+                                        </marker>
+                                    </defs>
+                                    
+                                    <!-- Base Register -->
+                                    <rect x="40" y="30" width="80" height="55" fill="#f0f0f0" stroke="#333" stroke-width="1.5" rx="5"/>
+                                    <text x="80" y="55" font-size="12" fill="#333" text-anchor="middle" font-weight="bold">רגיסטר בסיס</text>
+                                    <text x="80" y="70" font-size="12" fill="#333" text-anchor="middle">0x10000</text>
+                                    
+                                    <!-- Logical Address -->
+                                    <rect x="20" y="100" width="80" height="55" fill="#ccffcc" stroke="#333" stroke-width="1.5" rx="5"/>
+                                    <text x="55" y="125" font-size="12" fill="#333" text-anchor="middle" font-weight="bold">כתובת לוגית</text>
+                                    <text x="55" y="140" font-size="12" fill="#333" text-anchor="middle">0x500</text>
+                                    
+                                    <!-- Addition -->
+                                    <circle cx="140" cy="120" r="20" fill="#f0f0f0" stroke="#333" stroke-width="1.5"/>
+                                    <text x="140" y="125" font-size="16" fill="#333" text-anchor="middle" font-weight="bold">+</text>
+                                    <line x1="120" y1="120" x2="90" y2="120" stroke="#333" stroke-width="1.5"/>
+                                    <line x1="140" y1="90" x2="140" y2="50" stroke="#333" stroke-width="1.5"/>
+                                    <!-- Connect + symbol to result -->
+                                    <line x1="160" y1="120" x2="190" y2="120" stroke="#333" stroke-width="1.5"/>
+                                    <!-- Physical Address -->
+                                    <rect x="190" y="100" width="80" height="55" fill="#cbd5e1" stroke="#333" stroke-width="1.5" rx="5"/>
+                                    <text x="230" y="125" font-size="12" fill="#333" text-anchor="middle" font-weight="bold">כתובת פיזית</text>
+                                    <text x="230" y="140" font-size="12" fill="#333" text-anchor="middle">0x10500</text>
+                                    <line x1="160" y1="120" x2="190" y2="120" stroke="#333" stroke-width="1.5" marker-end="url(#arrow1)"/>
+                                    
+                                    <!-- Formula -->
+                                    <text x="125" y="180" font-size="14" fill="#cbd5e1" text-anchor="middle">כתובת פיזית = רגיסטר בסיס + כתובת לוגית</text>
+                                    <text x="125" y="200" font-size="14" fill="#cbd5e1" text-anchor="middle">0x10500 = 0x10000 + 0x500</text>
+                                </svg>
+                            </div>
+                            <div class="address-step" style="text-align: center;">
+                                <h3>בדיקת גבולות</h3>
+                                <svg width="250" height="240" viewBox="0 0 250 240">
+                                    <!-- Arrow Definitions -->
+                                    <defs>
+                                        <marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                            <path d="M0,0 L0,6 L9,3 z" fill="#333" />
+                                        </marker>
+                                    </defs>
+                                    
+                                    <!-- Logical Address -->
+                                    <rect x="20" y="30" width="80" height="55" fill="#ccffcc" stroke="#333" stroke-width="1.5" rx="5"/>
+                                    <text x="60" y="55" font-size="12" fill="#333" text-anchor="middle" font-weight="bold">כתובת לוגית</text>
+                                    <text x="60" y="70" font-size="12" fill="#333" text-anchor="middle">0x500</text>
+                                    
+                                    <!-- Limit Register -->
+                                    <rect x="20" y="90" width="80" height="50" fill="#f0f0f0" stroke="#333" stroke-width="1.5" rx="5"/>
+                                    <text x="60" y="115" font-size="12" fill="#333" text-anchor="middle" font-weight="bold">רגיסטר גבול</text>
+                                    <text x="60" y="130" font-size="12" fill="#333" text-anchor="middle">0x1000</text>
+                                    
+                                    <!-- Comparator -->
+                                    <rect x="130" y="60" width="100" height="50" fill="#f0f0f0" stroke="#333" stroke-width="1.5" rx="10"/>
+                                    <text x="180" y="85" font-size="12" fill="#333" text-anchor="middle" font-weight="bold">השוואה גבולות</text>
+                                    <text x="180" y="100" font-size="12" fill="#333" text-anchor="middle">0x500 < 0x1000 ?</text>
+                                    
+                                    <line x1="100" y1="50" x2="130" y2="70" stroke="#333" stroke-width="1.5" marker-end="url(#arrow2)"/>
+                                    <line x1="100" y1="110" x2="130" y2="90" stroke="#333" stroke-width="1.5" marker-end="url(#arrow2)"/>
+                                    
+                                    <!-- Result -->
+                                    <path d="M180,100 L180,150" stroke="#333" stroke-width="1.5" marker-end="url(#arrow2)"/>
+                                    
+                                    <!-- Decision Box -->
+                                    <rect x="130" y="150" width="100" height="60" fill="#e6f2ff" stroke="#333" stroke-width="1.5" rx="10"/>
+                                    <text x="180" y="173" font-size="12" fill="#333" text-anchor="middle" font-weight="bold">תקין?</text>
+                                    <text x="180" y="190" font-size="12" fill="#333" text-anchor="middle">כן - המשך תרגום</text>
+                                    <text x="180" y="205" font-size="12" fill="#333" text-anchor="middle">לא - הפעל חריגה</text>
+                                </svg>
+                            </div>
+                        </div>
+
+            <div class="warning-box">
+                <h3>מה קורה כשיש חריגה בגבולות?</h3>
+                <p>כאשר תהליך מנסה לגשת לכתובת מחוץ למרחב הזיכרון המוקצה לו, מופעל מנגנון חריגה (Exception). מערכת ההפעלה מקבלת שליטה ובדרך כלל מסיימת את התהליך הבעייתי עם הודעת שגיאה כגון "Segmentation Fault" או "Access Violation".</p>
+            </div>
+        </div>
+
+        <!-- יחידת ניהול זיכרון -->
+        <div class="content-section" id="mmu-basics">
+            <h2>💻 יחידת ניהול זיכרון (MMU)</h2>
+            <p>יחידת ניהול הזיכרון (Memory Management Unit - MMU) היא רכיב חומרה מיוחד האחראי על תרגום כתובות לוגיות לכתובות פיזיות. ה-MMU משולב בדרך כלל בתוך המעבד ומהווה חלק קריטי בניהול זיכרון במערכות מודרניות.</p>
+
+            <div class="image-container" style="display: flex; flex-direction: row-reverse; align-items: flex-start; gap: 32px;">
+                <div class="concept-image" style="flex: 1.2;">
+                    <svg width="100%" height="300" viewBox="0 0 600 300">
+                        <!-- CPU -->
+                        <rect x="50" y="80" width="150" height="140" fill="#f0f0f0" stroke="#333" stroke-width="2" rx="10"/>
+                        <text x="140" y="60" font-size="16" fill="#cbd5e1" text-anchor="cbd5e1" font-weight="bold">CPU</text>
+                        
+                        <!-- MMU inside CPU -->
+                        <rect x="90" y="120" width="100" height="60" fill="#ffcccc" stroke="#333" stroke-width="2" rx="5"/>
+                        <text x="140" y="150" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">MMU</text>
+                        <text x="140" y="170" font-size="12" fill="#333" text-anchor="middle">יחידת ניהול זיכרון</text>
+                        
+                        <!-- TLB inside MMU -->
+                        <rect x="100" y="185" width="80" height="25" fill="#e6ccff" stroke="#333" stroke-width="1" rx="3"/>
+                        <text x="140" y="202" font-size="10" fill="#333" text-anchor="middle">TLB (מטמון תרגום)</text>
+                        
+                        <!-- RAM -->
+                        <rect x="400" y="80" width="150" height="140" fill="#ccffcc" stroke="#333" stroke-width="2" rx="10"/>
+                        <text x="475" y="60" font-size="16" fill="#cbd5e1" text-anchor="middle" font-weight="bold">זיכרון פיזי (RAM)</text>
+                        
+                        <!-- Memory segments in RAM -->
+                        <rect x="420" y="100" width="110" height="20" fill="#ffcccc" stroke="#333" stroke-width="1"/>
+                        <text x="475" y="115" font-size="12" fill="#333" text-anchor="middle">מערכת הפעלה</text>
+                        
+                        <rect x="420" y="130" width="110" height="20" fill="#ccccff" stroke="#333" stroke-width="1"/>
+                        <text x="475" y="145" font-size="12" fill="#333" text-anchor="middle">תהליך 1</text>
+                        
+                        <rect x="420" y="160" width="110" height="20" fill="#ffffcc" stroke="#333" stroke-width="1"/>
+                        <text x="475" y="175" font-size="12" fill="#333" text-anchor="middle">תהליך 2</text>
+                        
+                        <rect x="420" y="190" width="110" height="20" fill="#e6ccff" stroke="#333" stroke-width="1"/>
+                        <text x="475" y="205" font-size="12" fill="#333" text-anchor="middle">תהליך 3</text>
+                        
+                        <!-- Flow arrows -->
+                        <line x1="205" y1="140" x2="260" y2="140" stroke="#333" stroke-width="2" stroke-dasharray="5,3"/>
+                        <text x="230" y="130" font-size="12" fill="#cbd5e1" text-anchor="middle">כתובת</text>
+                        <text x="230" y="145" font-size="12" fill="#cbd5e1" text-anchor="middle">לוגית</text>
+                        <path d="M260,140 C300,140 300,140 340,140" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+                        
+                        <line x1="205" y1="160" x2="260" y2="160" stroke="#333" stroke-width="2" stroke-dasharray="5,3" marker-start="url(#arrow)"/>
+                        <text x="230" y="175" font-size="12" fill="#cbd5e1" text-anchor="middle">מידע</text>
+                        <path d="M260,160 C300,160 300,160 340,160" stroke="#333" stroke-width="2"/>
+                        
+                        <line x1="340" y1="140" x2="400" y2="140" stroke="#333" stroke-width="2"/>
+                        <text x="370" y="130" font-size="12" fill="#cbd5e1" text-anchor="middle">כתובת</text>
+                        <text x="370" y="145" font-size="12" fill="#cbd5e1" text-anchor="middle">פיזית</text>
+                        
+                        <line x1="340" y1="160" x2="400" y2="160" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+                        
+                        <!-- Page table in memory -->
+                        <rect x="420" y="230" width="110" height="30" fill="#e6f2ff" stroke="#333" stroke-width="1.5"/>
+                        <text x="475" y="250" font-size="12" fill="#333" text-anchor="middle">טבלאות דפים</text>
+                        
+                        <!-- Arrow between MMU and Page Tables -->
+                        <line x1="190" y1="180" x2="420" y2="245" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+                        <text x="270" y="220" font-size="12" fill="#cbd5e1" text-anchor="middle">גישה לטבלאות</text>
+                        <text x="270" y="235" font-size="12" fill="#cbd5e1" text-anchor="middle">דפים</text>
+                        
+                        <!-- Arrow Definitions -->
+                        <defs>
+                            <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                <path d="M0,0 L0,6 L9,3 z" fill="#333" />
+                            </marker>
+                        </defs>
+                    </svg>
+                    <div class="image-caption">יחידת ניהול הזיכרון (MMU) ותפקידה בתהליך תרגום כתובות</div>
+                </div>
+                <div class="info-box" style="flex: 1;">
+                    <h3>תפקידי ה-MMU:</h3>
+                    <ul>
+                        <li><strong>תרגום כתובות:</strong> המרת כתובות לוגיות לכתובות פיזיות</li>
+                        <li><strong>הגנת זיכרון:</strong> בדיקה שכל גישה היא בגבולות המותרים</li>
+                        <li><strong>ניהול הרשאות:</strong> אכיפת הרשאות גישה (קריאה/כתיבה/הרצה)</li>
+                        <li><strong>תמיכה בזיכרון וירטואלי:</strong> תרגום דפים וירטואליים לפיזיים</li>
+                        <li><strong>האצת ביצועים:</strong> שימוש במטמון תרגום כתובות (TLB)</li>
+                    </ul>
+                </div>
+        
+           </div>
+        </div>
+            
+            <!-- טעינה דינמאית -->
+            <div class="content-section" id="dynamic-loading">
+                <h2>📥 טעינה דינמאית</h2>
+                <p>טעינה דינמאית (Dynamic Loading) היא טכניקה שבה חלקים מהתוכנית נטענים לזיכרון רק כאשר הם נדרשים במהלך הביצוע. במקום לטעון את כל התוכנית בבת אחת, המערכת טוענת רק את החלקים הנחוצים, מה שחוסך בזיכרון ואפשר יעילות טובה יותר.</p>
+                
+                <div class="image-container">
+                <div class="concept-image">
+                    <svg width="100%" height="350" viewBox="0 0 700 350">
+                    <!-- Static Loading (Traditional) -->
+                    <rect x="50" y="40" width="280" height="120" fill="#ffeeee" stroke="#333" stroke-width="2" rx="10"/>
+                    <text x="190" y="30" font-size="16" fill="#333" text-anchor="middle" font-weight="bold">טעינה סטטית</text>
+                    
+                    <!-- Complete program loaded -->
+                    <rect x="70" y="60" width="240" height="80" fill="#ffcccc" stroke="#333" stroke-width="1"/>
+                    <text x="190" y="105" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">כל התוכנית נטענת</text>
+                    <text x="190" y="125" font-size="14" fill="#333" text-anchor="middle">(גם חלקים שלא בשימוש)</text>
+                    
+                    <!-- Dynamic Loading -->
+                    <rect x="370" y="40" width="280" height="280" fill="#eeffee" stroke="#333" stroke-width="2" rx="10"/>
+                    <text x="510" y="30" font-size="16" fill="#333" text-anchor="middle" font-weight="bold">טעינה דינמאית</text>
+                    
+                    <!-- Main program -->
+                    <rect x="390" y="60" width="100" height="40" fill="#ccffcc" stroke="#333" stroke-width="1"/>
+                    <text x="440" y="85" font-size="12" fill="#333" text-anchor="middle" font-weight="bold">תוכנית ראשית</text>
+                    
+                    <!-- Function 1 - loaded -->
+                    <rect x="390" y="110" width="100" height="40" fill="#ccffcc" stroke="#333" stroke-width="1"/>
+                    <text x="440" y="135" font-size="12" fill="#333" text-anchor="middle" font-weight="bold">פונקציה A</text>
+                    <text x="440" y="145" font-size="10" fill="#333" text-anchor="middle">(נטענה)</text>
+                    
+                    <!-- Function 2 - not loaded -->
+                    <rect x="390" y="160" width="100" height="40" fill="#f0f0f0" stroke="#333" stroke-width="1" stroke-dasharray="5,5"/>
+                    <text x="440" y="185" font-size="12" fill="#999" text-anchor="middle" font-weight="bold">פונקציה B</text>
+                    <text x="440" y="195" font-size="10" fill="#999" text-anchor="middle">(טרם נטענה)</text>
+                    
+                    <!-- Function 3 - not loaded -->
+                    <rect x="390" y="210" width="100" height="40" fill="#f0f0f0" stroke="#333" stroke-width="1" stroke-dasharray="5,5"/>
+                    <text x="440" y="235" font-size="12" fill="#999" text-anchor="middle" font-weight="bold">פונקציה C</text>
+                    <text x="440" y="245" font-size="10" fill="#999" text-anchor="middle">(טרם נטענה)</text>
+                    
+                    <!-- Library - not loaded -->
+                    <rect x="520" y="110" width="100" height="40" fill="#f0f0f0" stroke="#333" stroke-width="1" stroke-dasharray="5,5"/>
+                    <text x="570" y="135" font-size="12" fill="#999" text-anchor="middle" font-weight="bold">ספרייה X</text>
+                    <text x="570" y="145" font-size="10" fill="#999" text-anchor="middle">(טרם נטענה)</text>
+                    
+                    <!-- Loading arrow -->
+                    <path d="M440,250 Q480,270 520,250" stroke="#00aa00" stroke-width="3" fill="none" marker-end="url(#loadArrow)"/>
+                    <text x="480" y="285" font-size="12" fill="#00aa00" text-anchor="middle" font-weight="bold">טעינה בעת הצורך</text>
+                    
+                    <!-- Comparison arrows -->
+                    <text x="350" y="200" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">VS</text>
+                    
+                    <!-- Arrow definitions -->
+                    <defs>
+                        <marker id="loadArrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                        <path d="M0,0 L0,6 L9,3 z" fill="#00aa00" />
+                        </marker>
+                    </defs>
+                    </svg>
+                    <div class="image-caption">השוואה בין טעינה סטטית (מלאה מראש) לטעינה דינמאית (לפי הצורך)</div>
+                </div>
+                
+                <div class="feature-box">
+                    <h3>יתרונות טעינה דינמאית:</h3>
+                    <ul class="feature-list" style="display: flex; flex-wrap: wrap; gap: 16px; background: none; box-shadow: none;">
+                        <li class="feature-item" style="flex: 1 1 45%; min-width: 180px; text-align: center;">
+                            💾 חיסכון בזיכרון
+                        </li>
+                        <li class="feature-item" style="flex: 1 1 45%; min-width: 180px; text-align: center;">
+                            ⚡ זמן אתחול מהיר יותר
+                        </li>
+                        <li class="feature-item" style="flex: 1 1 45%; min-width: 180px; text-align: center;">
+                            🔄 עדכונים גמישים
+                        </li>
+                        <li class="feature-item" style="flex: 1 1 45%; min-width: 180px; text-align: center;">
+                            📚 שיתוף ספריות
+                        </li>
+                    </ul>
+                </div>
+            
+
+            </div>
+                
+            </div>
+
+            <!-- הקצאה רציפה -->
+            <div class="content-section" id="contiguous-allocation">
+                <h2>📐 הקצאה רציפה</h2>
+                <p>הקצאה רציפה (Contiguous Allocation) היא שיטת ניהול זיכרון שבה כל תהליך מקבל בלוק רציף של זיכרון. זוהי אחת השיטות הבסיסיות והפשוטות ביותר לניהול זיכרון, אך היא יכולה לסבול מבעיות כמו פיצול זיכרון.</p>
+
+                <div class="image-container">
+                <div class="concept-image">
+                    <svg width="100%" height="450" viewBox="0 0 900 450">
+                                        <!-- Title -->
+                                        <text x="450" y="25" font-size="18" fill="#333" text-anchor="middle" font-weight="bold">בעיות הקצאה רציפה - דוגמה מעשית</text>
+                                        
+                                        <!-- Initial State -->
+                                        <rect x="50" y="60" width="180" height="320" fill="#f8f8f8" stroke="#333" stroke-width="2"/>
+                                        <text x="140" y="50" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">מצב התחלתי</text>
+                                        
+                                        <rect x="70" y="80" width="140" height="40" fill="#ffcccc" stroke="#333" stroke-width="1"/>
+                                        <text x="140" y="105" font-size="12" fill="#333" text-anchor="middle">מערכת הפעלה (100KB)</text>
+                                        
+                                        <rect x="70" y="130" width="140" height="80" fill="#ccffcc" stroke="#333" stroke-width="1"/>
+                                        <text x="140" y="175" font-size="12" fill="#333" text-anchor="middle">תהליך A (200KB)</text>
+                                        
+                                        <rect x="70" y="220" width="140" height="60" fill="#ccccff" stroke="#333" stroke-width="1"/>
+                                        <text x="140" y="255" font-size="12" fill="#333" text-anchor="middle">תהליך B (150KB)</text>
+                                        
+                                        <rect x="70" y="290" width="140" height="80" fill="#ffffcc" stroke="#333" stroke-width="1"/>
+                                        <text x="140" y="335" font-size="12" fill="#333" text-anchor="middle">תהליך C (200KB)</text>
+                                        
+                                        <!-- After Process A ends -->
+                                        <rect x="270" y="60" width="180" height="320" fill="#f8f8f8" stroke="#333" stroke-width="2"/>
+                                        <text x="360" y="50" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">תהליך A הסתיים</text>
+                                        
+                                        <rect x="290" y="80" width="140" height="40" fill="#ffcccc" stroke="#333" stroke-width="1"/>
+                                        <text x="360" y="105" font-size="12" fill="#333" text-anchor="middle">מערכת הפעלה (100KB)</text>
+                                        
+                                        <rect x="290" y="130" width="140" height="80" fill="#e0e0e0" stroke="#333" stroke-width="1" stroke-dasharray="5,5"/>
+                                        <text x="360" y="175" font-size="12" fill="#666" text-anchor="middle">פנוי (200KB)</text>
+                                        
+                                        <rect x="290" y="220" width="140" height="60" fill="#ccccff" stroke="#333" stroke-width="1"/>
+                                        <text x="360" y="255" font-size="12" fill="#333" text-anchor="middle">תהליך B (150KB)</text>
+                                        
+                                        <rect x="290" y="290" width="140" height="80" fill="#ffffcc" stroke="#333" stroke-width="1"/>
+                                        <text x="360" y="335" font-size="12" fill="#333" text-anchor="middle">תהליך C (200KB)</text>
+                                        
+                                        <!-- After Process C ends -->
+                                        <rect x="490" y="60" width="180" height="320" fill="#f8f8f8" stroke="#333" stroke-width="2"/>
+                                        <text x="580" y="50" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">תהליך C הסתיים</text>
+                                        
+                                        <rect x="510" y="80" width="140" height="40" fill="#ffcccc" stroke="#333" stroke-width="1"/>
+                                        <text x="580" y="105" font-size="12" fill="#333" text-anchor="middle">מערכת הפעלה (100KB)</text>
+                                        
+                                        <rect x="510" y="130" width="140" height="80" fill="#e0e0e0" stroke="#333" stroke-width="1" stroke-dasharray="5,5"/>
+                                        <text x="580" y="175" font-size="12" fill="#666" text-anchor="middle">פנוי (200KB)</text>
+                                        
+                                        <rect x="510" y="220" width="140" height="60" fill="#ccccff" stroke="#333" stroke-width="1"/>
+                                        <text x="580" y="255" font-size="12" fill="#333" text-anchor="middle">תהליך B (150KB)</text>
+                                        
+                                        <rect x="510" y="290" width="140" height="80" fill="#e0e0e0" stroke="#333" stroke-width="1" stroke-dasharray="5,5"/>
+                                        <text x="580" y="335" font-size="12" fill="#666" text-anchor="middle">פנוי (200KB)</text>
+                                        
+                                        <!-- Problem State -->
+                                        <rect x="710" y="60" width="180" height="320" fill="#fff0f0" stroke="#ff0000" stroke-width="3"/>
+                                        <text x="800" y="45" font-size="14" fill="#ff0000" text-anchor="middle" font-weight="bold">בעיה!</text>
+                                        <text x="800" y="395" font-size="12" fill="#ff0000" text-anchor="middle" font-weight="bold">תהליך D צריך 350KB</text>
+                                        <text x="800" y="410" font-size="12" fill="#ff0000" text-anchor="middle">יש 400KB פנויים אבל לא רציפים!</text>
+                                        <text x="800" y="425" font-size="12" fill="#ff0000" text-anchor="middle">❌ לא ניתן להקצות</text>
+                                        
+                                        <rect x="730" y="80" width="140" height="40" fill="#ffcccc" stroke="#333" stroke-width="1"/>
+                                        <text x="800" y="105" font-size="12" fill="#333" text-anchor="middle">מערכת הפעלה (100KB)</text>
+                                        
+                                        <rect x="730" y="130" width="140" height="80" fill="#e0e0e0" stroke="#333" stroke-width="1" stroke-dasharray="5,5"/>
+                                        <text x="800" y="175" font-size="12" fill="#666" text-anchor="middle">פנוי (200KB)</text>
+                                        
+                                        <rect x="730" y="220" width="140" height="60" fill="#ccccff" stroke="#333" stroke-width="1"/>
+                                        <text x="800" y="255" font-size="12" fill="#333" text-anchor="middle">תהליך B (150KB)</text>
+                                        
+                                        <rect x="730" y="290" width="140" height="80" fill="#e0e0e0" stroke="#333" stroke-width="1" stroke-dasharray="5,5"/>
+                                        <text x="800" y="335" font-size="12" fill="#666" text-anchor="middle">פנוי (200KB)</text>
+                                        
+                                        <!-- New process attempt -->
+                                        <rect x="750" y="350" width="100" height="25" fill="#ffaaaa" stroke="#ff0000" stroke-width="2" stroke-dasharray="5,5"/>
+                                        <text x="800" y="367" font-size="11" fill="#ff0000" text-anchor="middle" font-weight="bold">תהליך D - 350KB</text>
+                                        
+                                        <!-- Arrows showing progression -->
+                                        <path d="M230,220 L260,220" stroke="#333" stroke-width="2" marker-end="url(#progressArrow)"/>
+                                        <path d="M450,220 L480,220" stroke="#333" stroke-width="2" marker-end="url(#progressArrow)"/>
+                                        <path d="M670,220 L700,220" stroke="#ff0000" stroke-width="3" marker-end="url(#problemArrow)"/>
+                                        
+                                        <!-- Memory usage indicators -->
+                                        <text x="140" y="400" font-size="11" fill="#333" text-anchor="middle">זיכרון בשימוש: 650KB</text>
+                                        <text x="140" y="415" font-size="11" fill="#333" text-anchor="middle">זיכרון פנוי: 0KB</text>
+                                        
+                                        <text x="360" y="400" font-size="11" fill="#333" text-anchor="middle">זיכרון בשימוש: 450KB</text>
+                                        <text x="360" y="415" font-size="11" fill="#333" text-anchor="middle">זיכרון פנוי: 200KB</text>
+                                        
+                                        <text x="580" y="400" font-size="11" fill="#333" text-anchor="middle">זיכרון בשימוש: 250KB</text>
+                                        <text x="580" y="415" font-size="11" fill="#333" text-anchor="middle">זיכרון פנוי: 400KB</text>
+                                        
+                                        <text x="800" y="440" font-size="11" fill="#ff0000" text-anchor="middle" font-weight="bold">🧩 שיברור חיצוני!</text>
+                                        
+                                        <!-- Arrow definitions -->
+                                        <defs>
+                                            <marker id="progressArrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                                <path d="M0,0 L0,6 L9,3 z" fill="#333" />
+                                            </marker>
+                                            <marker id="problemArrow" markerWidth="12" markerHeight="12" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                                <path d="M0,0 L0,6 L9,3 z" fill="#ff0000" />
+                                            </marker>
+                                        </defs>
+                                    </svg>
+                                    <div class="image-caption">דוגמה מעשית לבעיית השיברור החיצוני בהקצאה רציפה - יש מספיק זיכרון פנוי (400KB) אך לא בבלוק רציף אחד</div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    
+            
+            <!-- שיברור זיכרון -->
+            <div class="content-section" id="memory-fragmentation">
+                <h2>🧩 שיברור זיכרון</h2>
+                <p>שיברור זיכרון (Memory Fragmentation) הוא תופעה שבה הזיכרון הפנוי מתפרק לחלקים קטנים ולא רציפים, מה שמקשה על הקצאת זיכרון לתהליכים חדשים. זוהי אחת הבעיות המרכזיות בניהול זיכרון עם הקצאה רציפה.</p>
+
+                <div class="image-container">
+                    <svg width="100%" height="450" viewBox="0 0 900 450">
+                        <!-- External Fragmentation -->
+                        <text x="200" y="30" font-size="16" fill="#333" text-anchor="middle" font-weight="bold">שיברור חיצוני (External Fragmentation)</text>
+                        
+                        <rect x="100" y="50" width="200" height="300" fill="#f0f0f0" stroke="#333" stroke-width="2"></rect>
+                        <text x="200" y="370" font-size="14" fill="#333" text-anchor="middle">סה"כ זיכרון פנוי: 150KB</text>
+                        <text x="200" y="385" font-size="14" fill="#ff0000" text-anchor="middle">אי אפשר להקצות תהליך של 100KB!</text>
+                        
+                        <!-- Memory blocks -->
+                        <rect x="120" y="70" width="160" height="40" fill="#ffcccc" stroke="#333" stroke-width="1"></rect>
+                        <text x="200" y="95" font-size="12" fill="#333" text-anchor="middle">מערכת הפעלה</text>
+                        
+                        <rect x="120" y="120" width="160" height="30" fill="#e0e0e0" stroke="#333" stroke-width="1"></rect>
+                        <text x="200" y="140" font-size="12" fill="#333" text-anchor="middle">פנוי (50KB)</text>
+                        
+                        <rect x="120" y="160" width="160" height="40" fill="#ccffcc" stroke="#333" stroke-width="1"></rect>
+                        <text x="200" y="185" font-size="12" fill="#333" text-anchor="middle">תהליך A</text>
+                        
+                        <rect x="120" y="210" width="160" height="20" fill="#e0e0e0" stroke="#333" stroke-width="1"></rect>
+                        <text x="200" y="225" font-size="12" fill="#333" text-anchor="middle">פנוי (30KB)</text>
+                        
+                        <rect x="120" y="240" width="160" height="50" fill="#ccccff" stroke="#333" stroke-width="1"></rect>
+                        <text x="200" y="270" font-size="12" fill="#333" text-anchor="middle">תהליך B</text>
+                        
+                        <rect x="120" y="300" width="160" height="40" fill="#e0e0e0" stroke="#333" stroke-width="1"></rect>
+                        <text x="200" y="325" font-size="12" fill="#333" text-anchor="middle">פנוי (70KB)</text>
+                        
+                        <!-- Internal Fragmentation -->
+                        <text x="650" y="30" font-size="16" fill="#333" text-anchor="middle" font-weight="bold">שיברור פנימי (Internal Fragmentation)</text>
+                        
+                        <rect x="550" y="50" width="200" height="300" fill="#f0f0f0" stroke="#333" stroke-width="2"></rect>
+                        <text x="650" y="370" font-size="14" fill="#333" text-anchor="middle">הקצאה בבלוקים קבועים</text>
+                        <text x="650" y="385" font-size="14" fill="#ff0000" text-anchor="middle">בזבוז זיכרון בתוך הבלוקים</text>
+                        
+                        <!-- Fixed size blocks -->
+                        <rect x="570" y="70" width="160" height="60" fill="#ffcccc" stroke="#333" stroke-width="1"></rect>
+                        <text x="650" y="95" font-size="12" fill="#333" text-anchor="middle">מערכת הפעלה (64KB)</text>
+                        <text x="650" y="110" font-size="10" fill="#333" text-anchor="middle">שימוש מלא</text>
+                        
+                        <rect x="570" y="140" width="160" height="60" fill="#ccffcc" stroke="#333" stroke-width="1"></rect>
+                        <text x="650" y="165" font-size="12" fill="#333" text-anchor="middle">תהליך A (40KB)</text>
+                        <rect x="570" y="180" width="160" height="20" fill="#ff6666" stroke="none"></rect>
+                        <text x="650" y="195" font-size="10" fill="white" text-anchor="middle">בזבוז (24KB)</text>
+                        
+                        <rect x="570" y="210" width="160" height="60" fill="#ccccff" stroke="#333" stroke-width="1"></rect>
+                        <text x="650" y="235" font-size="12" fill="#333" text-anchor="middle">תהליך B (55KB)</text>
+                        <rect x="570" y="255" width="160" height="15" fill="#ff6666" stroke="none"></rect>
+                        <text x="650" y="265" font-size="10" fill="white" text-anchor="middle">בזבוז (9KB)</text>
+                        
+                        <rect x="570" y="280" width="160" height="60" fill="#e0e0e0" stroke="#333" stroke-width="1"></rect>
+                        <text x="650" y="315" font-size="12" fill="#333" text-anchor="middle">בלוק פנוי (64KB)</text>
+                        
+                        <!-- Dividing line -->
+                        <line x1="450" y1="40" x2="450" y2="400" stroke="#333" stroke-width="2" stroke-dasharray="5,5"></line>
+
+                        <!-- Solutions section -->
+                        <text x="450" y="420" font-size="16" fill="#333" text-anchor="middle" font-weight="bold">פתרונות</text>
+                    </svg>
+                    <div class="image-caption">השוואה בין שיברור חיצוני (זיכרון מפוצל) ושיברור פנימי (בזבוז בתוך בלוקים)</div>
+
+                </div>  <div class="concept-grid">
+                    <div class="concept-row">
+                        <div class="concept-item">
+                            <h4>🧩 שיברור חיצוני</h4>
+                            <p><strong>מה זה:</strong> זיכרון פנוי קיים אך מפוזר בחלקים קטנים לא רציפים</p>
+                            <p><strong>גורם:</strong> הקצאה ושחרור תהליכים בגדלים שונים</p>
+                            <p><strong>תוצאה:</strong> אי יכולת להקצות תהליכים גדולים למרות שיש מספיק זיכרון פנוי</p>
+                        </div>
+                        <div class="concept-item">
+                            <h4>🔳 שיברור פנימי</h4>
+                            <p><strong>מה זה:</strong> בזבוז זיכרון בתוך בלוק שהוקצה לתהליך</p>
+                            <p><strong>גורם:</strong> הקצאה בבלוקים בגודל קבוע (גדולים מהצורך)</p>
+                            <p><strong>תוצאה:</strong> זיכרון שמוקצה אך לא בשימוש</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>דחיסה (Compaction) – פתרון לשיברור חיצוני</h3>
+                <p>דחיסה היא טכניקה שבה המערכת מזיזה את כל התהליכים בזיכרון כך שהם יהיו רציפים, ובכך יוצרת בלוק פנוי גדול ורציף בקצה הזיכרון. פעולה זו מאפשרת הקצאת תהליכים גדולים יותר, אך דורשת זמן ביצוע משמעותי מכיוון שיש להעתיק את התהליכים.</p>
+
+                <h3>אלגוריתמים לפתרון שיברור זיכרון חיצוני (דחיסה):</h3>
+                 <div class="algorithm-container" style="display: flex; flex-wrap: wrap; gap: 16px;">
+                    <div class="algorithm-item" style="flex: 1 1 45%; min-width: 300px;">
+                        <h4>🔄 First Fit</h4>
+                        <p>אלגוריתם זה מחפש את הבלוק הראשון ברשימה שיכול להכיל את התהליך ומקצה אותו. שיטה זו פשוטה ומהירה, אך עשויה להשאיר חורים קטנים בזיכרון.</p>
+                        <ul>
+                            <li><strong>יתרון:</strong> מהיר מאוד - עוצר ברגע שמוצא בלוק מתאים.</li>
+                            <li><strong>חיסרון:</strong> עלול להשאיר שאריות קטנות בזיכרון.</li>
+                            <li><strong>מעבר על הרשימה:</strong> עובר על הרשימה עד שמוצא את הבלוק הראשון שמתאים. במקרה הגרוע עובר על כל N המקומות ברשימה.</li>
+                            </ul>
+                            </div>
+                            <div class="algorithm-item" style="flex: 1 1 45%; min-width: 300px;">
+                                <h4>🎯 Best Fit</h4>
+                                <p>אלגוריתם זה מחפש את הבלוק הקטן ביותר שיכול להכיל את התהליך, במטרה להפחית את הפיצול בזיכרון. שיטה זו יעילה יותר מבחינת ניצול זיכרון.</p>
+                                <ul>
+                                    <li><strong>יתרון:</strong> מפחית את הפיצול בזיכרון.</li>
+                                    <li><strong>חיסרון:</strong> דורש חיפוש בכל הרשימה, ולכן איטי יותר.</li>
+                                    <li><strong>מעבר על הרשימה:</strong> עובר על כל N המקומות ברשימה כדי למצוא את הבלוק הקטן ביותר שמתאים.</li>
+                                </ul>
+                            </div>
+                            <div class="algorithm-item" style="flex: 1 1 100%; min-width: 300px; margin-top: 16px;">
+                                <h4>🧩 Worst Fit</h4>
+                                <p>אלגוריתם זה מחפש את הבלוק הגדול ביותר ברשימה ומקצה אותו לתהליך. המטרה היא להשאיר חורים גדולים יותר בזיכרון הפנוי.</p>
+                                <ul>
+                                    <li><strong>יתרון:</strong> עשוי להקל על הקצאות עתידיות של תהליכים גדולים.</li>
+                                    <li><strong>חיסרון:</strong> לא יעיל מבחינת ניצול זיכרון.</li>
+                                    <li><strong>מעבר על הרשימה:</strong> עובר על כל N המקומות ברשימה כדי למצוא את הבלוק הגדול ביותר.</li>
+                                </ul>
+                            </div>
+                </div>
+
+                <div class="expandable-section">
+                    <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">פתרונות לשיברור זיכרון 
+                        <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button>
+                    </h3>
+                    <div class="collapsible-content" style="display: none;">
+                        <div class="feature-box">
+                            <h4>פתרונות לשיברור חיצוני:</h4>
+                            <div class="solution-list">
+                                <div class="solution-item">
+                                    <h5>🔄 דחיסה (Compaction)</h5>
+                                    <p><strong>איך פותר:</strong> מרכז את כל התהליכים בקצה אחד של הזיכרון ויוצר בלוק פנוי גדול ורציף.</p>
+                                    <div class="pros-cons">
+                                        <span class="pro">✅ פותר את הבעיה לחלוטין</span>
+                                        <span class="con">❌ יקר בזמן ביצוע - צריך להעתיק תהליכים</span>
+                                    </div>
+                                    <div class="animation-example" style="margin: 15px 0;">
+                                        <h6>דוגמה לדחיסה:</h6>
+                                        <div style="display: flex; gap: 30px; align-items: center;">
+                                            <div style="text-align: center;">
+                                                <p>לפני דחיסה</p>
+                                                <svg width="80" height="200" viewBox="0 0 80 200">
+                                                    <rect x="10" y="10" width="60" height="25" fill="#ffcccc" stroke="#333" stroke-width="1"></rect>
+                                                    <text x="40" y="27" font-size="10" text-anchor="middle">OS</text>
+                                                    <rect x="10" y="45" width="60" height="20" fill="#e0e0e0" stroke="#333" stroke-width="1"></rect>
+                                                    <text x="40" y="58" font-size="9" text-anchor="middle">פנוי</text>
+                                                    <rect x="10" y="75" width="60" height="30" fill="#ccffcc" stroke="#333" stroke-width="1"></rect>
+                                                    <text x="40" y="95" font-size="10" text-anchor="middle">תהליך A</text>
+                                                    <rect x="10" y="115" width="60" height="15" fill="#e0e0e0" stroke="#333" stroke-width="1"></rect>
+                                                    <text x="40" y="127" font-size="9" text-anchor="middle">פנוי</text>
+                                                    <rect x="10" y="140" width="60" height="25" fill="#ccccff" stroke="#333" stroke-width="1"></rect>
+                                                    <text x="40" y="157" font-size="10" text-anchor="middle">תהליך B</text>
+                                                    <rect x="10" y="175" width="60" height="15" fill="#e0e0e0" stroke="#333" stroke-width="1"></rect>
+                                                    <text x="40" y="187" font-size="9" text-anchor="middle">פנוי</text>
+                                                </svg>
+                                            </div>
+                                            <div style="font-size: 20px;">→</div>
+                                            <div style="text-align: center;">
+                                                <p>אחרי דחיסה</p>
+                                                <svg width="80" height="200" viewBox="0 0 80 200">
+                                                    <rect x="10" y="10" width="60" height="25" fill="#ffcccc" stroke="#333" stroke-width="1"></rect>
+                                                    <text x="40" y="27" font-size="10" text-anchor="middle">OS</text>
+                                                    <rect x="10" y="45" width="60" height="30" fill="#ccffcc" stroke="#333" stroke-width="1"></rect>
+                                                    <text x="40" y="65" font-size="10" text-anchor="middle">תהליך A</text>
+                                                    <rect x="10" y="85" width="60" height="25" fill="#ccccff" stroke="#333" stroke-width="1"></rect>
+                                                    <text x="40" y="102" font-size="10" text-anchor="middle">תהליך B</text>
+                                                    <rect x="10" y="120" width="60" height="70" fill="#e0e0e0" stroke="#333" stroke-width="1"></rect>
+                                                    <text x="40" y="160" font-size="10" text-anchor="middle">פנוי</text>
+                                                    <text x="40" y="175" font-size="10" text-anchor="middle">(בלוק גדול)</text>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="solution-item">
+                                    <h5>🧩 הקצאה לא רציפה (Paging/Segmentation)</h5>
+                                    <p><strong>איך פותר:</strong> מאפשר לתהליך להשתמש בחלקי זיכרון לא רציפים - כך אין צורך בבלוק גדול רציף.</p>
+                                    <div class="pros-cons">
+                                        <span class="pro">✅ פותר את הבעיה לחלוטין</span>
+                                        <span class="pro">✅ יעיל יותר מדחיסה</span>
+                                        <span class="con">❌ מורכב יותר ליישום - צריך טבלאות תרגום</span>
+                                    </div>
+                                </div>
+                                <div class="solution-item">
+                                    <h5>🎯 שיפור אלגוריתמי הקצאה</h5>
+                                    <p><strong>איך פותר:</strong> אלגוריתמים כמו Best Fit מקטינים את הפיצול על ידי השארת חורים גדולים יותר.</p>
+                                    <div class="pros-cons">
+                                        <span class="pro">✅ קל ליישום</span>
+                                        <span class="con">❌ לא פותר את הבעיה לחלוטין - רק מפחית אותה</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <h4>פתרונות לשיברור פנימי:</h4>
+                            <div class="solution-list">
+                                <div class="solution-item">
+                                    <h5>📏 הקצאה בגדלים משתנים</h5>
+                                    <p><strong>איך פותר:</strong> הקצאת בדיוק הכמות הנדרשת לכל תהליך - אין בזבוז.</p>
+                                </div>
+                                <div class="solution-item">
+                                    <h5>🔢 גדלי בלוקים מרובים</h5>
+                                    <p><strong>איך פותר:</strong> שימוש בגדלים שונים (16KB, 32KB, 64KB) מפחית את הבזבוז הממוצע.</p>
+                                </div>
+                                <div class="solution-item">
+                                    <h5>🧩 מערכת עמודים קטנים</h5>
+                                    <p><strong>איך פותר:</strong> עמודים קטנים (4KB) מפחיתים את הבזבוז המקסימלי לעמוד אחד בלבד.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
+                <div class="warning-box">
+                    <h3>השפעת שיברור על ביצועי המערכת:</h3>
+                    <ul>
+                        <li><strong>ירידה בניצול זיכרון:</strong> זיכרון קיים אך לא ניתן לשימוש</li>
+                        <li><strong>האטה בהקצאות:</strong> חיפוש אחר בלוקים מתאימים לוקח יותר זמן</li>
+                        <li><strong>דחיית תהליכים:</strong> תהליכים עשויים להידחות למרות שיש מספיק זיכרון פנוי</li>
+                        <li><strong>צורך בתחזוקה:</strong> פעולות דחיסה או ארגון מחדש</li>
+                    </ul>
+                </div>
+            </div>
+        <!-- דפדוף (Paging) -->
+        <div class="content-section" id="paging">
+            <h2>📄 שיטת דפדוף (Paging)</h2>
+            <p>שיטת דפדוף (Paging) היא טכניקת ניהול זיכרון בה מרחב הכתובות הלוגי והפיזי מחולק ליחידות בגודל קבוע: עמודים (Pages) בזיכרון הלוגי ומסגרות (Frames) בזיכרון הפיזי. כל עמוד יכול להיות ממופה לכל מסגרת פנויה, כך שאין צורך בהקצאה רציפה של זיכרון.</p>
+            <div class="image-container">
+                <svg width="100%" height="320" viewBox="0 0 700 320">
+                    <!-- Logical Address Space -->
+                    <rect x="40" y="40" width="120" height="240" fill="#e6f2ff" stroke="#333" stroke-width="2"/>
+                    <text x="100" y="30" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">מרחב כתובות לוגי</text>
+                    <!-- Pages -->
+                    <rect x="60" y="60" width="80" height="40" fill="#99ccff" stroke="#333" stroke-width="1"/>
+                    <text x="100" y="85" font-size="12" fill="#333" text-anchor="middle">עמוד 0</text>
+                    <rect x="60" y="110" width="80" height="40" fill="#99ccff" stroke="#333" stroke-width="1"/>
+                    <text x="100" y="135" font-size="12" fill="#333" text-anchor="middle">עמוד 1</text>
+                    <rect x="60" y="160" width="80" height="40" fill="#99ccff" stroke="#333" stroke-width="1"/>
+                    <text x="100" y="185" font-size="12" fill="#333" text-anchor="middle">עמוד 2</text>
+                    <rect x="60" y="210" width="80" height="40" fill="#99ccff" stroke="#333" stroke-width="1"/>
+                    <text x="100" y="235" font-size="12" fill="#333" text-anchor="middle">עמוד 3</text>
+                    <!-- Page Table -->
+                    <rect x="200" y="80" width="120" height="160" fill="#fffbe6" stroke="#333" stroke-width="2"/>
+                    <text x="260" y="70" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">טבלת עמודים</text>
+                    <!-- Table entries -->
+                    <rect x="220" y="100" width="80" height="25" fill="#f0f0f0" stroke="#333" stroke-width="1"/>
+                    <text x="260" y="117" font-size="12" fill="#333" text-anchor="middle">עמוד 0 → מסגרת 2</text>
+                    <rect x="220" y="130" width="80" height="25" fill="#f0f0f0" stroke="#333" stroke-width="1"/>
+                    <text x="260" y="147" font-size="12" fill="#333" text-anchor="middle">עמוד 1 → מסגרת 0</text>
+                    <rect x="220" y="160" width="80" height="25" fill="#f0f0f0" stroke="#333" stroke-width="1"/>
+                    <text x="260" y="177" font-size="12" fill="#333" text-anchor="middle">עמוד 2 → מסגרת 3</text>
+                    <rect x="220" y="190" width="80" height="25" fill="#f0f0f0" stroke="#333" stroke-width="1"/>
+                    <text x="260" y="207" font-size="12" fill="#333" text-anchor="middle">עמוד 3 → מסגרת 1</text>
+                    <!-- Physical Memory -->
+                    <rect x="400" y="40" width="120" height="240" fill="#e6ffe6" stroke="#333" stroke-width="2"/>
+                    <text x="460" y="30" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">זיכרון פיזי</text>
+                    <!-- Frames -->
+                    <rect x="420" y="60" width="80" height="40" fill="#ccffcc" stroke="#333" stroke-width="1"/>
+                    <text x="460" y="85" font-size="12" fill="#333" text-anchor="middle">מסגרת 0</text>
+                    <rect x="420" y="110" width="80" height="40" fill="#ccffcc" stroke="#333" stroke-width="1"/>
+                    <text x="460" y="135" font-size="12" fill="#333" text-anchor="middle">מסגרת 1</text>
+                    <rect x="420" y="160" width="80" height="40" fill="#ccffcc" stroke="#333" stroke-width="1"/>
+                    <text x="460" y="185" font-size="12" fill="#333" text-anchor="middle">מסגרת 2</text>
+                    <rect x="420" y="210" width="80" height="40" fill="#ccffcc" stroke="#333" stroke-width="1"/>
+                    <text x="460" y="235" font-size="12" fill="#333" text-anchor="middle">מסגרת 3</text>
+                    <!-- Arrows -->
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L9,3 z" fill="#333" />
+                        </marker>
+                    </defs>
+                    <line x1="140" y1="80" x2="200" y2="112" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+                    <line x1="140" y1="130" x2="200" y2="142" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+                    <line x1="140" y1="180" x2="200" y2="172" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+                    <line x1="140" y1="230" x2="200" y2="202" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+                    <line x1="320" y1="112" x2="420" y2="180" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+                    <line x1="320" y1="142" x2="420" y2="80" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+                    <line x1="320" y1="172" x2="420" y2="230" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+                    <line x1="320" y1="202" x2="420" y2="130" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+                </svg>
+                <div class="image-caption">שיטת דפדוף: עמודים לוגיים ממופים למסגרות פיזיות באמצעות טבלת עמודים</div>
+            </div>
+            <div class="feature-box">
+                <h3>יתרונות הדפדוף:</h3>
+                <ul class="feature-list" style="display: flex; flex-wrap: wrap; gap: 16px; background: none; box-shadow: none;">
+                    <li class="feature-item" style="flex: 1 1 45%; min-width: 180px; text-align: center;">
+                        🧩 פותר שיברור חיצוני
+                    </li>
+                    <li class="feature-item" style="flex: 1 1 45%; min-width: 180px; text-align: center;">
+                        🔄 מאפשר הקצאה לא רציפה
+                    </li>
+                    <li class="feature-item" style="flex: 1 1 45%; min-width: 180px; text-align: center;">
+                        🔒 הגנה על זיכרון בין תהליכים
+                    </li>
+                    <li class="feature-item" style="flex: 1 1 45%; min-width: 180px; text-align: center;">
+                        📈 ניצול טוב יותר של הזיכרון
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- מבנה כתובת בזיכרון מדופדף -->
+        <div class="content-section" id="address-structure">
+            <h2>🔢 מבנה כתובת בזיכרון מדופדף</h2>
+            <p>במערכת דפדוף, כתובת לוגית מחולקת לשני שדות עיקריים:</p>
+            <ul>
+                <li><strong>מספר עמוד (Page Number):</strong> מזהה את העמוד במרחב הכתובות של התהליך</li>
+                <li><strong>היסט עמוד (Offset):</strong> מציין את המיקום בתוך העמוד</li>
+            </ul>
+            <div class="image-container">
+                <svg width="100%" height="120" viewBox="0 0 700 120">
+                    <!-- Logical Address -->
+                    <rect x="50" y="40" width="600" height="40" fill="#e6f2ff" stroke="#333" stroke-width="2"/>
+                    <text x="350" y="35" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">כתובת לוגית (Virtual Address)</text>
+                    <!-- Page Number -->
+                    <rect x="60" y="50" width="200" height="20" fill="#99ccff" stroke="#333" stroke-width="1"/>
+                    <text x="160" y="65" font-size="12" fill="#333" text-anchor="middle">מספר עמוד (Page Number)</text>
+                    <!-- Offset -->
+                    <rect x="270" y="50" width="370" height="20" fill="#ccffcc" stroke="#333" stroke-width="1"/>
+                    <text x="455" y="65" font-size="12" fill="#333" text-anchor="middle">היסט עמוד (Offset)</text>
+                    <!-- Bit ranges -->
+                    <text x="160" y="90" font-size="12" fill="#333" text-anchor="middle">k ביטים</text>
+                    <text x="455" y="90" font-size="12" fill="#333" text-anchor="middle">m ביטים</text>
+                </svg>
+                <div class="image-caption">מבנה כתובת לוגית: מספר עמוד + היסט עמוד</div>
+            </div>
+            
+            
+            <ul class="feature-list" style="margin-bottom: 24px;">
+                <li class="feature-item">
+                    אם גודל עמוד הוא 4KB (2<sup>12</sup> בתים) – ההיסט הוא 12 ביטים.
+                </li>
+                <li class="feature-item">
+                    אם מרחב הכתובות הוא 32 ביט – מספר העמוד הוא 20 ביטים.
+                </li>
+                <li class="feature-item">
+                    כתובת לוגית: <span dir="ltr">[Page Number | Offset]</span>
+                </li>
+            </ul>
+
+            <div class="info-box" style="margin-top: 32px;">
+                <p>
+                    מערכת ההפעלה מחלקת כל זיכרון ל“עמודים” בגודל קבוע (למשל 4 KB), ומשתמשת בטבלת דפים (Page Table) כדי לתרגם כתובת לוגית (Virtual Address) לכתובת פיזית.
+                    כל כתובת לוגית מופרדת ל־<strong>מספר דף</strong> (Page Number) ול־<strong>היסט</strong> (Offset) בתוך הדף.
+                    </p>
+                    <h4>שלבי הפתרון במבחן</h4>
+                    <li class="feature-item" style="margin-bottom: 10px;">
+                        <strong>פיצול הכתובת:</strong>
+                        <div style="display: flex; flex-direction: row-reverse; gap: 32px; align-items: center; margin-top: 8px;">
+                            <div style="flex: 1; text-align: center;">
+                                <span style="font-weight: bold;">גודל דף:</span><br>
+                                4 KB = 4096 בתים
+                            </div>
+                            <div style="flex: 1; text-align: center;">
+                                <span style="font-weight: bold;">כתובת לדוגמה:</span><br>
+                                5000
+                            </div>
+                        </div>
+                    </li>
+                   
+                </ol>
+
+                <h4 style="margin-top: 28px;">שתי שיטות חישוב</h4>
+                <div style="display: flex; flex-wrap: wrap; gap: 24px;">
+                    <div class="feature-item" style="flex: 1 1 280px; min-width: 200px;">
+                        <h5 style="margin-bottom: 8px;">1. שיטה ידנית (טווחים):</h5>
+                        <ol style="margin-right: 18px;">
+                            <li>קובעים טווחים לפי גודל הדף:  
+                                דף 0 = 0–4095,  
+                                דף 1 = 4096–8191.
+                            </li>
+                            <li>מגלים ש־5000 שייך לטווח של דף 1.</li>
+                            <li>היסט = 5000 − 4096 = 904.</li>
+                            <li>ב-Page Table לדף 1 מופיע ערך 3 → מסגרת 3.</li>
+                            <li>כתובת פיזית = (3 × 4096) + 904 = 13192.</li>
+                        </ol>
+                    </div>
+                    <div class="feature-item" style="flex: 1 1 280px; min-width: 200px;">
+                        <h5 style="margin-bottom: 8px;">2. חישוב ישיר (חלוקה ושארית):</h5>
+                        <ol style="margin-right: 18px;">
+                            <li>מחלקים: 5000 ÷ 4096 = 1, שארית 904.</li>
+                            <li>ב-Page Table, דף 1 → מסגרת 3.</li>
+                            <li>כתובת פיזית = (3 × 4096) + 904 = 13192.</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="important-note" style="margin-top: 28px;">
+                    <strong>הערות:</strong><br>
+                    - לרוב במבחן נותנים כתובת בינארית או הקסדצימלית.<br>
+                    - עדיף לעבוד עם השיטה השנייה (עשרונית/בינארית) – כך גם המחשב עושה זאת.<br>
+                    - אם נותנים כתובת בינארית – מחלקים לפי מספר הביטים של ההיסט.<br>
+                    - דפים קטנים יוצרים טבלת דפים גדולה יותר (יותר כניסות), אך מפחיתים שיברור פנימי.<br>
+                    - יש נוסחה אופטימלית לגודל דף, שתלויה בגודל הזיכרון, כמות הגישות, וגודל ה-TLB.<br>
+                    - טבלת דפים גדולה לא מאטה את החיפוש – הגישה היא ישירה לפי אינדקס.
+                </div>
+            
+            </div>
+            <div class="image-container">
+                <svg width="900" height="500" viewBox="0 0 900 500">
+                    <!-- Arrow marker definition -->
+                    <defs>
+                        <marker id="arrow_b" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <path d="M0,0 L0,6 L9,3 z" fill="#3b82f6" />
+                        </marker>
+                    </defs>
+
+                    <!-- CPU -->
+                    <rect x="48" y="178" width="102" height="80" fill="#d3d3d3" stroke="#333" stroke-width="2"/>
+                    <text x="99" y="223" font-size="16" fill="#333" text-anchor="middle" font-family="Arial">CPU</text>
+
+                    <!-- Arrow from CPU to logical address -->
+                    <line x1="150" y1="218" x2="200" y2="218" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow_b)"/>
+
+                    <!-- logical address boxes -->
+                    <rect x="200" y="198" width="40" height="40" fill="#fff" stroke="#333" stroke-width="2"/>
+                    <text x="220" y="223" font-size="16" fill="#333" text-anchor="middle" font-family="Arial">p</text>
+                    <rect x="240" y="198" width="40" height="40" fill="#fff" stroke="#333" stroke-width="2"/>
+                    <text x="260" y="223" font-size="16" fill="#333" text-anchor="middle" font-family="Arial">d</text>
+                    
+                    <!-- logical address label -->
+                    <text x="220" y="188" font-size="14" fill="#3b82f6" text-anchor="middle" font-family="Arial">logical address</text>
+
+                    <!-- Arrow from p down to page table -->
+                    <line x1="220" y1="238" x2="220" y2="310" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow_b)"/>
+                    <text x="205" y="275" font-size="14" fill="#3b82f6" font-family="Arial">p</text>
+
+                    <!-- Page Table -->
+                    <rect x="165" y="310" width="110" height="140" fill="#fff" stroke="#333" stroke-width="2"/>
+                    
+                    <!-- Page table entries -->
+                    <line x1="175" y1="330" x2="265" y2="330" stroke="#333" stroke-width="1"/>
+                    <line x1="175" y1="350" x2="265" y2="350" stroke="#333" stroke-width="1"/>
+                    <line x1="175" y1="370" x2="265" y2="370" stroke="#333" stroke-width="1"/>
+                    <rect x="175" y="370" width="80" height="20" fill="#87ceeb" stroke="#333" stroke-width="1"/>
+                    <text x="215" y="383" font-size="14" fill="#333" text-anchor="middle" font-family="Arial">f</text>
+                    <line x1="175" y1="390" x2="265" y2="390" stroke="#333" stroke-width="1"/>
+                    <line x1="175" y1="410" x2="265" y2="410" stroke="#333" stroke-width="1"/>
+                    <line x1="175" y1="430" x2="265" y2="430" stroke="#333" stroke-width="1"/>
+                    
+                    <!-- page table label -->
+                    <text x="220" y="470" font-size="14" fill="#333" text-anchor="middle" font-family="Arial">page table</text>
+
+                    <!-- Arrow from page table f to physical address -->
+                    <line x1="255" y1="380" x2="380" y2="218" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow_b)"/>
+
+                    <!-- physical address boxes -->
+                    <rect x="380" y="198" width="40" height="40" fill="#fff" stroke="#333" stroke-width="2"/>
+                    <text x="400" y="223" font-size="16" fill="#333" text-anchor="middle" font-family="Arial">f</text>
+                    <rect x="420" y="198" width="40" height="40" fill="#fff" stroke="#333" stroke-width="2"/>
+                    <text x="440" y="223" font-size="16" fill="#333" text-anchor="middle" font-family="Arial">d</text>
+                    
+                    <!-- physical address label -->
+                    <text x="430" y="188" font-size="14" fill="#3b82f6" text-anchor="middle" font-family="Arial">physical address</text>
+
+                    <!-- Arrow from d (logical) to d (physical) -->
+                    <line x1="280" y1="200" x2="420" y2="200" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow_b)"/>
+                    <text x="350" y="195" font-size="14" fill="#3b82f6" font-family="Arial">d</text>
+
+                    <!-- Arrow from physical address to physical memory -->
+                    <line x1="460" y1="218" x2="627" y2="218" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow_b)"/>
+
+                    <!-- Physical memory -->
+                    <rect x="627" y="78" width="143" height="320" fill="#fff" stroke="#333" stroke-width="2"/>
+                    
+                    <!-- frame e -->
+                    <rect x="637" y="88" width="123" height="80" fill="#d3d3d3" stroke="#333" stroke-width="1"/>
+                    <text x="698" y="133" font-size="14" fill="#333" text-anchor="middle" font-family="Arial">frame e</text>
+                    
+                    <!-- frame f -->
+                    <rect x="637" y="168" width="123" height="80" fill="#87ceeb" stroke="#333" stroke-width="1"/>
+                    <text x="698" y="213" font-size="14" fill="#333" text-anchor="middle" font-family="Arial">frame f</text>
+                    
+                    <!-- frame g -->
+                    <rect x="637" y="248" width="123" height="80" fill="#d3d3d3" stroke="#333" stroke-width="1"/>
+                    <text x="698" y="293" font-size="14" fill="#333" text-anchor="middle" font-family="Arial">frame g</text>
+
+                    <!-- Memory addresses -->
+                    <text x="780" y="103" font-size="12" fill="#333" text-anchor="start" font-family="monospace">0x000</text>
+                    <text x="780" y="183" font-size="12" fill="#333" text-anchor="start" font-family="monospace">0xfff</text>
+                    <text x="780" y="263" font-size="12" fill="#333" text-anchor="start" font-family="monospace">physical memory</text>
+
+                </svg>
+                    <div class="image-caption" style="margin-top: 8px;">
+                        תהליך תרגום כתובת בדפדוף: דוגמה למיפוי עמוד לוגי למסגרת פיזית באמצעות טבלת דפים
+                    </div>
+                </div>
+            </div>
+      
+            
+
+        <!-- טבלת דפים עם רגיסטר בסיסי (Page Table Base Register - PTBR) -->
+        <div class="content-section" id="page-table-base-register">
+            <h2>📑 טבלת דפים עם רגיסטר בסיסי (PTBR)</h2>
+            <p>
+            בכל מערכת דפדוף, לכל תהליך יש טבלת דפים (Page Table) משלו. כדי לדעת היכן נמצאת טבלת הדפים של התהליך בזיכרון, המעבד משתמש ב<strong>רגיסטר בסיס טבלת דפים</strong> (Page Table Base Register - PTBR). 
+            <br>
+            בכל החלפת הקשר (Context Switch), מערכת ההפעלה מעדכנת את ה-PTBR לכתובת טבלת הדפים של התהליך החדש.
+            </p>
+            <div class="image-container">
+            <svg width="100%" height="260" viewBox="0 0 700 260">
+                <!-- PTBR Register -->
+                <rect x="40" y="40" width="120" height="40" fill="#e6ccff" stroke="#333" stroke-width="2"/>
+                <text x="100" y="65" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">PTBR</text>
+                <text x="100" y="85" font-size="12" fill="#333" text-anchor="middle">כתובת טבלת הדפים</text>
+                <!-- Arrow to Page Table -->
+                <line x1="160" y1="60" x2="250" y2="60" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+                <!-- Page Table -->
+                <rect x="250" y="30" width="120" height="100" fill="#fffbe6" stroke="#333" stroke-width="2"/>
+                <text x="310" y="50" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">Page Table</text>
+                <rect x="270" y="60" width="80" height="25" fill="#f0f0f0" stroke="#333" stroke-width="1"/>
+                <text x="310" y="77" font-size="12" fill="#333" text-anchor="middle">עמוד 0 → מסגרת 2</text>
+                <rect x="270" y="90" width="80" height="25" fill="#f0f0f0" stroke="#333" stroke-width="1"/>
+                <text x="310" y="107" font-size="12" fill="#333" text-anchor="middle">עמוד 1 → מסגרת 0</text>
+                <!-- Arrow marker -->
+                <defs>
+                <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L0,6 L9,3 z" fill="#333" />
+                </marker>
+                </defs>
+            </svg>
+            <div class="image-caption">PTBR – רגיסטר שמצביע על מיקום טבלת הדפים של התהליך בזיכרון</div>
+            </div>
+        </div>
+
+        <!-- טבלת דפים עם רגיסטר ארוך (Page Table Length Register - PTLR) -->
+        <div class="content-section" id="page-table-length-register">
+            <h2>📏 טבלת דפים עם רגיסטר אורך (PTLR)</h2>
+            <p>
+            בנוסף ל-PTBR, קיים <strong>רגיסטר אורך טבלת דפים</strong> (Page Table Length Register - PTLR) שמכיל את מספר הערכים בטבלת הדפים (כלומר, כמה עמודים מוקצים לתהליך). 
+            <br>
+            כך, ה-MMU יכול לבדוק האם מספר העמוד המבוקש חוקי, ולמנוע גישה לעמודים לא מוקצים.
+            </p>
+            <div class="image-container">
+            <svg width="100%" height="180" viewBox="0 0 600 180">
+                <!-- PTBR -->
+                <rect x="40" y="30" width="120" height="40" fill="#e6ccff" stroke="#333" stroke-width="2"/>
+                <text x="100" y="55" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">PTBR</text>
+                <!-- PTLR -->
+                <rect x="40" y="90" width="120" height="40" fill="#ccffcc" stroke="#333" stroke-width="2"/>
+                <text x="100" y="115" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">PTLR</text>
+                <!-- Arrow to Page Table -->
+                <line x1="160" y1="50" x2="250" y2="50" stroke="#333" stroke-width="2" marker-end="url(#arrow2)"/>
+                <!-- Page Table -->
+                <rect x="250" y="20" width="120" height="100" fill="#fffbe6" stroke="#333" stroke-width="2"/>
+                <text x="310" y="40" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">Page Table</text>
+                <rect x="270" y="60" width="80" height="25" fill="#f0f0f0" stroke="#333" stroke-width="1"/>
+                <text x="310" y="77" font-size="12" fill="#333" text-anchor="middle">עמוד 0 → מסגרת 2</text>
+                <rect x="270" y="90" width="80" height="25" fill="#f0f0f0" stroke="#333" stroke-width="1"/>
+                <text x="310" y="107" font-size="12" fill="#333" text-anchor="middle">עמוד 1 → מסגרת 0</text>
+                <!-- Arrow marker -->
+                <defs>
+                <marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L0,6 L9,3 z" fill="#333" />
+                </marker>
+                </defs>
+            </svg>
+            <div class="image-caption">PTLR – רגיסטר שמציין את אורך טבלת הדפים (מספר עמודים מוקצים)</div>
+            </div>
+        </div>
+
+        <!-- טיפול בגישה כפולה לזיכרון (Two Memory Accesses) -->
+        <div class="content-section" id="two-memory-accesses">
+            <h2>⚡ איך מטפלים בגישה כפולה לזיכרון?</h2>
+            <p>
+            בתרגום כתובת בדפדוף, נדרשת גישה אחת לזיכרון כדי לקרוא את טבלת הדפים, ואז גישה נוספת כדי לקרוא/לכתוב את המידע עצמו – כלומר, <strong>שתי גישות לזיכרון לכל פקודה!</strong>
+            </p>
+            <div class="feature-box">
+            <h3>איך פותרים את הבעיה?</h3>
+            <ul class="feature-list">
+                <li><strong>TLB (Translation Lookaside Buffer):</strong> מטמון חומרה קטן ומהיר שמכיל את טבלת הדפים. אם התרגום נמצא ב-TLB ("פגיעה ב-TLB"), נחסכת הגישה לטבלת הדפים בזיכרון.</li>
+                <li><strong>פגיעה ב-TLB:</strong> רוב הגישות מתבצעות במהירות גבוהה, ורק לעיתים נדירות יש צורך בגישה כפולה לזיכרון.</li>
+            </ul>
+            </div>
+                        <div class="image-container">
+                            <svg width="900" height="550" viewBox="0 0 900 550">
+                            <!-- Arrow marker definition -->
+                            <defs>
+                                <marker id="arrow-1" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                <path d="M0,0 L0,6 L9,3 z" fill="#3b82f6" />
+                                </marker>
+                            </defs>
+
+                            <!-- Hebrew text at top -->
+                            <text x="450" y="25" font-size="14" fill="#3b82f6" text-anchor="middle" font-family="Arial">.יש מהנת דוגמא של EAT, דוגמאות יש שעות במשתנים</text>
+
+                            <!-- Main rectangle frame -->
+                            <rect x="180" y="60" width="500" height="350" fill="none" stroke="#3b82f6" stroke-width="2"/>
+
+                            <!-- CPU -->
+                            <rect x="35" y="120" width="90" height="60" fill="#d3d3d3" stroke="#3b82f6" stroke-width="2"/>
+                            <text x="80" y="155" font-size="14" fill="#3b82f6" text-anchor="middle" font-family="Arial">CPU</text>
+
+                            <!-- Arrow from CPU to logical address -->
+                            <line x1="125" y1="150" x2="200" y2="150" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-1)"/>
+
+                            <!-- logical address boxes -->
+                            <rect x="200" y="135" width="30" height="30" fill="#fff" stroke="#3b82f6" stroke-width="2"/>
+                            <text x="215" y="155" font-size="14" fill="#3b82f6" text-anchor="middle" font-family="Arial">p</text>
+                            <rect x="230" y="135" width="30" height="30" fill="#fff" stroke="#3b82f6" stroke-width="2"/>
+                            <text x="245" y="155" font-size="14" fill="#3b82f6" text-anchor="middle" font-family="Arial">d</text>
+                            
+                            <!-- logical address label -->
+                            <text x="200" y="125" font-size="12" fill="#3b82f6" text-anchor="start" font-family="Arial">logical</text>
+                            <text x="200" y="112" font-size="12" fill="#3b82f6" text-anchor="start" font-family="Arial">address</text>
+
+                            <!-- Arrows from p and d down -->
+                            <line x1="215" y1="165" x2="215" y2="200" stroke="#3b82f6" stroke-width="2"/>
+                            <line x1="245" y1="165" x2="245" y2="380" stroke="#3b82f6" stroke-width="2"/>
+
+                            <!-- Multiple arrows from p to TLB -->
+                            <line x1="215" y1="200" x2="250" y2="200" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-1)"/>
+                            <line x1="215" y1="210" x2="250" y2="210" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-1)"/>
+                            <line x1="215" y1="220" x2="250" y2="220" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-1)"/>
+                            <line x1="215" y1="230" x2="250" y2="230" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-1)"/>
+                            <line x1="215" y1="240" x2="250" y2="240" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-1)"/>
+
+                            <!-- TLB -->
+                            <rect x="250" y="190" width="120" height="80" fill="#87ceeb" stroke="#3b82f6" stroke-width="2"/>
+                            
+                            <!-- TLB headers -->
+                            <text x="290" y="180" font-size="12" fill="#3b82f6" text-anchor="middle" font-family="Arial">page</text>
+                            <text x="330" y="180" font-size="12" fill="#3b82f6" text-anchor="middle" font-family="Arial">frame</text>
+                            <text x="290" y="168" font-size="12" fill="#3b82f6" text-anchor="middle" font-family="Arial">number</text>
+                            <text x="330" y="168" font-size="12" fill="#3b82f6" text-anchor="middle" font-family="Arial">number</text>
+                            
+                            <!-- TLB separator line -->
+                            <line x1="310" y1="195" x2="310" y2="265" stroke="#3b82f6" stroke-width="1"/>
+                            
+                            <!-- TLB entries -->
+                            <rect x="255" y="200" width="50" height="12" fill="#b3e0fc" stroke="#3b82f6" stroke-width="1"/>
+                            <rect x="315" y="200" width="50" height="12" fill="#b3e0fc" stroke="#3b82f6" stroke-width="1"/>
+                            <rect x="255" y="212" width="50" height="12" fill="#b3e0fc" stroke="#3b82f6" stroke-width="1"/>
+                            <rect x="315" y="212" width="50" height="12" fill="#b3e0fc" stroke="#3b82f6" stroke-width="1"/>
+                            <rect x="255" y="224" width="50" height="12" fill="#b3e0fc" stroke="#3b82f6" stroke-width="1"/>
+                            <rect x="315" y="224" width="50" height="12" fill="#b3e0fc" stroke="#3b82f6" stroke-width="1"/>
+                            <rect x="255" y="236" width="50" height="12" fill="#b3e0fc" stroke="#3b82f6" stroke-width="1"/>
+                            <rect x="315" y="236" width="50" height="12" fill="#b3e0fc" stroke="#3b82f6" stroke-width="1"/>
+                            <rect x="255" y="248" width="50" height="12" fill="#b3e0fc" stroke="#3b82f6" stroke-width="1"/>
+                            <rect x="315" y="248" width="50" height="12" fill="#b3e0fc" stroke="#3b82f6" stroke-width="1"/>
+                            
+                            <!-- TLB label -->
+                            <text x="310" y="285" font-size="14" fill="#3b82f6" text-anchor="middle" font-family="Arial">TLB</text>
+
+                            <!-- TLB HIT path -->
+                            <line x1="370" y1="230" x2="450" y2="230" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-1)"/>
+                            <text x="410" y="220" font-size="12" fill="#3b82f6" text-anchor="middle" font-family="Arial">TLB hit</text>
+
+                            <!-- TLB MISS path -->
+                            <line x1="190" y1="250" x2="190" y2="350" stroke="#3b82f6" stroke-width="2"/>
+                            <line x1="190" y1="350" x2="250" y2="350" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-1)"/>
+                            <text x="215" y="340" font-size="12" fill="#3b82f6" text-anchor="middle" font-family="Arial">TLB miss</text>
+
+                            <!-- Page Table -->
+                            <rect x="250" y="320" width="80" height="100" fill="#fff" stroke="#3b82f6" stroke-width="2"/>
+                            
+                            <!-- Page table entries -->
+                            <line x1="255" y1="335" x2="325" y2="335" stroke="#3b82f6" stroke-width="1"/>
+                            <line x1="255" y1="350" x2="325" y2="350" stroke="#3b82f6" stroke-width="1"/>
+                            <line x1="255" y1="365" x2="325" y2="365" stroke="#3b82f6" stroke-width="1"/>
+                            <rect x="255" y="365" width="65" height="15" fill="#87ceeb" stroke="#3b82f6" stroke-width="1"/>
+                            <text x="287" y="375" font-size="12" fill="#3b82f6" text-anchor="middle" font-family="Arial">f</text>
+                            <line x1="255" y1="380" x2="325" y2="380" stroke="#3b82f6" stroke-width="1"/>
+                            <line x1="255" y1="395" x2="325" y2="395" stroke="#3b82f6" stroke-width="1"/>
+                            <line x1="255" y1="410" x2="325" y2="410" stroke="#3b82f6" stroke-width="1"/>
+                            
+                            <!-- page table label -->
+                            <text x="290" y="440" font-size="14" fill="#3b82f6" text-anchor="middle" font-family="Arial">page table</text>
+
+                            <!-- Arrow from page table to physical address -->
+                            <line x1="330" y1="372" x2="450" y2="250" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-1)"/>
+
+                            <!-- physical address boxes -->
+                            <rect x="450" y="220" width="30" height="30" fill="#fff" stroke="#3b82f6" stroke-width="2"/>
+                            <text x="465" y="240" font-size="14" fill="#3b82f6" text-anchor="middle" font-family="Arial">f</text>
+                            <rect x="480" y="220" width="30" height="30" fill="#fff" stroke="#3b82f6" stroke-width="2"/>
+                            <text x="495" y="240" font-size="14" fill="#3b82f6" text-anchor="middle" font-family="Arial">d</text>
+
+                            <!-- physical address label -->
+                            <text x="465" y="210" font-size="12" fill="#3b82f6" text-anchor="middle" font-family="Arial">physical</text>
+                            <text x="465" y="197" font-size="12" fill="#3b82f6" text-anchor="middle" font-family="Arial">address</text>
+
+                            <!-- Arrow from d to physical address -->
+                            <line x1="245" y1="380" x2="480" y2="380" stroke="#3b82f6" stroke-width="2"/>
+                            <line x1="495" y1="380" x2="495" y2="250" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-1)"/>
+
+                            <!-- Arrow from p to page table -->
+                            <text x="235" y="372" font-size="12" fill="#3b82f6" text-anchor="middle" font-family="Arial">p</text>
+
+                            <!-- Arrow to physical memory -->
+                            <line x1="510" y1="235" x2="630" y2="235" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-1)"/>
+
+                            <!-- Physical memory -->
+                            <rect x="630" y="120" width="120" height="300" fill="#87ceeb" stroke="#3b82f6" stroke-width="2"/>
+                            <text x="690" y="440" font-size="14" fill="#3b82f6" text-anchor="middle" font-family="Arial">physical</text>
+                            <text x="690" y="455" font-size="14" fill="#3b82f6" text-anchor="middle" font-family="Arial">memory</text>
+                            </svg>
+                            
+                        
+                        <div class="image-caption">TLB – מטמון חומרה שמאיץ את תרגום הכתובות ומונע גישה כפולה לזיכרון ברוב המקרים</div>
+                        </div>
+        </div>
+
+        <!-- הגנה על זיכרון בדפדוף -->
+        <div class="content-section" id="paging-protection">
+            <h2>🔒 הגנה על זיכרון בדפדוף</h2>
+            <p>
+                בדפדוף, לכל עמוד בטבלת הדפים יש <strong>סיבית הרשאות</strong> (Protection Bits) וגם <strong>סיבית תוקף</strong> (valid/invalid, מסומנת כ־v או i).
+                <br>
+                ה־MMU בודק את הסיביות האלו בכל גישה:
+                <ul>
+                    <li>אם <strong>סיבית התוקף (valid)</strong> היא <strong>v</strong> – העמוד נמצא במרחב הלוגי של התהליך והגישה מותרת (אם הרשאות מתאימות).</li>
+                    <li>אם <strong>סיבית התוקף</strong> היא <strong>i</strong> – העמוד מחוץ למרחב הלוגי של התהליך, וכל גישה אליו תגרום לחריגת זיכרון.</li>
+                </ul>
+                <br>
+                <strong>PTLR</strong> (Page Table Length Register) משמש לבדוק האם מספר העמוד חוקי – כלומר, האם הוא בתחום שמותר לתהליך.
+            </p>
+            <div class="image-container">
+                <svg width="100%" height="180" viewBox="0 0 700 180">
+                    <!-- Page Table Entry -->
+                    <rect x="60" y="40" width="220" height="100" fill="#fffbe6" stroke="#333" stroke-width="2"/>
+                    <text x="170" y="60" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">Page Table Entry</text>
+                    <rect x="80" y="80" width="60" height="30" fill="#ccffcc" stroke="#333" stroke-width="1"/>
+                    <text x="110" y="100" font-size="12" fill="#333" text-anchor="middle">מסגרת</text>
+                    <rect x="150" y="80" width="80" height="30" fill="#e6ccff" stroke="#333" stroke-width="1"/>
+                    <text x="190" y="100" font-size="12" fill="#333" text-anchor="middle">סיבית הרשאות</text>
+                    <rect x="235" y="80" width="35" height="30" fill="#ffe4b5" stroke="#333" stroke-width="1"/>
+                    <text x="252" y="100" font-size="12" fill="#333" text-anchor="middle">v/i</text>
+                    <!-- Arrow to MMU -->
+                    <line x1="270" y1="95" x2="340" y2="95" stroke="#333" stroke-width="2" marker-end="url(#arrow4)"/>
+                    <!-- MMU -->
+                    <rect x="340" y="60" width="100" height="70" fill="#f0f0f0" stroke="#333" stroke-width="2"/>
+                    <text x="390" y="95" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">MMU</text>
+                    <!-- Arrow marker -->
+                    <defs>
+                        <marker id="arrow4" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L9,3 z" fill="#333" />
+                        </marker>
+                    </defs>
+                </svg>
+                <div class="image-caption">הגנה בדפדוף – לכל עמוד יש סיבית הרשאות וסיבית תוקף (v/i), וה-MMU בודק אותן בכל גישה</div>
+            </div>
+            <div class="info-box">     
+                <h3>סיבית תוקף (valid/invalid):</h3>
+                <ul>
+                    <li><strong>v</strong> – העמוד במרחב הלוגי של התהליך (גישה מותרת).</li>
+                    <li><strong>i</strong> – העמוד מחוץ למרחב הלוגי (גישה תגרום לחריגה).</li>
+                </ul>
+                <p>גישה לא חוקית (הרשאות או תוקף) תגרום לחריגת זיכרון (Page Fault / Protection Fault).</p>
+            </div>
+        </div>
+        <!-- חישוב גודל טבלת הדפים -->
+        <div class="content-section" id="page-table-size">
+            <h2>📏 חישוב גודל טבלת הדפים</h2>
+            <p>
+                גודל טבלת הדפים תלוי בגודל מרחב הכתובות של התהליך, בגודל הדף ובגודל כל כניסה בטבלה.
+                <br>
+                <strong>נוסחה:</strong>
+                <br>
+                <span dir="ltr">
+                    מספר כניסות = גודל מרחב הכתובות / גודל דף
+                    <br>
+                    גודל טבלה (בבתים) = מספר כניסות × גודל כניסה (בבתים)
+                </span>
+            </p>
+            <div class="feature-box">
+                <h4>דוגמה:</h4>
+                <ul>
+                    <li>מרחב כתובות: 32 ביט (4GB)</li>
+                    <li>גודל דף: 4KB (2<sup>12</sup> בתים)</li>
+                    <li>מספר כניסות: 2<sup>32</sup> / 2<sup>12</sup> = 2<sup>20</sup> = 1,048,576</li>
+                    <li>גודל כניסה: 4 בתים</li>
+                    <li>גודל טבלה: 1,048,576 × 4 = 4MB</li>
+                </ul>
+                <div class="important-note">
+                    <strong>הערה:</strong> בטבלאות דפים מרובות רמות (Multi-level), כל טבלה קטנה יותר.
+                </div>
+            </div>
+        </div>
+
+        <!-- קוד משותף (Shared Code) -->
+        <div class="content-section" id="shared-code">
+            <h2>🔗 קוד משותף (Shared Code)</h2>
+            <p>
+                במערכות הפעלה ניתן לשתף קוד בין תהליכים שונים (למשל ספריות מערכת או קוד של תוכניות זהות) כדי לחסוך בזיכרון.
+                <br>
+                <strong>איך זה עובד?</strong>
+                <ul>
+                    <li>הקוד נטען פעם אחת לזיכרון הפיזי.</li>
+                    <li>טבלת הדפים של כל תהליך ממפה את אותו קוד לאותה מסגרת פיזית.</li>
+                    <li>הקוד חייב להיות <strong>קריא בלבד</strong> (read-only), כדי למנוע שינויים ע"י תהליך אחד שישפיעו על אחרים.</li>
+                </ul>
+            </p>
+            <div class="feature-box">
+                <h4>יתרונות:</h4>
+                <ul>
+                    <li>חיסכון בזיכרון</li>
+                    <li>טעינה מהירה של תהליכים חדשים</li>
+                </ul>
+                <h4>דוגמה:</h4>
+                <p>שני תהליכים משתמשים באותה ספריית DLL או קוד מערכת – כל אחד ממפה את הקוד לאותו מקום בזיכרון הפיזי.</p>
+            </div>
+        </div>
+
+        <div class="content-section" id="page-table-structure">
+            <h2>📑 מבנה טבלת הדפים (Structure of the Page Table)</h2>
+            <p>
+                <strong>הבעיה:</strong> טבלת הדפים חייבת להיות בזיכרון הראשי – אם יש לנו 1000 תהליכים, נבזבז הרבה מקום.<br>
+                לכן קיימים מבנים שונים לטבלת הדפים כדי לשפר מהירות ולחסוך בזיכרון.
+            </p>
+        <!-- טבלה חד-ממדית (One-Level Page Table) -->
+        <div class="table-structure">
+            <div class="tables-row">
+                <div class="feature-item">
+                    <h3 class="structure-title">🏗️ טבלה היררכית (Hierarchical)</h3>
+                    
+                    <div class="svg-container">
+                        <svg width="350" height="280" viewBox="0 0 350 280" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="hierGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.8" />
+                                    <stop offset="100%" style="stop-color:#1e40af;stop-opacity:0.8" />
+                                </linearGradient>
+                                <linearGradient id="hierGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.8" />
+                                    <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:0.8" />
+                                </linearGradient>
+                                <linearGradient id="hierGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.8" />
+                                    <stop offset="100%" style="stop-color:#16a34a;stop-opacity:0.8" />
+                                </linearGradient>
+                                <filter id="shadow">
+                                    <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+                                </filter>
+                                <marker id="arrowHier" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                    <path d="M0,0 L0,6 L9,3 z" fill="#60a5fa" />
+                                </marker>
+                            </defs>
+                            
+                            <!-- כותרת דף וירטואלי -->
+                            <rect x="125" y="20" width="100" height="30" fill="url(#hierGrad1)" stroke="#3b82f6" stroke-width="2" rx="5" filter="url(#shadow)"/>
+                            <text x="175" y="40" font-size="12" fill="white" text-anchor="middle" font-weight="bold">כתובת וירטואלית</text>
+                            
+                            <!-- חץ למטה -->
+                            <line x1="175" y1="50" x2="175" y2="80" stroke="#60a5fa" stroke-width="3" marker-end="url(#arrowHier)"/>
+                            
+                            <!-- טבלה ראשית -->
+                            <rect x="125" y="80" width="100" height="80" fill="url(#hierGrad2)" stroke="#8b5cf6" stroke-width="2" rx="8" filter="url(#shadow)"/>
+                            <text x="175" y="100" font-size="11" fill="white" text-anchor="middle" font-weight="bold">טבלה ראשית</text>
+                            
+                            <!-- רשימת כניסות בטבלה ראשית -->
+                            <rect x="135" y="110" width="80" height="12" fill="rgba(255,255,255,0.3)" stroke="#c084fc" stroke-width="1" rx="2"/>
+                            <text x="175" y="119" font-size="8" fill="white" text-anchor="middle">כניסה 0</text>
+                            <rect x="135" y="125" width="80" height="12" fill="rgba(255,255,255,0.3)" stroke="#c084fc" stroke-width="1" rx="2"/>
+                            <text x="175" y="134" font-size="8" fill="white" text-anchor="middle">כניסה 1</text>
+                            <rect x="135" y="140" width="80" height="12" fill="rgba(255,255,255,0.5)" stroke="#c084fc" stroke-width="2" rx="2"/>
+                            <text x="175" y="149" font-size="8" fill="white" text-anchor="middle">כניסה 2</text>
+                            
+                            <!-- חצים לטבלאות משניות -->
+                            <line x1="135" y1="146" x2="80" y2="180" stroke="#60a5fa" stroke-width="2" marker-end="url(#arrowHier)"/>
+                            <line x1="215" y1="146" x2="270" y2="180" stroke="#60a5fa" stroke-width="2" marker-end="url(#arrowHier)"/>
+                            
+                            <!-- טבלאות משניות -->
+                            <rect x="20" y="180" width="80" height="70" fill="url(#hierGrad3)" stroke="#22c55e" stroke-width="2" rx="6" filter="url(#shadow)"/>
+                            <text x="60" y="200" font-size="10" fill="white" text-anchor="middle" font-weight="bold">טבלה משנית A</text>
+                            <rect x="30" y="210" width="60" height="8" fill="rgba(255,255,255,0.4)" stroke="#34d399" stroke-width="1" rx="1"/>
+                            <rect x="30" y="220" width="60" height="8" fill="rgba(255,255,255,0.4)" stroke="#34d399" stroke-width="1" rx="1"/>
+                            <rect x="30" y="230" width="60" height="8" fill="rgba(255,255,255,0.4)" stroke="#34d399" stroke-width="1" rx="1"/>
+                            
+                            <rect x="250" y="180" width="80" height="70" fill="url(#hierGrad3)" stroke="#22c55e" stroke-width="2" rx="6" filter="url(#shadow)"/>
+                            <text x="290" y="200" font-size="10" fill="white" text-anchor="middle" font-weight="bold">טבלה משנית B</text>
+                            <rect x="260" y="210" width="60" height="8" fill="rgba(255,255,255,0.4)" stroke="#34d399" stroke-width="1" rx="1"/>
+                            <rect x="260" y="220" width="60" height="8" fill="rgba(255,255,255,0.4)" stroke="#34d399" stroke-width="1" rx="1"/>
+                            <rect x="260" y="230" width="60" height="8" fill="rgba(255,255,255,0.4)" stroke="#34d399" stroke-width="1" rx="1"/>
+                            
+                            <!-- הסבר -->
+                            <text x="175" y="270" font-size="10" fill="#94a3b8" text-anchor="middle">רק הטבלאות הנדרשות נטענות לזיכרון</text>
+                        </svg>
+                    </div>
+                    
+                    <div class="advantages">
+                        <h4>✅ יתרונות:</h4>
+                        <ul>
+                            <li>חיסכון בזיכרון - רק חלקים פעילים נטענים</li>
+                            <li>מהירות טעינה של טבלאות חדשות</li>
+                            <li>מתאים למרחבי כתובות גדולים</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="disadvantages">
+                        <h4>❌ חסרונות:</h4>
+                        <ul>
+                            <li>זמן גישה ארוך יותר (2+ פעולות זיכרון)</li>
+                            <li>מורכבות מימוש</li>
+                            <li>צריך לנהל מספר רמות</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="feature-item">
+                <!-- טבלת גיבוב -->
+                    <div class="table-structure">
+                       
+                        <h3 class="structure-title">🔍 טבלת גיבוב (Hashed)</h3>
+                        
+                        <div class="svg-container">
+                            <svg width="350" height="280" viewBox="0 0 350 280" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="hashGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.8" />
+                                        <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:0.8" />
+                                    </linearGradient>
+                                    <linearGradient id="hashGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#ec4899;stop-opacity:0.8" />
+                                        <stop offset="100%" style="stop-color:#db2777;stop-opacity:0.8" />
+                                    </linearGradient>
+                                    <marker id="arrowHash" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#c084fc" />
+                                    </marker>
+                                </defs>
+                                
+                                <!-- מספר דף -->
+                                <rect x="50" y="20" width="80" height="30" fill="url(#hashGrad1)" stroke="#8b5cf6" stroke-width="2" rx="5" filter="url(#shadow)"/>
+                                <text x="90" y="40" font-size="11" fill="white" text-anchor="middle" font-weight="bold">מספר דף</text>
+                                
+                                <!-- פונקציית גיבוב -->
+                                <ellipse cx="90" cy="80" rx="40" ry="20" fill="url(#hashGrad2)" stroke="#ec4899" stroke-width="2" filter="url(#shadow)"/>
+                                <text x="90" y="85" font-size="10" fill="white" text-anchor="middle" font-weight="bold">Hash()</text>
+                                
+                                <!-- חץ לטבלת גיבוב -->
+                                <line x1="90" y1="50" x2="90" y2="60" stroke="#c084fc" stroke-width="2" marker-end="url(#arrowHash)"/>
+                                <line x1="90" y1="100" x2="90" y2="120" stroke="#c084fc" stroke-width="2" marker-end="url(#arrowHash)"/>
+                                
+                                <!-- טבלת גיבוב -->
+                                <rect x="40" y="120" width="100" height="100" fill="url(#hashGrad1)" stroke="#8b5cf6" stroke-width="2" rx="8" filter="url(#shadow)"/>
+                                <text x="90" y="140" font-size="11" fill="white" text-anchor="middle" font-weight="bold">טבלת גיבוב</text>
+                                
+                                <!-- כניסות בטבלה -->
+                                <rect x="50" y="150" width="80" height="15" fill="rgba(255,255,255,0.3)" stroke="#c084fc" stroke-width="1" rx="2"/>
+                                <text x="90" y="161" font-size="9" fill="white" text-anchor="middle">Hash[0]</text>
+                                <rect x="50" y="170" width="80" height="15" fill="rgba(255,255,255,0.5)" stroke="#c084fc" stroke-width="2" rx="2"/>
+                                <text x="90" y="181" font-size="9" fill="white" text-anchor="middle">Hash[1] ←</text>
+                                <rect x="50" y="190" width="80" height="15" fill="rgba(255,255,255,0.3)" stroke="#c084fc" stroke-width="1" rx="2"/>
+                                <text x="90" y="201" font-size="9" fill="white" text-anchor="middle">Hash[2]</text>
+                                
+                                <!-- שרשור התנגשויות -->
+                                <line x1="130" y1="177" x2="180" y2="177" stroke="#f472b6" stroke-width="2" marker-end="url(#arrowHash)"/>
+                                
+                                <!-- רשימת שרשור -->
+                                <rect x="180" y="160" width="60" height="20" fill="url(#hashGrad2)" stroke="#ec4899" stroke-width="1" rx="4"/>
+                                <text x="210" y="174" font-size="8" fill="white" text-anchor="middle">דף A</text>
+                                <line x1="240" y1="170" x2="270" y2="170" stroke="#f472b6" stroke-width="1" marker-end="url(#arrowHash)"/>
+                                
+                                <rect x="270" y="160" width="60" height="20" fill="url(#hashGrad2)" stroke="#ec4899" stroke-width="1" rx="4"/>
+                                <text x="300" y="174" font-size="8" fill="white" text-anchor="middle">דף B</text>
+                                
+                                <!-- הסבר -->
+                                <text x="175" y="250" font-size="10" fill="#94a3b8" text-anchor="middle">שרשור לפתרון התנגשויות</text>
+                                <text x="175" y="265" font-size="10" fill="#94a3b8" text-anchor="middle">מתאים לכתובות ארוכות</text>
+                            </svg>
+                        </div>
+                        
+                        <div class="advantages">
+                            <h4>✅ יתרונות:</h4>
+                            <ul>
+                                <li>מתאים לכתובות ארוכות מאוד</li>
+                                <li>גישה מהירה בממוצע O(1)</li>
+                                <li>גמיש לגדלי זיכרון שונים</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="disadvantages">
+                            <h4>❌ חסרונות:</h4>
+                            <ul>
+                                <li>התנגשויות יכולות לגרום לביצועים גרועים</li>
+                                <li>מורכבות במימוש השרשור</li>
+                                <li>זיכרון נוסף לרשימות שרשור</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="feature-item">
+
+                <!-- טבלה מהופכת -->
+                <div class="table-structure">
+                    
+                    <h3 class="structure-title">🔄 טבלה מהופכת (Inverted)</h3>
+                    
+                    <div class="svg-container">
+                        <svg width="350" height="280" viewBox="0 0 350 280" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="invGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#ec4899;stop-opacity:0.8" />
+                                    <stop offset="100%" style="stop-color:#db2777;stop-opacity:0.8" />
+                                </linearGradient>
+                                <linearGradient id="invGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:0.8" />
+                                    <stop offset="100%" style="stop-color:#d97706;stop-opacity:0.8" />
+                                </linearGradient>
+                                <marker id="arrowInv" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                    <path d="M0,0 L0,6 L9,3 z" fill="#f472b6" />
+                                </marker>
+                            </defs>
+                            
+                            <!-- כותרת -->
+                            <text x="175" y="25" font-size="12" fill="#f472b6" text-anchor="middle" font-weight="bold">טבלה אחת לכל המערכת</text>
+                            
+                            <!-- טבלה מהופכת -->
+                            <rect x="75" y="40" width="200" height="180" fill="url(#invGrad1)" stroke="#ec4899" stroke-width="2" rx="10" filter="url(#shadow)"/>
+                            <text x="175" y="60" font-size="11" fill="white" text-anchor="middle" font-weight="bold">טבלה מהופכת</text>
+                            
+                            <!-- כותרות עמודות -->
+                            <rect x="85" y="70" width="50" height="20" fill="rgba(255,255,255,0.3)" stroke="#f472b6" stroke-width="1" rx="3"/>
+                            <text x="110" y="83" font-size="9" fill="white" text-anchor="middle" font-weight="bold">מסגרת</text>
+                            
+                            <rect x="140" y="70" width="50" height="20" fill="rgba(255,255,255,0.3)" stroke="#f472b6" stroke-width="1" rx="3"/>
+                            <text x="165" y="83" font-size="9" fill="white" text-anchor="middle" font-weight="bold">דף</text>
+                            
+                            <rect x="195" y="70" width="70" height="20" fill="rgba(255,255,255,0.3)" stroke="#f472b6" stroke-width="1" rx="3"/>
+                            <text x="230" y="83" font-size="9" fill="white" text-anchor="middle" font-weight="bold">תהליך</text>
+                            
+                            <!-- שורות מדגמה -->
+                            <rect x="85" y="95" width="50" height="18" fill="rgba(255,255,255,0.2)" stroke="#f472b6" stroke-width="1" rx="2"/>
+                            <text x="110" y="107" font-size="8" fill="white" text-anchor="middle">Frame 0</text>
+                            <rect x="140" y="95" width="50" height="18" fill="rgba(255,255,255,0.2)" stroke="#f472b6" stroke-width="1" rx="2"/>
+                            <text x="165" y="107" font-size="8" fill="white" text-anchor="middle">Page 5</text>
+                            <rect x="195" y="95" width="70" height="18" fill="rgba(255,255,255,0.2)" stroke="#f472b6" stroke-width="1" rx="2"/>
+                            <text x="230" y="107" font-size="8" fill="white" text-anchor="middle">Process A</text>
+                            
+                            <rect x="85" y="118" width="50" height="18" fill="rgba(255,255,255,0.4)" stroke="#f472b6" stroke-width="2" rx="2"/>
+                            <text x="110" y="130" font-size="8" fill="white" text-anchor="middle">Frame 1</text>
+                            <rect x="140" y="118" width="50" height="18" fill="rgba(255,255,255,0.4)" stroke="#f472b6" stroke-width="2" rx="2"/>
+                            <text x="165" y="130" font-size="8" fill="white" text-anchor="middle">Page 3</text>
+                            <rect x="195" y="118" width="70" height="18" fill="rgba(255,255,255,0.4)" stroke="#f472b6" stroke-width="2" rx="2"/>
+                            <text x="230" y="130" font-size="8" fill="white" text-anchor="middle">Process B</text>
+                            
+                            <rect x="85" y="141" width="50" height="18" fill="rgba(255,255,255,0.2)" stroke="#f472b6" stroke-width="1" rx="2"/>
+                            <text x="110" y="153" font-size="8" fill="white" text-anchor="middle">Frame 2</text>
+                            <rect x="140" y="141" width="50" height="18" fill="rgba(255,255,255,0.2)" stroke="#f472b6" stroke-width="1" rx="2"/>
+                            <text x="165" y="153" font-size="8" fill="white" text-anchor="middle">Page 1</text>
+                            <rect x="195" y="141" width="70" height="18" fill="rgba(255,255,255,0.2)" stroke="#f472b6" stroke-width="1" rx="2"/>
+                            <text x="230" y="153" font-size="8" fill="white" text-anchor="middle">Process A</text>
+                            <rect x="85" y="164" width="50" height="18" fill="rgba(255,255,255,0.2)" stroke="#f472b6" stroke-width="1" rx="2"/>
+                            <text x="110" y="176" font-size="8" fill="white" text-anchor="middle">Frame 3</text>
+                            <rect x="140" y="164" width="50" height="18" fill="rgba(255,255,255,0.2)" stroke="#f472b6" stroke-width="1" rx="2"/>
+                            <text x="165" y="176" font-size="8" fill="white" text-anchor="middle">Page 7</text>
+                            <rect x="195" y="164" width="70" height="18" fill="rgba(255,255,255,0.2)" stroke="#f472b6" stroke-width="1" rx="2"/>
+                            <text x="230" y="176" font-size="8" fill="white" text-anchor="middle">Process C</text>
+                        </svg>
+                    </div>
+                    <div class="advantages">
+                        <h4>✅ יתרונות:</h4>
+                        <ul>
+                            <li>טבלה אחת בלבד לכל הזיכרון</li>
+                            <li>חיסכון בזיכרון – גודל הטבלה תלוי בגודל הזיכרון הפיזי בלבד</li>
+                            <li>פשוט יחסית למימוש</li>
+                        </ul>
+                    </div>
+                    <div class="disadvantages">
+                        <h4>❌ חסרונות:</h4>
+                        <ul>
+                            <li>חיפוש איטי – צריך לעבור על כל הטבלה (לרוב פותרים עם Hash/TLB)</li>
+                            <li>לא יעיל למערכות עם הרבה תהליכים</li>
+                            <li>מורכבויות בהרשאות וגישה מרובת תהליכים</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+            
+
+                <div class="content-section" id="swap">
+        <h2>💾 החלפה (Swap)</h2>
+        
+        <p>
+            <strong>מה זה Swap?</strong><br>
+            כאשר הזיכרון הראשי (RAM) מתמלא, מערכת ההפעלה יכולה להעביר דפים של תהליכים מהזיכרון אל הדיסק. פעולה זו נקראת <strong>Swap Out</strong>.  
+            כאשר הדף נחוץ שוב – הוא מועבר חזרה מהדיסק לזיכרון, כלומר <strong>Swap In</strong>.  
+            כך ניתן להריץ יותר תהליכים ממה שהזיכרון הפיזי מאפשר בפועל.
+        </p>
+
+        <div class="feature-box">
+            <h3>🧠 למה בכלל צריך Swap?</h3>
+            <ul>
+            <li>מאפשר להריץ תהליכים רבים גם אם אין מספיק זיכרון RAM.</li>
+            <li>משחרר מקום מזיכרון פיזי – דפים לא פעילים מועברים לדיסק.</li>
+            <li>יוצר מרחב זיכרון וירטואלי שגדול מהזיכרון האמיתי במחשב.</li>
+            </ul>
+        </div>
+
+        <div class="image-container">
+            <svg width="100%" height="220" viewBox="0 0 700 220">
+            <!-- זיכרון ראשי (RAM) -->
+            <rect x="60" y="40" width="180" height="140" fill="#ccffcc" stroke="#333" stroke-width="2"/>
+            <text x="150" y="60" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">זיכרון ראשי (RAM)</text>
+            <!-- דפים בזיכרון -->
+            <rect x="80" y="80" width="60" height="30" fill="#99ccff" stroke="#333" stroke-width="1"/>
+            <text x="110" y="100" font-size="12" fill="#333" text-anchor="middle">דף 1</text>
+            <rect x="80" y="120" width="60" height="30" fill="#99ccff" stroke="#333" stroke-width="1"/>
+            <text x="110" y="140" font-size="12" fill="#333" text-anchor="middle">דף 2</text>
+            <rect x="150" y="80" width="60" height="30" fill="#99ccff" stroke="#333" stroke-width="1"/>
+            <text x="180" y="100" font-size="12" fill="#333" text-anchor="middle">דף 3</text>
+            <rect x="150" y="120" width="60" height="30" fill="#e0e0e0" stroke="#333" stroke-width="1"/>
+            <text x="180" y="140" font-size="12" fill="#333" text-anchor="middle">פנוי</text>
+
+            <!-- דיסק -->
+            <rect x="400" y="40" width="180" height="140" fill="#f0f0f0" stroke="#333" stroke-width="2"/>
+            <text x="490" y="60" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">דיסק (Swap)</text>
+            <!-- דפים בדיסק -->
+            <rect x="420" y="80" width="60" height="30" fill="#ffd6a5" stroke="#333" stroke-width="1"/>
+            <text x="450" y="100" font-size="12" fill="#333" text-anchor="middle">דף 4</text>
+            <rect x="420" y="120" width="60" height="30" fill="#ffd6a5" stroke="#333" stroke-width="1"/>
+            <text x="450" y="140" font-size="12" fill="#333" text-anchor="middle">דף 5</text>
+            <rect x="490" y="80" width="60" height="30" fill="#ffd6a5" stroke="#333" stroke-width="1"/>
+            <text x="520" y="100" font-size="12" fill="#333" text-anchor="middle">דף 6</text>
+            <rect x="490" y="120" width="60" height="30" fill="#e0e0e0" stroke="#333" stroke-width="1"/>
+            <text x="520" y="140" font-size="12" fill="#333" text-anchor="middle">פנוי</text>
+
+            <!-- חצים -->
+            <defs>
+                <marker id="swapArrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L9,3 z" fill="#f59e42" />
+                </marker>
+            </defs>
+            <line x1="210" y1="135" x2="420" y2="135" stroke="#f59e42" stroke-width="3" marker-end="url(#swapArrow)"/>
+            <text x="315" y="125" font-size="12" fill="#f59e42" text-anchor="middle">Swap Out</text>
+            <line x1="420" y1="90" x2="80" y2="90" stroke="#f59e42" stroke-width="3" marker-end="url(#swapArrow)"/>
+            <text x="250" y="80" font-size="12" fill="#f59e42" text-anchor="middle">Swap In</text>
+            </svg>
+            <div class="image-caption">דפים שאינם בשימוש מועברים מה־RAM לדיסק (Swap Out) וחוזרים כשצריך (Swap In)</div>
+        </div>
+
+        <div class="info-box">
+            <h3>⚙️ אתגרים ובעיות בהחלפה:</h3>
+            <ul>
+            <li>גישה לדיסק איטית יותר מזיכרון – החלפה תכופה גורמת לאיטיות.</li>
+            <li>אי אפשר תמיד לבצע החלפה (אם הדף נעול או בשימוש).</li>
+            <li>יש לוודא שלא כותבים לדיסק דפים שלא השתנו.</li>
+            <li>ה־Kernel מנהל את כל תהליך ההחלפה.</li>
+            </ul>
+        </div>
+
+        <div class="feature-box">
+            <h4>📂 סוגי החלפה:</h4>
+            <ul>
+            <li><strong>Swap של תהליך שלם:</strong> התהליך כולו עובר לדיסק – פחות נפוץ כיום.</li>
+            <li><strong>Paging:</strong> רק דפים מסוימים מועברים לפי הצורך – הדרך המודרנית והיעילה.</li>
+            </ul>
+        </div>
+
+        <div class="warning-box">
+            <h4> שימו לב:</h4>
+            <ul>
+            <li>Swap מאפשר להריץ יותר תהליכים – אבל עלול להאט את הביצועים.</li>
+            <li>יש להיזהר ממצב של <strong>Thrashing</strong>: כאשר כל הזמן מועברים דפים בין הזיכרון לדיסק – דבר שמוביל לקריסה בביצועים.</li>
+            </ul>
+        </div>
+        </div>
+
+    
+
+        
+</body>
+</html>
