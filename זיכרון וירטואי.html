@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>זיכרון וירטואלי - מערכות הפעלה</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style/base.css">
+    <script src="script/sidebar.js"></script>
+</head>
+<body>
+    <!-- סרגל ניווט צף -->
+    <div class="nav-sidebar">
+        <div class="nav-sidebar-title">תוכן העניינים</div>
+        <ul class="nav-main-menu">
+            <!-- קטגוריה: יסודות זיכרון וירטואלי -->
+            <li class="nav-category"></li>
+                <a href="javascript:void(0)" class="category-title">📖 יסודות זיכרון וירטואלי</a>
+                <ul class="nav-submenu"></ul>
+                    <li><a href="#intro">מבוא לזיכרון וירטואלי</a></li>
+                    <li><a href="#paging-requirements">דרישות דיפדוף</a></li>
+                    <li><a href="#paging-ideas">רעיונות תהליכיים לדפדוף</a></li>
+                </ul>
+            </li>
+
+            <!-- קטגוריה: שגיאות דף וביצועים -->
+            <li class="nav-category">
+                <a href="javascript:void(0)" class="category-title">🚨 שגיאות דף וביצועים</a>
+                <ul class="nav-submenu">
+                    <li><a href="#page-faults">שגיאות דף (Page Faults)</a></li>
+                    <li><a href="#page-demanding">ביצועים של דרישת דפדוף</a></li>
+                    <li><a href="#page-demanding-optimizations">יעילות של דרישת דפדוף</a></li>
+                </ul>
+            </li>
+
+            <!-- קטגוריה: מנגנונים מתקדמים -->
+            <li class="nav-category">
+                <a href="javascript:void(0)" class="category-title">🛠️ מנגנונים מתקדמים</a>
+                <ul class="nav-submenu">
+                    <li><a href="#copy-on-write">העתקה על כתיבה (Copy on Write)</a></li>
+                </ul>
+            </li>
+
+            <!-- קטגוריה: אלגוריתמי החלפת דפים -->
+            <li class="nav-category">
+                <a href="javascript:void(0)" class="category-title">🔄 אלגוריתמי החלפת דפים</a>
+                <ul class="nav-submenu">
+                    <li><a href="#basic-page-replacement">החלפת עמוד בסיסי</a></li>
+                    <li><a href="#fifo-page-replacement">אלגוריתם FIFO</a></li>
+                    <li><a href="#belady-anomaly">אנומליית ביילדי</a></li>
+                    <li><a href="#lru-page-replacement">אלגוריתם LRU</a></li>
+                    <li><a href="#second-chance">הזדמנות שנייה</a></li>
+                    <li><a href="#other-page-replacement">אלגוריתמים נוספים</a></li>
+                </ul>
+            </li>
+
+            <!-- קטגוריה: הקצאת מסגרות וניהול זיכרון -->
+            <li class="nav-category">
+                <a href="javascript:void(0)" class="category-title">🗂️ הקצאת מסגרות וניהול זיכרון</a>
+                <ul class="nav-submenu">
+                    <li><a href="#page-buffering-allocation">מצבור והקצאת מסגרות</a></li>
+                    <li><a href="#global-vs-local">גלובלי נגד לוקאלי</a></li>
+                    <li><a href="#reclaiming-pages">שחרור דפים</a></li>
+                </ul>
+            </li>
+
+            <!-- קטגוריה: דשדוש וביצועים מתקדמים -->
+            <li class="nav-category">
+                <a href="javascript:void(0)" class="category-title">⚠️ דשדוש וביצועים מתקדמים</a>
+                <ul class="nav-submenu">
+                    <li><a href="#thrashing">דשדוש / סחזור (Thrashing)</a></li>
+                    <li><a href="#demand-paging-and-trashing">דרישת דפים בדשדוש</a></li>
+                    <li><a href="#working-set-model">מודל סט העבודה</a></li>
+                    <li><a href="#prepaging">דפדוף מראש</a></li>
+                </ul>
+            </li>
+
+            <!-- קטגוריה: דוגמאות והשוואות -->
+            <li class="nav-category">
+                <a href="javascript:void(0)" class="category-title">🔎 דוגמאות והשוואות</a>
+                <ul class="nav-submenu">
+                    <li><a href="#page-fault-comparison">השוואת שגיאות דף</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="back-home">
+            <a href="index.html">🏠 חזרה לדף הבית</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>זיכרון וירטואלי</h1>
+            <div class="subtitle">Virtual Memory</div>
+        </div>
+
+        <!-- מבוא לזיכרון וירטואלי -->
+        <div class="content-section" id="intro">
+            <h2>📖 מבוא לזיכרון וירטואלי</h2>
+            <p>
+            זיכרון וירטואלי הוא מנגנון שמאפשר לכל תהליך לעבוד עם מרחב זיכרון גדול ואחיד, ללא תלות בגודל הפיזי של הזיכרון במחשב. מערכת ההפעלה ממפה את הכתובות הווירטואליות לכתובות פיזיות בזיכרון, ומאפשרת הפרדה בין תהליכים, הגנה, וניצול יעיל של המשאבים.
+            </p>
+            <div class="visual-diagram">
+            <div class="hierarchy-box"></div>
+                <div class="layer">תהליך (Process)</div>
+                <div class="arrow">⬇️</div>
+                <div class="layer">מרחב כתובות וירטואלי</div>
+                <div class="arrow">⬇️</div>
+                <div class="layer">מיפוי לזיכרון פיזי</div>
+            
+            </div>
+            <div class="feature-list">
+            <li><strong>הפרדה:</strong> כל תהליך מקבל מרחב זיכרון משלו.</li>
+            <li><strong>הגנה:</strong> תהליך לא יכול לגשת לזיכרון של תהליך אחר.</li>
+            <li><strong>ניצול יעיל:</strong> טעינת חלקים מהקוד/הנתונים לפי הצורך בלבד.</li>
+            <li><strong>הרצת תהליכים גדולים:</strong> אפשר להריץ תהליכים שגדולים מהזיכרון הפיזי.</li>
+            
+            <div class="explanation-box">
+            <h3>איך זה קורה בפועל?</h3>
+            <p>
+                כאשר תהליך מבצע גישה לכתובת בזיכרון, הכתובת הזו היא כתובת וירטואלית. המעבד ומערכת ההפעלה משתמשים בטבלת דפים (Page Table) כדי לתרגם את הכתובת הווירטואלית לכתובת פיזית בזיכרון (RAM). אם הדף המבוקש לא נמצא בזיכרון, מתרחשת "שגיאת דף" (Page Fault) ומערכת ההפעלה טוענת את הדף מהדיסק לזיכרון הפיזי. כך, התהליך יכול לעבוד עם מרחב זיכרון גדול בהרבה מהזיכרון הפיזי הקיים בפועל, והמערכת דואגת לנהל את ההעמסה והפינוי של דפים לפי הצורך.
+            <!-- גרף SVG שממחיש את תהליך התרגום והטעינה בזיכרון וירטואלי -->
+           <!-- גרף: תהליך תרגום כתובת בזיכרון וירטואלי -->
+                <div style="display: flex; justify-content: center; margin: 2em 0;">
+                <svg width="600" height="620" viewBox="0 0 600 620" xmlns="http://www.w3.org/2000/svg" ; border-radius: 16px; box-shadow: 0 4px 20px #0002;">
+                <defs>
+                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                    <path d="M0,0 L0,10 L10,5 z" fill="#555" />
+                    </marker>
+                </defs>
+
+                <!-- שלב 1: תהליך -->
+                <rect x="180" y="20" width="240" height="48" rx="12" fill="#e3f2fd" stroke="#2196f3" stroke-width="2"/>
+                <text x="300" y="50" text-anchor="middle" fill="#1565c0" font-family="Heebo, sans-serif" font-size="18" font-weight="bold">🔁 תהליך רץ</text>
+
+                <!-- חץ לכתובת וירטואלית -->
+                <line x1="300" y1="68" x2="300" y2="108" stroke="#2196f3" stroke-width="2" marker-end="url(#arrow)"/>
+
+                <!-- כתובת וירטואלית -->
+                <rect x="180" y="108" width="240" height="48" rx="12" fill="#fffde7" stroke="#fbc02d" stroke-width="2"/>
+                <text x="300" y="138" text-anchor="middle" fill="#f57c00" font-size="18" font-family="Heebo, sans-serif">📍 כתובת וירטואלית</text>
+
+                <!-- חץ לטבלת הדפים -->
+                <line x1="300" y1="156" x2="300" y2="196" stroke="#fbc02d" stroke-width="2" marker-end="url(#arrow)"/>
+
+                <!-- טבלת דפים -->
+                <rect x="180" y="196" width="240" height="48" rx="12" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+                <text x="300" y="226" text-anchor="middle" fill="#2e7d32" font-size="18" font-family="Heebo, sans-serif">🗂️ טבלת דפים</text>
+
+                <!-- חץ לכתובת פיזית -->
+                <line x1="300" y1="244" x2="300" y2="284" stroke="#43a047" stroke-width="2" marker-end="url(#arrow)"/>
+
+                <!-- כתובת פיזית -->
+                <rect x="180" y="284" width="240" height="48" rx="12" fill="#e1f5fe" stroke="#0288d1" stroke-width="2"/>
+                <text x="300" y="314" text-anchor="middle" fill="#0277bd" font-size="18" font-family="Heebo, sans-serif">💾 כתובת פיזית ב-RAM</text>
+
+                <!-- חץ שגיאה -->
+                <line x1="300" y1="332" x2="300" y2="372" stroke="#d32f2f" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrow)"/>
+                <text x="305" y="365" font-size="13" fill="#d32f2f" font-family="Heebo, sans-serif">❌ אם הדף חסר</text>
+
+                <!-- שגיאת דף -->
+                <rect x="180" y="372" width="240" height="48" rx="12" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+                <text x="300" y="402" text-anchor="middle" fill="#b71c1c" font-size="18" font-family="Heebo, sans-serif">⚠️ שגיאת דף</text>
+
+                <!-- טעינת דף מהדיסק -->
+                <line x1="300" y1="420" x2="300" y2="460" stroke="#7e57c2" stroke-width="2" marker-end="url(#arrow)"/>
+                <rect x="180" y="460" width="240" height="48" rx="12" fill="#ede7f6" stroke="#7e57c2" stroke-width="2"/>
+                <text x="300" y="490" text-anchor="middle" fill="#512da8" font-size="18" font-family="Heebo, sans-serif">📂 טעינת דף מהדיסק</text>
+
+                <!-- חץ לעדכון -->
+                <line x1="300" y1="508" x2="450" y2="508" stroke="#8e24aa" stroke-width="2" marker-end="url(#arrow)"/>
+                <line x1="450" y1="508" x2="450" y2="220" stroke="#8e24aa" stroke-width="2"/>
+                <line x1="450" y1="220" x2="420" y2="220" stroke="#8e24aa" stroke-width="2" marker-end="url(#arrow)"/>
+
+                <!-- עדכון טבלת דפים -->
+                <rect x="420" y="196" width="160" height="48" rx="12" fill="#f3e5f5" stroke="#8e24aa" stroke-width="2"/>
+                <text x="500" y="226" text-anchor="middle" fill="#6a1b9a" font-size="16" font-family="Heebo, sans-serif">🔁 עדכון טבלת דפים</text>
+                </svg>
+
+
+            </div>
+            </div>
+        </div>
+        </div>
+
+        <!-- שגיאות דף -->
+        <div class="content-section" id="page-faults">
+            <h2>🚨 שגיאות דף (Page Faults)</h2>
+            <p>
+                שגיאת דף מתרחשת כאשר תהליך מנסה לגשת לדף זיכרון שאינו נמצא כרגע בזיכרון הפיזי (RAM). מערכת ההפעלה עוצרת את התהליך, טוענת את הדף מהדיסק לזיכרון, וממשיכה את ביצוע התהליך.
+            </p>
+            <div class="visual-diagram">
+                <div class="hierarchy-box">
+                    <div class="layer">גישה לכתובת וירטואלית</div>
+                    <div class="arrow">➡️</div>
+                    <div class="layer">בדיקת טבלת דפים</div>
+                    <div class="arrow">❌</div>
+                    <div class="layer">שגיאת דף → טעינה מהדיסק</div>
+                </div>
+            </div>
+            <div class="feature-list">
+                <li><strong>Minor Page Fault:</strong> הדף נמצא בזיכרון אך לא משויך לתהליך.</li>
+                <li><strong>Major Page Fault:</strong> הדף לא בזיכרון ויש לטעון אותו מהדיסק (איטי מאוד).</li>
+            </div>
+            <div class="warning-box">
+                <h3>השלכות שגיאות דף</h3>
+                <ul>
+                    <li>פגיעה בביצועים – טעינה מהדיסק איטית מאוד יחסית ל-RAM.</li>
+                    <li>אם יש יותר מדי שגיאות דף, המערכת עלולה להיכנס ל-"thrashing" (מעגל טעינות בלתי פוסק).</li>
+                </ul>
+            </div>
+        </div>
+       
+
+            <!-- דרישות דיפדוף -->
+            <div class="content-section" id="paging-requirements">
+                <h2>📋 דרישות דיפדוף (Paging Requirements)</h2>
+                <p>
+                כדי שמנגנון הזיכרון הווירטואלי יעבוד ביעילות, יש לעמוד בדרישות מסוימות:
+                <div class="feature-list" style="display: flex; flex-wrap: wrap; gap: 1em; list-style: none; padding: 0;"></div>
+                <li style="flex: 1 1 calc(50% - 1em);"><strong>🗂️ טבלת דפים (Page Table):</strong> שמירה על מיפוי בין כתובות וירטואליות לפיזיות.</li>
+                <li style="flex: 1 1 calc(50% - 1em);"><strong>📂 מנגנון טעינה:</strong> יכולת לטעון דפים מהדיסק לזיכרון לפי הצורך.</li>
+                <li style="flex: 1 1 calc(50% - 1em);"><strong>🔄 החלפת דפים (Page Replacement):</strong> בחירת דף לפינוי כאשר הזיכרון מלא.</li>
+                <li style="flex: 1 1 calc(50% - 1em);"><strong>🔒 הגנה והרשאות:</strong> הגדרת הרשאות גישה לכל דף (קריאה/כתיבה/הרצה).</li>
+                <li style="flex: 1 1 calc(50% - 1em);"><strong>⚡ ביצועים:</strong> שמירה על זמן גישה מהיר ככל האפשר.</li>
+                <li style="flex: 1 1 calc(50% - 1em);"><strong>🚀 TLB:</strong> cache מהיר במעבד שמאיץ תרגום כתובות.</li>
+                
+                
+                <div class="warning-box">
+                <h3>אתגרים:</h3>
+                <ul>
+                    <li>ניהול טבלאות דפים גדולות עבור תהליכים מרובי זיכרון.</li>
+                    <li>איזון בין מהירות, הגנה, וניצול זיכרון.</li>
+                </ul>
+                </div>
+            </div>
+        
+
+
+            <!-- רעיונות תהליכיים לדפדוף דפים -->
+            <div class="content-section" id="paging-ideas">
+                <h2>💡 רעיונות תהליכיים לדפדוף דפים</h2>
+                <ul>
+                    <li>מתחילים את התוכנה אך בלי שום דפים בזיכרון.</li>
+                    <li>ולכן מיד תחיה שגיאת דף כי אנחנו מביאים דפים למערכת רק אם קוראים להם, ובתחילת ההרצה אנחנו חייבים לקרוא לדף.</li>
+                    <li>בעיקרון יוצר הרבה בעיות כמו איפה אנחנו בקוד (כי אנחנו בשורה לא מאוחלת) ואנחנו מילה נצטרך כמעט בוודאות להביא את התוכנית בסוף.</li>
+                </ul>
+                <p>
+                תהליך יכול לגרום לשניים או יותר שגיאות דף, לדוגמה על ידי חיבור שני משתנים ששניהם נמצאים בדפים שונים, המערכת תצטרך לטעון את שני הדפים הכל.
+                </p>
+
+                
+            
+
+                <div class="explanation-box">
+                    <h3>הפעלה מחדש של הוראה (instruction restart)</h3>
+                    <p>
+                        יש לנו בעיה כי יש פקודות אוטומטיות שמעדכנות את הכתובת כדי לייעל את התהליך.<br>
+                        למה שנפעיל מחדש הוראה?<br>
+                        אם ההוראה שלנו עבדה על דברים שהיו בשני דפים או יותר, אז כשהחיותה שגיאת דף היא "נכשלה" ולא עבדה כראוי.<br>
+                        קצת בעייתי כי בעצם מה שקרה הוא שרק חלק מהתוכנית עבד חלק ואז הוא עבר דף ועכשיו חלק נהרס אז אנחנו לא רוצים להפעיל את כל הפקודה מחדש.
+                    </p>
+                </div>
+            </div>
+
+                <div class="content-section" id="page-demanding">
+                    <h2>📊 ביצועים של דרישת דפדוף (page demanding performance)</h2>
+                    <p>
+                        אם מדובר בטיפול בשגיאת דף, וזה כתוב היטב זה עדיין כמה מאות הוראות.<br>
+                        הסיכוי שתהיה שגיאת דף מסומנת ע"י p, אם p הוא 0 אז אין שגיאות דף ואם הוא 1 אז יש רק שגיאות דף.<br>
+                        Eat = (1 - p) x memory access + p (page fault overhead + page out + page in)
+                    </p>
+                    <p>
+                        רק page out לא תמיד יקרה, כי לא בהכרח נחליף אותו עם דף אחר, יכול להיות שיש מקום פנוי.
+                    </p>
+                </div>
+
+                <div class="content-section" id="page-demanding-optimizations">
+                    <h2>⚡ יעילות של דרישת דפדוף (page demanding optimizations)</h2>
+                    <ul>
+                        <li>החלפה של פעולות קלט פלט מהירות יותר ממערכת קבצים.</li>
+                        <li>לדיסק יש מערכת קבצים, שמונע דברים שמאיטים כתיבה לזיכרון אם משתמשים בה.</li>
+                        <li>ולכן המערכת הפעלה תעדיף קבצים גולמיים ובעצם מתעלמת ממערכת קבצים (ווינדוס לא עושה את זה).</li>
+                    </ul>
+                </div>
+                <!-- העתקה על כתיבה (Copy on Write) -->
+                <div class="content-section" id="copy-on-write">
+                    <h2 style="border-bottom: 3px solid #4caf50; padding-bottom: 0.2em; margin-bottom: 1em;">
+                        <span style="font-weight: bold;">העתקה על כתיבה</span> (Copy on Write)
+                    </h2>
+                    <p>
+                        כאשר תהליך יוצר תהליך חדש על ידי <code>fork()</code>, מערכת ההפעלה לא מעתיקה את כל הזיכרון באופן מיידי. במקום זאת,
+                        גם האב וגם הבן משתמשים באותן מסגרות זיכרון – כל עוד אף אחד מהם לא מנסה לבצע כתיבה.
+                    </p>
+
+                    <p>
+                        ברגע שאחד מהם מנסה לכתוב – מערכת ההפעלה מתערבת, יוצרת עותק חדש של אותה מסגרת (רק עבור התהליך הכותב), ומנתבת את הגישה אליו.
+                        תהליך זה נקרא <strong>Copy-On-Write</strong>.
+                    </p>
+
+                    <p>
+                        כדי לנהל את זה, מערכת ההפעלה משתמשת בסיבית בטבלת הדפים שמסמנת אם הדף מוגבל לכתיבה. כשיש ניסיון כתיבה,
+                        היא בודקת אם מדובר בדף משותף. אם כן – מתבצעת ההעתקה.
+                    </p>
+
+                    <p style="font-style: italic; color: #555;">
+                        מי שחוסך – לא משלם בזיכרון מיותר.
+                    </p>
+
+                    <p style="color: #388e3c; font-weight: bold;">
+                        המנגנון הזה חוסך משאבים וזמן – פתרון מאוד יעיל.
+                    </p>
+
+                    <h3 style="margin-top: 32px;">ומה באנדרואיד?</h3>
+
+                    <p>
+                        באנדרואיד, כל אפליקציה פועלת בתוך תהליך מבודד (sandbox) עם סביבת JVM משלה. יצירת תהליך חדש כרוכה בהקצאת זיכרון לכל הסביבה.
+                        לכן, כדי לייעל את הביצועים, מערכת אנדרואיד משתמשת גם היא ב-Copy-On-Write: התהליך החדש משתמש בזיכרון קיים כל עוד לא נערך שינוי.
+                    </p>
+
+                    <!-- גרף: תהליך Copy on Write -->
+                    <div style="display: flex; justify-content: center; margin: 2em 0;">
+                        <svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <marker id="arrow-cow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                                    <path d="M0,0 L0,10 L10,5 z" fill="#388e3c" />
+                                </marker>
+                                <marker id="arrow-write" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                                    <path d="M0,0 L0,10 L10,5 z" fill="#d32f2f" />
+                                </marker>
+                                <marker id="arrow-copy" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                                    <path d="M0,0 L0,10 L10,5 z" fill="#7e57c2" />
+                                </marker>
+                            </defs>
+                            <!-- תהליך אב -->
+                            <rect x="60" y="30" width="180" height="48" rx="12" fill="#e3f2fd" stroke="#2196f3" stroke-width="2"/>
+                            <text x="150" y="60" text-anchor="middle" fill="#1565c0" font-family="Heebo, sans-serif" font-size="18" font-weight="bold">👨‍💻 תהליך אב</text>
+                            <!-- תהליך בן -->
+                            <rect x="360" y="30" width="180" height="48" rx="12" fill="#fffde7" stroke="#fbc02d" stroke-width="2"/>
+                            <text x="450" y="60" text-anchor="middle" fill="#f57c00" font-family="Heebo, sans-serif" font-size="18" font-weight="bold">👶 תהליך בן</text>
+                            <!-- חץ fork -->
+                            <line x1="240" y1="54" x2="360" y2="54" stroke="#4caf50" stroke-width="3" marker-end="url(#arrow-cow)"/>
+                            <text x="300" y="44" text-anchor="middle" fill="#388e3c" font-size="14" font-family="Heebo, sans-serif">fork</text>
+                            <!-- מסגרת זיכרון משותפת -->
+                            <rect x="210" y="120" width="180" height="48" rx="12" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+                            <text x="300" y="150" text-anchor="middle" fill="#2e7d32" font-size="18" font-family="Heebo, sans-serif">📦 מסגרת זיכרון משותפת</text>
+                            <!-- חצים מהאב והבן למסגרת -->
+                            <line x1="150" y1="78" x2="240" y2="120" stroke="#43a047" stroke-width="2" marker-end="url(#arrow-cow)"/>
+                            <line x1="450" y1="78" x2="360" y2="120" stroke="#43a047" stroke-width="2" marker-end="url(#arrow-cow)"/>
+                            <!-- כתיבה בתהליך בן -->
+                            <rect x="360" y="220" width="180" height="48" rx="12" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+                            <text x="450" y="250" text-anchor="middle" fill="#b71c1c" font-size="18" font-family="Heebo, sans-serif">✏️ כתיבה בבן</text>
+                            <!-- חץ כתיבה למסגרת -->
+                            <line x1="450" y1="198" x2="450" y2="220" stroke="#d32f2f" stroke-width="2" marker-end="url(#arrow-write)"/>
+                            <!-- מסגרת חדשה לבן -->
+                            <rect x="360" y="290" width="180" height="48" rx="12" fill="#ede7f6" stroke="#7e57c2" stroke-width="2"/>
+                            <text x="450" y="320" text-anchor="middle" fill="#512da8" font-size="18" font-family="Heebo, sans-serif">📦 מסגרת חדשה לבן</text>
+                            <!-- חץ העתקה בן -->
+                            <line x1="450" y1="268" x2="450" y2="290" stroke="#7e57c2" stroke-width="2" marker-end="url(#arrow-copy)"/>
+                            <text x="460" y="285" fill="#7e57c2" font-size="13" font-family="Heebo, sans-serif">copy on write</text>
+                            <!-- כתיבה בתהליך אב -->
+                            <rect x="60" y="220" width="180" height="48" rx="12" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+                            <text x="150" y="250" text-anchor="middle" fill="#b71c1c" font-size="18" font-family="Heebo, sans-serif">✏️ כתיבה באב</text>
+                            <!-- חץ כתיבה למסגרת -->
+                            <line x1="150" y1="198" x2="150" y2="220" stroke="#d32f2f" stroke-width="2" marker-end="url(#arrow-write)"/>
+                            <!-- מסגרת חדשה לאב -->
+                            <rect x="60" y="290" width="180" height="48" rx="12" fill="#ede7f6" stroke="#7e57c2" stroke-width="2"/>
+                            <text x="150" y="320" text-anchor="middle" fill="#512da8" font-size="18" font-family="Heebo, sans-serif">📦 מסגרת חדשה לאב</text>
+                            <!-- חץ העתקה אב -->
+                            <line x1="150" y1="268" x2="150" y2="290" stroke="#7e57c2" stroke-width="2" marker-end="url(#arrow-copy)"/>
+                            <text x="160" y="285" fill="#7e57c2" font-size="13" font-family="Heebo, sans-serif">copy on write</text>
+                        </svg>
+                    </div>
+                    <div class="explanation-box">
+                        <h3>הסבר על Copy on Write</h3>
+                        <ol>
+                            <li>
+                                <strong>fork:</strong> תהליך יוצר העתק של עצמו (הבן), אך בפועל שניהם מצביעים לאותן מסגרות זיכרון.
+                            </li>
+                            <li>
+                                <strong>שימוש משותף:</strong> כל עוד אין כתיבה, האב והבן משתמשים באותו זיכרון.
+                            </li>
+                            <li>
+                                <strong>כתיבה:</strong> כאשר אחד התהליכים מנסה לכתוב, מתבצעת העתקה של המסגרת רק עבורו.
+                            </li>
+                            <li>
+                                <strong>יעילות:</strong> כך נחסך זיכרון וזמן העתקה, ורק כתיבה בפועל יוצרת העתקה.
+                            </li>
+                        </ol>
+                        <p>
+                            Copy on Write הוא מנגנון חשוב ליעילות ביצירת תהליכים חדשים, במיוחד במערכות הפעלה מודרניות.
+                        </p>
+                    </div>
+                </div>
+                <!-- החלפת עמוד בסיסי (Basic Page Replacement) -->
+                <div class="content-section" id="basic-page-replacement">
+                    <h2 style="border-bottom: 3px solid #43a047; padding-bottom: 0.2em; margin-bottom: 1em;">
+                        <span style="font-weight: bold;">החלפת עמוד בסיסי</span> (Basic Page Replacement)
+                    </h2>
+                    <p style="font-size: 1.1em;">
+                        מה קורה כשאין מסגרת זיכרון פנויה?  
+                        במקרה כזה, מערכת ההפעלה מחפשת <strong>מסגרת קורבן</strong> — מסגרת שניתן להחליף.
+                    </p>
+
+                    <ul style="margin-right: 1.5em; padding-right: 1em; color: #e3f2fd;">
+                        <li>
+                            המטרה היא למנוע מתהליך להחזיק ביותר מדי מסגרות שהוא לא באמת משתמש בהן. כך משמרים יעילות בזיכרון.
+                        </li>
+                        <li>
+                            לשם כך נעזרים בסיבית <strong>Modify</strong> (שינוי), שמסומנת רק אם הדף השתנה מאז הועתק מהדיסק.
+                            זה חשוב – כי אם הדף לא שונה, אין צורך לשמור אותו מחדש בעת החלפה (כלומר, לא נדרש <code>Page Out</code>).
+                        </li>
+                        <li>
+                            קיימת מערכת שירות ברקע ששומרת דפים מהזיכרון לדיסק לפי הצורך, כדי לפנות מקום בצורה חכמה.
+                        </li>
+                    </ul>
+
+                    <p style="margin-top: 1em; font-style: italic; color: #e3f2fc;">
+                        בבחירת הדף שיוחלף נלקחים בחשבון: מה ישוחרר, כמה הוא חשוב, וכמה זמן ייקח לשמור אותו בדיסק.
+                    </p>
+                    <!-- המחשה גרפית: תהליך החלפת עמוד -->
+                    <div style="display: flex; justify-content: center; margin: 2em 0;">
+                        <svg width="700" height="370" viewBox="0 0 700 370" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <marker id="arrow-main" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                                    <path d="M0,0 L0,10 L10,5 z" fill="#43a047" />
+                                </marker>
+                                <marker id="arrow-evict" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                                    <path d="M0,0 L0,10 L10,5 z" fill="#fbc02d" />
+                                </marker>
+                            </defs>
+                            <!-- CPU -->
+                            <rect x="40" y="30" width="90" height="60" rx="14" fill="#fffde7" stroke="#fbc02d" stroke-width="2"/>
+                            <text x="85" y="65" text-anchor="middle" fill="#f57c00" font-family="Heebo, sans-serif" font-size="18" font-weight="bold">🖥️ CPU</text>
+                            <text x="85" y="85" text-anchor="middle" fill="#888" font-size="13" font-family="Heebo, sans-serif">מבקש דף חדש</text>
+                            <!-- חץ מה-CPU ל-RAM -->
+                            <line x1="130" y1="60" x2="210" y2="110" stroke="#43a047" stroke-width="3" marker-end="url(#arrow-main)"/>
+                            <!-- RAM -->
+                            <rect x="210" y="110" width="220" height="180" rx="18" fill="#e3f2fd" stroke="#2196f3" stroke-width="3"/>
+                            <text x="320" y="135" text-anchor="middle" fill="#1565c0" font-family="Heebo, sans-serif" font-size="18" font-weight="bold">RAM</text>
+                            <!-- מסגרות קטנות ב-RAM -->
+                            <!-- 3 שורות של 4 מסגרות -->
+                            <g>
+                                <rect x="235" y="155" width="40" height="40" rx="6" fill="#ede7f6" stroke="#7e57c2" stroke-width="2"/>
+                                <rect x="285" y="155" width="40" height="40" rx="6" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+                                <rect x="335" y="155" width="40" height="40" rx="6" fill="#fffde7" stroke="#fbc02d" stroke-width="2"/>
+                                <rect x="385" y="155" width="40" height="40" rx="6" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+                                <rect x="235" y="205" width="40" height="40" rx="6" fill="#ede7f6" stroke="#7e57c2" stroke-width="2"/>
+                                <rect x="285" y="205" width="40" height="40" rx="6" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+                                <rect x="335" y="205" width="40" height="40" rx="6" fill="#fffde7" stroke="#fbc02d" stroke-width="2"/>
+                                <rect x="385" y="205" width="40" height="40" rx="6" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+                                <rect x="235" y="255" width="40" height="40" rx="6" fill="#ede7f6" stroke="#7e57c2" stroke-width="2"/>
+                                <rect x="285" y="255" width="40" height="40" rx="6" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+                                <rect x="335" y="255" width="40" height="40" rx="6" fill="#fffde7" stroke="#fbc02d" stroke-width="2"/>
+                                <!-- המסגרת שמפונה -->
+                                <rect x="385" y="255" width="40" height="40" rx="6" fill="#ffebee" stroke="#d32f2f" stroke-width="3" stroke-dasharray="4,3"/>
+                                <text x="405" y="280" text-anchor="middle" fill="#d32f2f" font-size="13" font-family="Heebo, sans-serif">פינוי</text>
+                            </g>
+                            <!-- חץ פינוי מה-RAM לדיסק -->
+                            <line x1="405" y1="295" x2="540" y2="295" stroke="#fbc02d" stroke-width="3" marker-end="url(#arrow-evict)"/>
+                            <text x="470" y="285" fill="#fbc02d" font-size="14" font-family="Heebo, sans-serif">Page Out</text>
+                            <!-- דיסק -->
+                            <rect x="540" y="250" width="120" height="90" rx="18" fill="#fffde7" stroke="#fbc02d" stroke-width="3"/>
+                            <text x="600" y="275" text-anchor="middle" fill="#f57c00" font-family="Heebo, sans-serif" font-size="18" font-weight="bold">דיסק</text>
+                            <!-- דפים קטנים בדיסק -->
+                            <rect x="560" y="295" width="30" height="30" rx="5" fill="#ede7f6" stroke="#7e57c2" stroke-width="2"/>
+                            <rect x="600" y="295" width="30" height="30" rx="5" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+                            <rect x="640" y="295" width="15" height="30" rx="5" fill="#fffde7" stroke="#fbc02d" stroke-width="2"/>
+                            <!-- חץ הכנסת דף חדש מהדיסק ל-RAM -->
+                            <line x1="600" y1="250" x2="405" y2="155" stroke="#43a047" stroke-width="3" marker-end="url(#arrow-main)"/>
+                            <text x="520" y="180" fill="#43a047" font-size="14" font-family="Heebo, sans-serif">Page In</text>
+                            <!-- הסבר טקסטואלי -->
+                            <text x="350" y="355" text-anchor="middle" fill="#555" font-size="15" font-family="Heebo, sans-serif">
+                                ה-CPU מבקש דף חדש → אם אין מקום ב-RAM, מפנים דף לדיסק ומכניסים דף חדש מהדיסק ל-RAM
+                            </text>
+                        </svg>
+                    </div>
+                    </div>
+                
+                <!-- אלגוריתם FIFO להחלפת דפים -->
+                <div class="content-section" id="fifo-page-replacement">
+                    <h2 style="border-bottom: 3px solid #1976d2; padding-bottom: 0.2em; margin-bottom: 1em;">
+                        <span style="font-weight: bold;">אלגוריתם FIFO</span> (First-In, First-Out)
+                    </h2>
+                    <p>
+                        אלגוריתם <strong>FIFO</strong> הוא מהפשוטים ביותר להחלפת דפים בזיכרון. בכל פעם שיש צורך להכניס דף חדש ואין מסגרת פנויה, הדף שנכנס ראשון (הכי ותיק) הוא זה שמפונה ראשון.
+                    </p>
+                    <ul>
+                        <li>שומר תור של דפים בזיכרון.</li>
+                        <li>כאשר יש צורך להכניס דף חדש, הדף הוותיק ביותר בתור יוצא.</li>
+                        <li>פשוט למימוש, אך לא תמיד יעיל – ייתכן שדפים חשובים יפונו.</li>
+                    </ul>
+                    <div style="display: flex; justify-content: center; margin: 2em 0;">
+                        <!-- גרף המחשה: FIFO Page Replacement -->
+                        <svg width="420" height="120" viewBox="0 0 420 120" xmlns="http://www.w3.org/2000/svg">
+                            <!-- מסגרות FIFO -->
+                            <rect x="40" y="40" width="60" height="40" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                            <text x="70" y="65" text-anchor="middle" fill="#1976d2" font-size="18" font-family="Heebo, sans-serif">A</text>
+                            <rect x="110" y="40" width="60" height="40" rx="8" fill="#fffde7" stroke="#fbc02d" stroke-width="2"/>
+                            <text x="140" y="65" text-anchor="middle" fill="#fbc02d" font-size="18" font-family="Heebo, sans-serif">B</text>
+                            <rect x="180" y="40" width="60" height="40" rx="8" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+                            <text x="210" y="65" text-anchor="middle" fill="#43a047" font-size="18" font-family="Heebo, sans-serif">C</text>
+                            <rect x="250" y="40" width="60" height="40" rx="8" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+                            <text x="280" y="65" text-anchor="middle" fill="#d32f2f" font-size="18" font-family="Heebo, sans-serif">D</text>
+                            <!-- חץ פינוי -->
+                            <line x1="70" y1="30" x2="70" y2="15" stroke="#1976d2" stroke-width="2" marker-end="url(#arrow-fifo)"/>
+                            <text x="70" y="10" text-anchor="middle" fill="#1976d2" font-size="13" font-family="Heebo, sans-serif">מפונה</text>
+                            <!-- חץ הכנסת דף חדש -->
+                            <line x1="320" y1="60" x2="370" y2="60" stroke="#43a047" stroke-width="2" marker-end="url(#arrow-fifo)"/>
+                            <rect x="370" y="40" width="40" height="40" rx="8" fill="#ede7f6" stroke="#7e57c2" stroke-width="2"/>
+                            <text x="390" y="65" text-anchor="middle" fill="#7e57c2" font-size="18" font-family="Heebo, sans-serif">E</text>
+                            <text x="395" y="90" fill="#7e57c2" font-size="13" font-family="Heebo, sans-serif">חדש</text>
+                            <defs>
+                                <marker id="arrow-fifo" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                                    <path d="M0,0 L0,10 L10,5 z" fill="#1976d2" />
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="explanation-box">
+                        <strong>דוגמה:</strong>
+                        <ol>
+                            <li>המסגרות בזיכרון: A, B, C, D (A נכנס ראשון).</li>
+                            <li>נדרש להכניס דף חדש (E) ואין מקום פנוי.</li>
+                            <li>הדף הוותיק ביותר (A) מפונה, E נכנס במקומו.</li>
+                        </ol>
+                    </div>
+                </div>
+                <!-- תופעת ביילדי (Belady's Anomaly) -->
+                <div class="content-section" id="belady-anomaly">
+                    <h2 style="border-bottom: 3px solid #d32f2f; padding-bottom: 0.2em; margin-bottom: 1em;">
+                        <span style="font-weight: bold;">אנומליית ביילדי</span> (Belady's Anomaly)
+                    </h2>
+                    <div class="warning-box" style="margin-bottom: 2em;">
+                        <p>
+                            <strong>אנומליית ביילדי</strong> היא תופעה נדירה שבה הגדלת מספר המסגרות (frames) לא בהכרח מפחיתה את מספר שגיאות הדף – ולעיתים אף מגדילה אותן!<br>
+                            התופעה מתרחשת באלגוריתמים מסוימים (למשל FIFO), אך לא באחרים (כמו LRU).
+                        </p>
+                        <ul>
+                            <li>אם יש יותר מסגרות יש יותר שגיאות דף – תוצאה לא אינטואיטיבית.</li>
+                            <li>הגדלת מספר המסגרות מגדיל את כמות שגיאות הדף (אבל זה עלייה אקדמית, "מדי פעם", זאת לא עלייה אינסופית וזה יורד אחר כך, זאת הגדרה למקרים מאוד ספציפיים).</li>
+                        </ul>
+                    </div>
+                    <div style="display: flex; justify-content: center; margin: 2em 0;">
+                        <!-- גרף SVG של אנומליית ביילדי -->
+                        <svg width="420" height="320" viewBox="0 0 420 320" xmlns="http://www.w3.org/2000/svg" style="border-radius: 10px; box-shadow: 0 2px 12px #0002;">
+                            <!-- קו עליון אדום -->
+                            <line x1="10" y1="20" x2="410" y2="20" stroke="#d32f2f" stroke-width="2"/>
+                            <!-- כותרת -->
+                            <text x="410" y="40" text-anchor="end" font-family="Heebo, Arial, sans-serif" font-size="20" font-weight="bold">אנומליית ביילדי</text>
+                            <!-- צירים -->
+                            <g>
+                                <line x1="60" y1="270" x2="380" y2="270" stroke="#888" stroke-width="2"/>
+                                <line x1="60" y1="270" x2="60" y2="60" stroke="#888" stroke-width="2"/>
+                            </g>
+                            <!-- קווי רשת -->
+                            <g stroke="#bbb" stroke-width="1">
+                                <line x1="60" y1="230" x2="380" y2="230"/>
+                                <line x1="60" y1="190" x2="380" y2="190"/>
+                                <line x1="60" y1="150" x2="380" y2="150"/>
+                                <line x1="60" y1="110" x2="380" y2="110"/>
+                                <line x1="100" y1="270" x2="100" y2="60"/>
+                                <line x1="140" y1="270" x2="140" y2="60"/>
+                                <line x1="180" y1="270" x2="180" y2="60"/>
+                                <line x1="220" y1="270" x2="220" y2="60"/>
+                                <line x1="260" y1="270" x2="260" y2="60"/>
+                                <line x1="300" y1="270" x2="300" y2="60"/>
+                                <line x1="340" y1="270" x2="340" y2="60"/>
+                                <line x1="380" y1="270" x2="380" y2="60"/>
+                            </g>
+                            <!-- ערכי ציר Y -->
+                            <g font-size="14" font-family="Heebo, Arial, sans-serif" fill="#444">
+                                <text x="50" y="275">0</text>
+                                <text x="50" y="235">4</text>
+                                <text x="50" y="195">8</text>
+                                <text x="45" y="155">12</text>
+                                <text x="45" y="115">16</text>
+                            </g>
+                            <!-- ערכי ציר X -->
+                            <g font-size="14" font-family="Heebo, Arial, sans-serif" fill="#444">
+                                <text x="60" y="290" text-anchor="middle">1</text>
+                                <text x="100" y="290" text-anchor="middle">2</text>
+                                <text x="140" y="290" text-anchor="middle">3</text>
+                                <text x="180" y="290" text-anchor="middle">4</text>
+                                <text x="220" y="290" text-anchor="middle">5</text>
+                                <text x="260" y="290" text-anchor="middle">6</text>
+                                <text x="300" y="290" text-anchor="middle">7</text>
+                            </g>
+                            <!-- תווית ציר X -->
+                            <text x="220" y="310" text-anchor="middle" font-size="16" font-family="Heebo, Arial, sans-serif">number of frames</text>
+                            <!-- תווית ציר Y -->
+                            <text x="15" y="170" text-anchor="middle" font-size="16" font-family="Heebo, Arial, sans-serif" transform="rotate(-90 15,170)">number of page faults</text>
+                            <!-- קו הגרף -->
+                            <polyline
+                                fill="none"
+                                stroke="#03a9f4"
+                                stroke-width="4"
+                                points="60,150 100,150 140,190 180,170 220,230 260,230 300,230"
+                            />
+                            <!-- נקודות -->
+                            <circle cx="60" cy="150" r="4" fill="#03a9f4"/>
+                            <circle cx="100" cy="150" r="4" fill="#03a9f4"/>
+                            <circle cx="140" cy="190" r="4" fill="#03a9f4"/>
+                            <circle cx="180" cy="170" r="4" fill="#03a9f4"/>
+                            <circle cx="220" cy="230" r="4" fill="#03a9f4"/>
+                            <circle cx="260" cy="230" r="4" fill="#03a9f4"/>
+                            <circle cx="300" cy="230" r="4" fill="#03a9f4"/>
+                        </svg>
+                    </div>
+                    <div class="explanation-box">
+                        <strong>דוגמה:</strong>
+                        <ol>
+                            <li>רצף דפים: 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5</li>
+                            <li>ב-3 מסגרות: 9 שגיאות דף</li>
+                            <li>ב-4 מסגרות: 10 שגיאות דף</li>
+                        </ol>
+                        <p>
+                            כלומר, הוספת מסגרת דווקא הגדילה את מספר שגיאות הדף!
+                        </p>
+                    </div>
+                </div>
+                <!-- אלגוריתם LRU (Least Recently Used) -->
+                <div class="content-section" id="lru-page-replacement">
+                    <h2 style="border-bottom: 3px solid #ff9800; padding-bottom: 0.2em; margin-bottom: 1em;">
+                        <span style="font-weight: bold;">האלגוריתם ששומש (LRU)</span>
+                    </h2>
+                    <div class="explanation-box" style="margin-bottom: 2em;">
+                        <p>
+                            <strong>LRU (Least Recently Used)</strong> הוא אלגוריתם שמפנה תמיד את הדף שלא השתמשו בו הכי הרבה זמן.<br>
+                            כלומר, בכל פעם שצריך לפנות דף – האלגוריתם בוחר את הדף שהגישה האחרונה אליו הייתה הכי מזמן.
+                        </p>
+                        <ul>
+                            <li>לא סובל מאנומליית ביילדי.</li>
+                            <li>דורש מעקב אחרי סדרי גישה – לרוב בעזרת תור או סימון זמן גישה.</li>
+                            <li>במימוש חומרה, לעיתים מוסיפים "סיבית שימוש" (Reference Bit) או משתמשים ב"חומת שעון" (Clock Algorithm) – כדי להעריך מי הכי פחות שמוש.</li>
+                        </ul>
+                    </div>
+                    <div class="explanation-box" style="margin-bottom: 2em;">
+                        <h3>איך זה עובד עם מתמשי בסיבית?</h3>
+                            <p>
+                                , המשמעות היא שהסיבית שומרת את ערכה לאורך זמן, ולאחר זמן קצוב היא מתאפסת .<br>
+                                מה שמאפשר למערכת ההפעלה לדעת אילו דפים לא השתמשו בהם לאחרונה, ולפנות את הדף הישן ביותר.<br>
+                                כך, LRU מבטיח שהדפים החשובים ביותר יישארו בזיכרון, תוך שמירה על יעילות גבוהה.
+
+                            </p>
+                    </div>
+                    <div style="display: flex; justify-content: center; gap: 3em; margin: 2em 0;">
+                        <!-- גרף ימני: לפני איפוס סיבית שימוש -->
+                        <div style="text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 0.5em;">לפני איפוס סיבית שימוש</div>
+                            <svg width="240" height="180" viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg">
+                                <!-- מסגרות LRU -->
+                                <rect x="20" y="60" width="40" height="40" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                                <text x="40" y="85" text-anchor="middle" fill="#1976d2" font-size="18" font-family="Heebo, sans-serif">A</text>
+                                <rect x="70" y="60" width="40" height="40" rx="8" fill="#fffde7" stroke="#fbc02d" stroke-width="2"/>
+                                <text x="90" y="85" text-anchor="middle" fill="#fbc02d" font-size="18" font-family="Heebo, sans-serif">B</text>
+                                <rect x="120" y="60" width="40" height="40" rx="8" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+                                <text x="140" y="85" text-anchor="middle" fill="#43a047" font-size="18" font-family="Heebo, sans-serif">C</text>
+                                
+                                <!-- סיבית שימוש -->
+                                <circle cx="40" cy="110" r="10" fill="#43a047" stroke="#1976d2" stroke-width="1"/>
+                                <text x="40" y="114" text-anchor="middle" fill="#fff" font-size="13" font-family="Heebo, sans-serif">1</text>
+                                <circle cx="90" cy="110" r="10" fill="#43a047" stroke="#fbc02d" stroke-width="1"/>
+                                <text x="90" y="114" text-anchor="middle" fill="#fff" font-size="13" font-family="Heebo, sans-serif">1</text>
+                                <circle cx="140" cy="110" r="10" fill="#43a047" stroke="#43a047" stroke-width="1"/>
+                                <text x="140" y="114" text-anchor="middle" fill="#fff" font-size="13" font-family="Heebo, sans-serif">1</text>
+                                
+                                <text x="120" y="140" text-anchor="middle" fill="#888" font-size="13" font-family="Heebo, sans-serif">סיבית שימוש = 1</text>
+                            </svg>
+                        </div>
+                        <!-- גרף שמאלי: אחרי איפוס סיבית שימוש, הכנסת דף חדש -->
+                        <div style="text-align: center;">
+                            <div style="font-weight: bold; margin-bottom: 0.5em;">אחרי איפוס סיבית שימוש<br>והכנסת דף חדש</div>
+                            <svg width="240" height="180" viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg">
+                                <!-- מסגרות LRU -->
+                                <rect x="20" y="60" width="40" height="40" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                                <text x="40" y="85" text-anchor="middle" fill="#1976d2" font-size="18" font-family="Heebo, sans-serif">A</text>
+                                <rect x="70" y="60" width="40" height="40" rx="8" fill="#fffde7" stroke="#fbc02d" stroke-width="2"/>
+                                <text x="90" y="85" text-anchor="middle" fill="#fbc02d" font-size="18" font-family="Heebo, sans-serif">B</text>
+                                <rect x="120" y="60" width="40" height="40" rx="8" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+                                <text x="140" y="85" text-anchor="middle" fill="#43a047" font-size="18" font-family="Heebo, sans-serif">C</text>
+                                <rect x="170" y="60" width="40" height="40" rx="8" fill="#ede7f6" stroke="#7e57c2" stroke-width="2"/>
+                                <text x="190" y="85" text-anchor="middle" fill="#7e57c2" font-size="18" font-family="Heebo, sans-serif">E</text>
+                                <text x="190" y="40" fill="#7e57c2" font-size="12" font-family="Heebo, sans-serif">חדש</text>
+                                <!-- סיבית שימוש -->
+                                <circle cx="40" cy="110" r="10" fill="#d32f2f" stroke="#1976d2" stroke-width="1"/>
+                                <text x="40" y="114" text-anchor="middle" fill="#fff" font-size="13" font-family="Heebo, sans-serif">0</text>
+                                <circle cx="90" cy="110" r="10" fill="#43a047" stroke="#fbc02d" stroke-width="1"/>
+                                <text x="90" y="114" text-anchor="middle" fill="#fff" font-size="13" font-family="Heebo, sans-serif">1</text>
+                                <circle cx="140" cy="110" r="10" fill="#d32f2f" stroke="#1976d2" stroke-width="1"/>
+                                <text x="140" y="114" text-anchor="middle" fill="#fff" font-size="13" font-family="Heebo, sans-serif">0</text>
+                                <circle cx="190" cy="110" r="10" fill="#43a047" stroke="#7e57c2" stroke-width="1"/>
+                                <text x="190" y="114" text-anchor="middle" fill="#fff" font-size="13" font-family="Heebo, sans-serif">1</text>
+                                <!-- חץ פינוי -->
+                                <line x1="40" y1="50" x2="40" y2="30" stroke="#ff9800" stroke-width="2" marker-end="url(#arrow-lru2)"/>
+                                <text x="40" y="25" text-anchor="middle" fill="#ff9800" font-size="13" font-family="Heebo, sans-serif">מפונה</text>
+                                <defs>
+                                    <marker id="arrow-lru2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                                        <path d="M0,0 L0,10 L10,5 z" fill="#ff9800" />
+                                    </marker>
+                                </defs>
+                                <text x="120" y="140" text-anchor="middle" fill="#888" font-size="13" font-family="Heebo, sans-serif">סיבית שימוש: 0 = יפונה</text>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="explanation-box">
+                        <strong>דוגמה:</strong>
+                        <ol>
+                            <li>המסגרות בזיכרון: A, B, C, D (A לא השתמשו בו הכי הרבה זמן).</li>
+                            <li>נדרש להכניס דף חדש (E) ואין מקום פנוי.</li>
+                            <li>הדף הכי פחות שמוש (A) מפונה, E נכנס במקומו.</li>
+                        </ol>
+                        <p>
+                            LRU שומר על דפים שהשתמשו בהם לאחרונה – ולכן לרוב מפנה דפים "פחות חשובים" ומפחית שגיאות דף.
+                        </p>
+                    </div>
+                </div>
+                <!-- כרטיסיה: הזדמנות שנייה (Second Chance) -->
+                <div class="content-section" id="second-chance">
+                    <h2 style="border-bottom: 3px solid #e91e63; padding-bottom: 0.2em; margin-bottom: 1em;">
+                        <span style="font-weight: bold;">הזדמנות שנייה</span> (Second Chance)
+                    </h2>
+                    <div class="explanation-box" style="margin-bottom: 2em;">
+                        <p>
+                            <strong>Second Chance</strong> הוא שיפור של אלגוריתם FIFO, שמנסה להימנע מפינוי דפים שנעשה בהם שימוש לאחרונה.<br>
+                            לכל דף יש <strong>סיבית שימוש</strong> (Reference Bit). כאשר צריך לפנות דף, בודקים את הדף הוותיק ביותר:
+                        </p>
+                        <ol>
+                            <li>אם סיבית השימוש שלו <strong>0</strong> – מפנים אותו.</li>
+                            <li>אם סיבית השימוש שלו <strong>1</strong> – נותנים לו "הזדמנות שנייה": מאפסים את הסיבית ומעבירים אותו לסוף התור.</li>
+                            <li>ממשיכים לבדוק את הדף הבא בתור עד שמוצאים דף שסיבית השימוש שלו 0.</li>
+                        </ol>
+                        <p>
+                            כך, דפים שנעשה בהם שימוש לאחרונה לא יפונו מיד, והמערכת שומרת על דפים חשובים יותר.
+                        </p>
+                    </div>
+                    <div style="display: flex; justify-content: center; margin: 2em 0;">
+                        <!-- המחשה גרפית: Second Chance -->
+                        <svg width="500" height="120" viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg">
+                            <!-- מסגרות בתור -->
+                            <rect x="40" y="40" width="60" height="40" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                            <text x="70" y="65" text-anchor="middle" fill="#1976d2" font-size="18" font-family="Heebo, sans-serif">A</text>
+                            <circle cx="70" cy="95" r="10" fill="#43a047" stroke="#1976d2" stroke-width="1"/>
+                            <text x="70" y="99" text-anchor="middle" fill="#fff" font-size="13" font-family="Heebo, sans-serif">1</text>
+                            <rect x="120" y="40" width="60" height="40" rx="8" fill="#fffde7" stroke="#fbc02d" stroke-width="2"/>
+                            <text x="150" y="65" text-anchor="middle" fill="#fbc02d" font-size="18" font-family="Heebo, sans-serif">B</text>
+                            <circle cx="150" cy="95" r="10" fill="#d32f2f" stroke="#fbc02d" stroke-width="1"/>
+                            <text x="150" y="99" text-anchor="middle" fill="#fff" font-size="13" font-family="Heebo, sans-serif">0</text>
+                            <rect x="200" y="40" width="60" height="40" rx="8" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+                            <text x="230" y="65" text-anchor="middle" fill="#43a047" font-size="18" font-family="Heebo, sans-serif">C</text>
+                            <circle cx="230" cy="95" r="10" fill="#43a047" stroke="#43a047" stroke-width="1"/>
+                            <text x="230" y="99" text-anchor="middle" fill="#fff" font-size="13" font-family="Heebo, sans-serif">1</text>
+                            <rect x="280" y="40" width="60" height="40" rx="8" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+                            <text x="310" y="65" text-anchor="middle" fill="#d32f2f" font-size="18" font-family="Heebo, sans-serif">D</text>
+                            <circle cx="310" cy="95" r="10" fill="#d32f2f" stroke="#d32f2f" stroke-width="1"/>
+                            <text x="310" y="99" text-anchor="middle" fill="#fff" font-size="13" font-family="Heebo, sans-serif">0</text>
+                            <!-- חץ פינוי -->
+                            <line x1="150" y1="30" x2="150" y2="15" stroke="#e91e63" stroke-width="2" marker-end="url(#arrow-second)"/>
+                            <text x="150" y="10" text-anchor="middle" fill="#e91e63" font-size="13" font-family="Heebo, sans-serif">מפונה</text>
+                            <!-- חץ "הזדמנות שנייה" -->
+                            <line x1="70" y1="30" x2="70" y2="15" stroke="#43a047" stroke-width="2" marker-end="url(#arrow-second)"/>
+                            <text x="70" y="10" text-anchor="middle" fill="#43a047" font-size="13" font-family="Heebo, sans-serif">הזדמנות שנייה</text>
+                            <defs>
+                                <marker id="arrow-second" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                                    <path d="M0,0 L0,10 L10,5 z" fill="#e91e63" />
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="explanation-box">
+                        <strong>דוגמה:</strong>
+                        <ol>
+                            <li>המסגרות בתור: A (סיבית 1), B (סיבית 0), C (סיבית 1), D (סיבית 0).</li>
+                            <li>צריך לפנות דף – בודקים את A: סיבית 1, מאפסים ומעבירים לסוף התור.</li>
+                            <li>הבא הוא B: סיבית 0, מפנים אותו.</li>
+                        </ol>
+                        <p>
+                            Second Chance משפר את FIFO בכך שהוא לא מפנה דפים שנעשה בהם שימוש לאחרונה.
+                        </p>
+                    </div>
+                    <div class="explanation-box" style="margin-top: 2em;">
+                        <h3 style="margin-bottom: 0.5em;">מתי יעיל לא יעיל?</h3>
+                        <ul>
+                            <li><strong>לא יעיל:</strong> אם יש הרבה מסגרות סגורות מאוד יעיל. אם יש קצת סביר להניח שאצל כולם הסיבית היא 1 ולכן סתם מבזבז זמן.</li>
+                        </ul>
+                        <h3 style="margin-bottom: 0.5em;">האם יכול להיות שהוא יסחוב לנצח?</h3>
+                        <ul>
+                            <li>כן, יכול לקרות רק כאשר יש כמה דפים בשימוש של תהליכים אחרים ואז בעצם כל פעם דף יעיר את שאר הדפים, מאוד ספציפי ולא יקרה בפרקטיקה.</li>
+                        </ul>
+                    </div>
+                    <div class="explanation-box" style="margin-top: 2em;">
+                        <h3 style="margin-bottom: 0.5em;">שיפור להזדמנות שנייה</h3>
+                        <p>
+                            מתייחס לא רק לסיבית ההתייחסות אלא גם לסיבית שינוי (m, r):<br>
+                            <ul>
+                                <li><strong>(0,0):</strong> לא שומש לאחרונה ולא השתנה, הכי נרצה להחליף.</li>
+                                <li><strong>(1,0):</strong> שומש לאחרונה אבל שונה, הכי עדיף אבל האופציה הכי טובה הבאה.</li>
+                                <li><strong>(0,1):</strong> שומש לאחרונה אבל לא שונה, קל להוציא כי לא צריך page out אבל כנראה נחזיר אותו בקרוב.</li>
+                                <li><strong>(1,1):</strong> גם שומש לאחרונה וגם שונה, זה קל להוציא (צריך לעשות page out) וגם כנראה נחזיר בקרוב.</li>
+                            </ul>
+                        </p>
+                        <div style="display: flex; justify-content: center; margin: 1.5em 0;">
+                            <!-- גרף קטן: ארבעה דפים עם סיביות r/m -->
+                            <svg width="320" height="80" viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg">
+                                <!-- דף 1 -->
+                                <rect x="10" y="20" width="60" height="40" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                                <text x="40" y="45" text-anchor="middle" fill="#1976d2" font-size="18" font-family="Heebo, sans-serif">A</text>
+                                <circle cx="25" cy="65" r="10" fill="#d32f2f" stroke="#1976d2" stroke-width="1"/>
+                                <text x="25" y="69" text-anchor="middle" fill="#fff" font-size="12" font-family="Heebo, sans-serif">r=0</text>
+                                <circle cx="55" cy="65" r="10" fill="#d32f2f" stroke="#1976d2" stroke-width="1"/>
+                                <text x="55" y="69" text-anchor="middle" fill="#fff" font-size="12" font-family="Heebo, sans-serif">m=0</text>
+                                <!-- דף 2 -->
+                                <rect x="85" y="20" width="60" height="40" rx="8" fill="#fffde7" stroke="#fbc02d" stroke-width="2"/>
+                                <text x="115" y="45" text-anchor="middle" fill="#fbc02d" font-size="18" font-family="Heebo, sans-serif">B</text>
+                                <circle cx="100" cy="65" r="10" fill="#43a047" stroke="#fbc02d" stroke-width="1"/>
+                                <text x="100" y="69" text-anchor="middle" fill="#fff" font-size="12" font-family="Heebo, sans-serif">r=1</text>
+                                <circle cx="130" cy="65" r="10" fill="#d32f2f" stroke="#fbc02d" stroke-width="1"/>
+                                <text x="130" y="69" text-anchor="middle" fill="#fff" font-size="12" font-family="Heebo, sans-serif">m=0</text>
+                                <!-- דף 3 -->
+                                <rect x="160" y="20" width="60" height="40" rx="8" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+                                <text x="190" y="45" text-anchor="middle" fill="#43a047" font-size="18" font-family="Heebo, sans-serif">C</text>
+                                <circle cx="175" cy="65" r="10" fill="#d32f2f" stroke="#43a047" stroke-width="1"/>
+                                <text x="175" y="69" text-anchor="middle" fill="#fff" font-size="12" font-family="Heebo, sans-serif">r=0</text>
+                                <circle cx="205" cy="65" r="10" fill="#43a047" stroke="#43a047" stroke-width="1"/>
+                                <text x="205" y="69" text-anchor="middle" fill="#fff" font-size="12" font-family="Heebo, sans-serif">m=1</text>
+                                <!-- דף 4 -->
+                                <rect x="235" y="20" width="60" height="40" rx="8" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+                                <text x="265" y="45" text-anchor="middle" fill="#d32f2f" font-size="18" font-family="Heebo, sans-serif">D</text>
+                                <circle cx="250" cy="65" r="10" fill="#43a047" stroke="#d32f2f" stroke-width="1"/>
+                                <text x="250" y="69" text-anchor="middle" fill="#fff" font-size="12" font-family="Heebo, sans-serif">r=1</text>
+                                <circle cx="280" cy="65" r="10" fill="#43a047" stroke="#d32f2f" stroke-width="1"/>
+                                <text x="280" y="69" text-anchor="middle" fill="#fff" font-size="12" font-family="Heebo, sans-serif">m=1</text>
+                            </svg>
+                        </div>
+                        <div style="text-align: center; color: #888; font-size: 13px;">
+                            דוגמה: דפים עם ערכי r/m שונים – הכי עדיף להחליף את A (r=0, m=0)
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- כרטיסיה: אלגוריתמים נוספים להחלפת דפים -->
+                <div class="content-section" id="other-page-replacement">
+                    <h2 style="border-bottom: 3px solid #9c27b0; padding-bottom: 0.2em; margin-bottom: 1em;">
+                        <span style="font-weight: bold;">אלגוריתמים נוספים להחלפת דפים</span>
+                    </h2>
+                    <ul>
+                        <li><strong>LFU (Least Frequently Used):</strong> מפנה את הדף שניגשו אליו הכי פחות פעמים.<br>
+                            <span style="color:#388e3c;">יתרון:</span> שומר רק את הדפים שמשתמשים בהם הכי הרבה.<br>
+                            <span style="color:#d32f2f;">חסרונות:</span> היסטוריה רחוקה (גם אם דף לא שמוש הרבה זמן הוא עלול לא לצאת), לדף חדש יש ערך נמוך וקשה לו לשרוד.
+                        </li>
+                        <li><strong>MFU (Most Frequently Used):</strong> מפנה את הדף שניגשו אליו הכי הרבה פעמים.<br>
+                            <span style="color:#388e3c;">יתרון:</span> דף שנקרא הרבה עכשיו אולי לא צריך אותו יותר והוא ישוחרר מהר.
+                        </li>
+                    </ul>
+                    <div style="display: flex; justify-content: center; margin: 2em 0;">
+                        <!-- גרף SVG: המחשה של LFU -->
+                        <svg width="420" height="160" viewBox="0 0 420 160" xmlns="http://www.w3.org/2000/svg">
+                            <!-- מסגרות בזיכרון -->
+                            <rect x="40" y="40" width="60" height="40" rx="8" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+                            <text x="70" y="65" text-anchor="middle" fill="#1976d2" font-size="18" font-family="Heebo, sans-serif">1</text>
+                            <rect x="120" y="40" width="60" height="40" rx="8" fill="#fffde7" stroke="#fbc02d" stroke-width="2"/>
+                            <text x="150" y="65" text-anchor="middle" fill="#fbc02d" font-size="18" font-family="Heebo, sans-serif">2</text>
+                            <rect x="200" y="40" width="60" height="40" rx="8" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+                            <text x="230" y="65" text-anchor="middle" fill="#43a047" font-size="18" font-family="Heebo, sans-serif">3</text>
+                            <!-- מוני גישה -->
+                            <rect x="40" y="90" width="60" height="28" rx="6" fill="#fff" stroke="#1976d2" stroke-width="1"/>
+                            <text x="70" y="108" text-anchor="middle" fill="#1976d2" font-size="15" font-family="Heebo, sans-serif">גישה: 15</text>
+                            <rect x="120" y="90" width="60" height="28" rx="6" fill="#fff" stroke="#fbc02d" stroke-width="1"/>
+                            <text x="150" y="108" text-anchor="middle" fill="#fbc02d" font-size="15" font-family="Heebo, sans-serif">גישה: 24</text>
+                            <rect x="200" y="90" width="60" height="28" rx="6" fill="#fff" stroke="#43a047" stroke-width="1"/>
+                            <text x="230" y="108" text-anchor="middle" fill="#43a047" font-size="15" font-family="Heebo, sans-serif">גישה: 26</text>
+                            <!-- חץ פינוי -->
+                            <line x1="70" y1="40" x2="70" y2="20" stroke="#9c27b0" stroke-width="2" marker-end="url(#arrow-lfu)"/>
+                            <text x="70" y="15" text-anchor="middle" fill="#9c27b0" font-size="13" font-family="Heebo, sans-serif"> LFU מפונה</text>
+
+                            <!-- חץ פינוי -->
+                            <line x1="230" y1="40" x2="230" y2="20" stroke="#9c27b0" stroke-width="2" marker-end="url(#arrow-lfu)"/>
+                            <text x="230" y="15" text-anchor="middle" fill="#9c27b0" font-size="13" font-family="Heebo, sans-serif"> MFU מפונה</text>
+
+                            <!-- דף חדש נכנס -->
+                            <line x1="320" y1="60" x2="270" y2="60" stroke="#43a047" stroke-width="2" marker-end="url(#arrow-lfu)"/>
+                            <rect x="320" y="40" width="60" height="40" rx="8" fill="#ede7f6" stroke="#7e57c2" stroke-width="2"/>
+                            <text x="350" y="65" text-anchor="middle" fill="#7e57c2" font-size="18" font-family="Heebo, sans-serif">4</text>
+                            <text x="350" y="90" fill="#7e57c2" font-size="13" font-family="Heebo, sans-serif">חדש</text>
+                            <defs>
+                                <marker id="arrow-lfu" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                                    <path d="M0,0 L0,10 L10,5 z" fill="#9c27b0" />
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="explanation-box">
+                        <h3>המחשה גרפית: LFU</h3>
+                        <p>
+                            כאשר צריך לפנות דף, האלגוריתם בוחר את הדף שמספר הגישות אליו הוא הנמוך ביותר (כאן: 1 או 3). דף חדש נכנס במקומו.
+                        </p>
+                    </div>
+                </div>
+                <!-- כרטיסיה: מצבור מסגרות והקצאת מסגרות -->
+                <div class="content-section" id="page-buffering-allocation">
+                    <h2 style="border-bottom: 3px solid #ffb300; padding-bottom: 0.2em; margin-bottom: 1em;">
+                        <span style="font-weight: bold;">מצבור של מסגרות</span> (Page Buffering algorithms)
+                    </h2>
+                    <p>
+                        נשמור מצבור של מסגרות פנויות, ככה שלא כל פעם נצטרך לחפש מסגרת אלא פשוט נבצע מיד.
+                    </p>
+                    <h2 style="border-bottom: 3px solid #ffb300; padding-bottom: 0.2em; margin: 2em 0 1em 0;">
+                        <span style="font-weight: bold;">הקצאת מסגרות</span> (Allocation of Frames)
+                    </h2>
+                    <p>
+                        לכל תהליך חייבת להיות <strong>כמות מינימלית של מסגרות</strong> זיכרון – כלומר, מספר דפי זיכרון שהמערכת חייבת להקצות לו כדי שיוכל לפעול כראוי.
+                    </p>
+
+                    <p>
+                        למה צריך את המינימום הזה? הנה דוגמה: נניח ש<strong>הוראה (instruction)</strong> בקוד שוקלת 6 בתים, אך כל דף זיכרון קטן ממנה (למשל 4 בתים). במצב כזה, ייתכן שההוראה תהיה מפוצלת על פני שני דפים – חלק אחד בדף אחד, והמשך בדף אחר.
+                    </p>
+
+                    <ul style="margin-right: 1.5em;">
+                        <li>לכן, המערכת חייבת להקצות לפחות <strong>שני דפים</strong> עבור קוד ההרצה, רק כדי שתוכל לבצע הוראות שמפוצלות.</li>
+                        <li>מעבר לכך, התהליך עשוי להזדקק לדפים נוספים לנתונים, מחסנית, טבלאות וכו'.</li>
+                    </ul>
+
+                    <p style="font-weight: bold; margin-top: 1.5em;">ומה לגבי מקסימום?</p>
+
+                    <ul style="margin-right: 1.5em;">
+                        <li>במקרה האידיאלי, היינו רוצים להקצות לתהליך <strong>כמספר הדפים הכולל שהוא דורש</strong> — כך שלא תהיה כמעט החלפת דפים (page faults).</li>
+                    </ul>
+
+                    
+                </div>
+                <!-- כרטיסיה: גלובלי נגד לוקאלי (Global vs Local Allocation) -->
+                <div class="content-section" id="global-vs-local">
+                    <h2 style="border-bottom: 3px solid #388e3c; padding-bottom: 0.2em; margin-bottom: 1em;">
+                        <span style="font-weight: bold;">גלובלי נגד לוקאלי</span> (Global vs Local Allocation)
+                    </h2>
+                     <p>
+                        כשמערכת ההפעלה צריכה לבחור איזה דף להוציא מהזיכרון (Page Replacement), היא צריכה להחליט באיזה "קונטקסט" לבצע את ההחלטה:
+                        האם ניתן לבחור דף מכלל המערכת (גישה גלובלית), או רק מתוך הדפים של התהליך הנוכחי (גישה לוקאלית).
+                    </p>
+
+                    <p>
+                        בחירה בין שתי הגישות משפיעה על צדק בין תהליכים, על מהירות הסריקה ועל יכולת השימוש באלגוריתמים חכמים יותר כמו <code>Second Chance</code>.
+                    </p>
+
+                    <ul>
+                        <li>
+                            <strong>גלובלי:</strong> כל תהליך במערכת משתתף בתור אחד משותף להחלפת דפים. כלומר, תהליך יכול לגרום לכך שדף של תהליך אחר יידחק החוצה מהזיכרון.
+                            <ul>
+                                <li><span style="color:#388e3c;">יתרון:</span> מאפשר סריקה רחבה יותר ובחירה אופטימלית של דפים.</li>
+                                <li><span style="color:#d32f2f;">חיסרון:</span> תהליכים עלולים לאבד דפים מבלי שליטה — פחות צדק בין תהליכים.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>לוקאלי:</strong> כל תהליך מנהל לעצמו את הדפים שלו. הוא יכול להחליף דפים אך ורק מתוך הזיכרון שהוקצה לו.
+                            <ul>
+                                <li><span style="color:#388e3c;">יתרון:</span> שליטה גבוהה של כל תהליך על הדפים שלו, סריקה מהירה.</li>
+                                <li><span style="color:#d32f2f;">חיסרון:</span> תהליך לא יכול לנצל מסגרות לא מנוצלות של תהליכים אחרים — פחות גמישות.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- כרטיסיה: שחרור דפים (Reclaiming pages) -->
+                <div class="content-section" id="reclaiming-pages">
+                    <h2 style="border-bottom: 3px solid #388e3c; padding-bottom: 0.2em; margin-bottom: 1em;">
+                        <span style="font-weight: bold;">שחרור דפים</span> (Reclaiming pages)
+                    </h2>
+                    
+                        <p>
+                            מערכת ההפעלה תמיד צריכה לשמור לעצמה מספר מסגרות זיכרון חופשיות, כדי שתוכל להקצות אותן לתהליכים חדשים או לדפים שנכנסים לזיכרון בעקבות החלפה (<code>Page Fault</code>).
+                        </p>
+
+                        <p>
+                            כדי להבטיח שתמיד יהיו דפים זמינים, המערכת מפעילה מדי פעם תהליך רקע (כמו <strong>Page Cleaner</strong> או <strong>Page Daemon</strong>),
+                            שתפקידו לזהות דפים שאינם בשימוש כרגע – ולשחרר אותם.
+                        </p>
+
+                        <p>
+                            שחרור הדפים כולל שני מצבים:
+                            <ul style="margin-right: 1.5em;">
+                                <li><strong>אם הדף לא שונה</strong> מאז שנקרא מהדיסק – אפשר פשוט למחוק אותו מהזיכרון (אין צורך לשמור).</li>
+                                <li><strong>אם הדף שונה</strong> – יש לבצע <code>Page Out</code>, כלומר לכתוב את תוכנו בחזרה לדיסק לפני המחיקה מהזיכרון.</li>
+                            </ul>
+                        </p>
+
+                        <p style="font-style: italic; color: #555;">
+                            כך מבטיחה מערכת ההפעלה זמינות מתמשכת של זיכרון – מבלי לחכות עד לרגע שבו כבר אין מקום.
+                        </p>
+                    </div>
+                <!-- כרטיסיה: דשדוש / סחזור (Thrashing) -->
+                <div class="content-section" id="thrashing">
+                    <h2 style="border-bottom: 3px solid #4caf50; padding-bottom: 0.2em; margin-bottom: 1em;">
+                        <span style="font-weight: bold;">דשדוש / סחזור</span> (Thrashing)
+                    </h2>
+                    <div class="explanation-box" style="margin-bottom: 2em;">
+                        <p>
+                            דשדוש (Thrashing) מתרחש כאשר מערכת ההפעלה מבלה את רוב זמנה בהחלפת דפים (page swapping) במקום להריץ תהליכים בפועל.<br>
+                            זה קורה כאשר יש יותר מדי תהליכים או דרישה גבוהה מדי לזיכרון, כך שהמעבד כמעט תמיד עסוק בטעינת דפים מהדיסק.<br>
+                            התוצאה: ירידה חדה בניצול המעבד ובביצועי המערכת.
+                        </p>
+                        <ul>
+                            <li>הוספת תהליכים מעבר לנקודה מסוימת גורמת לעלייה חדה בשגיאות דף.</li>
+                            <li>המערכת "תקועה" בלולאת טעינה ופינוי דפים.</li>
+                            <li>ניצול המעבד (CPU utilization) יורד בצורה דרסטית.</li>
+                        </ul>
+                    </div>
+                    <div style="display: flex; justify-content: center; margin: 2em 0;">
+                        <!-- גרף Thrashing - גרסה מתוקנת -->
+                        <svg width="500" height="320" viewBox="0 0 500 320" xmlns="http://www.w3.org/2000/svg" style="border-radius: 10px; box-shadow: 0 2px 12px #0002;">
+                            <!-- צירים -->
+                            <g>
+                                <line x1="60" y1="270" x2="440" y2="270" stroke="#222" stroke-width="2"/>
+                                <line x1="60" y1="270" x2="60" y2="60" stroke="#222" stroke-width="2"/>
+                            </g>
+                            <!-- תוויות צירים -->
+                            <text x="250" y="305" text-anchor="middle" font-size="16" font-family="Heebo, Arial, sans-serif">degree of multiprogramming</text>
+                            <text x="25" y="170" text-anchor="middle" font-size="16" font-family="Heebo, Arial, sans-serif" transform="rotate(-90 25,170)">CPU utilization</text>
+                            <!-- קו הגרף (צורת S עם ירידה חדה) -->
+                            <path d="M60,270 Q140,170 250,120 Q320,100 370,120 Q400,140 410,200 Q420,270 440,270" fill="none" stroke="#03a9f4" stroke-width="4"/>
+                            <!-- קו מקווקו לנקודת thrashing -->
+                            <line x1="370" y1="270" x2="370" y2="60" stroke="#888" stroke-width="2" stroke-dasharray="6,4"/>
+                            <!-- תווית thrashing -->
+                            <text x="375" y="80" fill="#d32f2f" font-size="16" font-family="Heebo, Arial, sans-serif">thrashing</text>
+                            <text x="385" y="100" fill="#888" font-size="13" font-family="Heebo, Arial, sans-serif">↓</text>
+                        </svg>
+                    </div>
+                    <div class="explanation-box">
+                        <strong>סיכום:</strong>
+                        <ul>
+                            <li>ככל שמוסיפים תהליכים, ניצול המעבד עולה – עד גבול מסוים.</li>
+                            <li>מעבר לנקודה זו, המערכת נכנסת לדשדוש – ניצול המעבד יורד בחדות.</li>
+                            <li>הפתרון: הגבלת מספר התהליכים או שיפור ניהול הדפים.</li>
+                        </ul>
+                    </div>
+                    
+                </div>
+                <!-- דרישת דפים בדשדוש (demand paging and trashing) -->
+                    <div class="content-section" id="demand-paging-and-trashing">
+                        <h2 style="border-bottom: 3px solid #1976d2; padding-bottom: 0.2em; margin-bottom: 1em;">
+                            <span style="font-weight: bold;">דרישת דפים בדשדוש</span> (demand paging and trashing)
+                        </h2>
+
+                        <p>
+                            ברוב מערכות ההפעלה, נעשה שימוש בטכניקת <strong>Demand Paging</strong> – כלומר, דפים נטענים לזיכרון רק כאשר באמת יש אליהם גישה. 
+                            זה חוסך זיכרון, אך עלול לגרום ל<strong>שגיאות דף (Page Faults)</strong> כשניגשים לדפים שלא נטענו עדיין.
+                        </p>
+
+                        <p>
+                            כדי לייעל את השימוש בזיכרון, אנחנו מניחים את עקרון <strong>הלוקליות (Locality)</strong>:
+                            כלומר, אם תהליך ניגש לדף מסוים עכשיו — סביר להניח שהוא ימשיך לגשת לדפים סמוכים בקרוב (לוקליות בזמן ולוקליות במרחב).
+                        </p>
+
+                        <p>
+                            אך כאשר תהליך עובר בין מקטעים שונים של הקוד או הנתונים (כלומר בין "אזורי לוקליות"), מתרבות שגיאות הדף — כי הדפים הדרושים כבר לא בזיכרון.
+                        </p>
+
+                        <p>
+                            <strong>דשדוש (Trashing)</strong> מתרחש כאשר זיכרון המערכת עמוס מדי: אם סכום הדרישות של כל התהליכים (מבחינת דפים בזיכרון) גדול ממה שהמערכת יכולה להכיל בפועל — נוצר מצב שבו יש אינספור שגיאות דף.
+                            במקום שהתהליכים יבצעו עבודה אמיתית, הם רק טוענים ומחליפים דפים שוב ושוב — מה שגורם לקריסת ביצועים.
+                        </p>
+
+                        <p style="font-style: italic; color: #555;">
+                            במצב כזה, גם הוספת תהליכים חדשים עלולה להחמיר את המצב, ולכן מערכת ההפעלה עשויה להקפיא או להשהות תהליכים כדי להחזיר יציבות.
+                        </p>
+                    </div>
+                    <!-- כרטיסיה: Working Set Model -->
+                    <div class="content-section" id="working-set-model">
+                        <h2 style="border-bottom: 3px solid #1976d2; padding-bottom: 0.2em; margin-bottom: 1em;">
+                            <span style="font-weight: bold;">מודל סט העבודה</span> (Working Set Model)
+                        </h2>
+                        <p>
+                            מודל סט העבודה נועד לזהות את <strong>קבוצת הדפים שהמערכת צריכה לשמור בזיכרון</strong> עבור כל תהליך בזמן נתון, כדי למנוע שגיאות דף מיותרות.
+                            הרעיון הוא: כל תהליך עובד עם קבוצת דפים מסוימת לאורך זמן – ואם הקבוצה הזו (ה־Working Set) נמצאת בזיכרון, ביצועי התהליך יהיו טובים.
+                        </p>
+
+                        <p>
+                            לשם כך, נגדיר קבוע שנקרא <strong>Δ (Delta)</strong> – מספר פקודות/פעולות אחורה שבהן נבחן את היסטוריית הגישה של התהליך לדפים.
+                        </p>
+
+                        <ul style="margin-right: 1.5em;">
+                            <li>Δ הוא טווח הזמן בו סופרים לאילו דפים התהליך ניגש – לדוגמה, ב־100 הפקודות האחרונות.</li>
+                            <li>אם Δ קטן מדי – נקבל תמונה חלקית; אם הוא גדול מדי – נקבל מידע לא רלוונטי.</li>
+                        </ul>
+
+                        <p>
+                            עבור כל תהליך <strong>n</strong>, נגדיר:
+                        </p>
+                        <div style="text-align: center; margin: 1em 0; font-size: 1.2em;">
+                            <strong>wss<sub>n</sub></strong> = Working Set Size של התהליך n (כלומר, מספר הדפים שהוא ניגש אליהם בטווח Δ)
+                        </div>
+
+                        <p>
+                            אם נחשב את סכום כל קבוצות העבודה של כל התהליכים:
+                        </p>
+                        <div style="text-align: center; margin: 1em 0; font-size: 1.2em;">
+                            <strong>D = Σ wss<sub>n</sub></strong> &nbsp; (עבור כל התהליכים)
+                        </div>
+
+                        <p>
+                            <strong>D</strong> מייצג את <u>סך כל הדפים שהמערכת צריכה להחזיק בזיכרון</u> כדי שכל התהליכים יוכלו לפעול ללא שגיאות דף תכופות.
+                        </p>
+
+                        <ul style="margin-right: 1.5em;">
+                            <li><strong>אם D &gt; מספר המסגרות הפנוי במערכת</strong> – אין מספיק זיכרון כדי להחזיק את כל סטי העבודה, וזה עלול להוביל לדשדוש (trashing).</li>
+                            <li><strong>אם D &lt; מספר המסגרות הקיים</strong> – יש בזבוז, וניתן להוסיף עוד תהליכים או להקצות פחות זיכרון.</li>
+                        </ul>
+
+                        <p style="font-style: italic; color: #555;">
+                            המודל מאפשר למערכת להחליט מתי להקצות או לשחרר זיכרון לתהליכים לפי הצרכים האמיתיים שלהם – במקום לחלק מסגרות באחוזים קבועים או שווים.
+                        </p>
+                    </div>
+                    <!-- כרטיסיה: דפדוף מראש (Prepaging) -->
+                    <div class="content-section" id="prepaging">
+                        <h2 style="border-bottom: 3px solid #1976d2; padding-bottom: 0.2em; margin-bottom: 1em;">
+                            <span style="font-weight: bold;">דפדוף מראש</span> (Prepaging)
+                        </h2>
+                        <p>
+                            דפדוף מראש (Prepaging) הוא טכניקה שבה מערכת ההפעלה טוענת דפים לזיכרון <strong>עוד לפני</strong> שהתהליך ניגש אליהם בפועל, מתוך הנחה שסביר להניח שהם יידרשו בקרוב.
+                        </p>
+                        <ul>
+                            <li>המטרה: להפחית את מספר שגיאות הדף (Page Faults) בתחילת הרצת תהליך או בעת מעבר בין אזורי לוקליות.</li>
+                            <li>במקום להמתין לשגיאת דף עבור כל דף, נטען מראש קבוצה של דפים סמוכים.</li>
+                            <li>הנחת היסוד: עקרון הלוקליות – תהליך שניגש לדף מסוים, כנראה ייגש גם לדפים סמוכים.</li>
+                        </ul>
+                        <div class="explanation-box">
+                            <h3>יתרונות וחסרונות</h3>
+                            <ul>
+                                <li><strong>יתרון:</strong> מפחית שגיאות דף רצופות ומאיץ את ביצועי התהליך בתחילת הריצה או במעברים גדולים.</li>
+                                <li><strong>חיסרון:</strong> עלול לגרום לבזבוז זיכרון אם נטענים דפים שלא באמת יידרשו (overhead מיותר).</li>
+                            </ul>
+                        </div>
+                        <div class="explanation-box">
+                            <h3>מתי משתמשים?</h3>
+                            <ul>
+                                <li>בעת טעינת תהליך חדש – נטען מראש את דפי הקוד הראשונים.</li>
+                                <li>בעת חזרה מאירוע I/O – נטען דפים שצפויים להידרש מיד לאחר מכן.</li>
+                                <li>במערכות עם דפוסי גישה צפויים וברורים.</li>
+                            </ul>
+                        </div>
+                        <p style="font-style: italic; color: #555;">
+                            דפדוף מראש יעיל במיוחד כאשר יש לוקליות גבוהה, אך דורש איזון כדי לא לבזבז זיכרון על דפים מיותרים.
+                        </p>
+                    </div>
+                    <!-- כרטיסיה: השוואת שגיאות דף בין שתי תוכניות -->
+                    <div class="content-section" id="page-fault-comparison">
+                        <h2 style="border-bottom: 3px solid #1976d2; padding-bottom: 0.2em; margin-bottom: 1em;">
+                            <span style="font-weight: bold;">לאיזה מהתוכנות יש יותר שגיאות דף?</span>
+                       </h2>
+
+                        <p>
+                            בדוגמה הבאה נבחן כיצד <strong>סדר הגישה למטריצה</strong> משפיע על כמות שגיאות הדף (Page Faults) – כאשר כל <strong>שורה של מטריצה מאוחסנת בדף נפרד בזיכרון</strong>.
+                        </p>
+
+                        <div style="display: flex; gap: 2em; justify-content: center; flex-wrap: wrap; margin-top: 2em;">
+                                <!-- Program 1: Column-major order -->
+                                <div style="flex: 1 1 300px; min-width: 280px;">
+                                    <div class="explanation-box" style="direction: ltr; text-align: left; background-color: #263238; color: #eceff1; border-radius: 10px; padding: 1em;">
+                                        <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 0.5em;">Program 1: Column-major order</div>
+                                        <pre style="font-family: 'Fira Code', monospace; white-space: pre-wrap;">
+                int data[128][128];
+                // Each row is stored in one page
+
+                for (j = 0; j < 128; j++)
+                    for (i = 0; i < 128; i++)
+                                data[i][j] = 0;
+                // 128 x 128 = 16,384 page faults
+                                        </pre>
+                                    </div>
+                                </div>
+
+                                <!-- Program 2: Row-major order -->
+                                <div style="flex: 1 1 300px; min-width: 280px;">
+                                    <div class="explanation-box" style="direction: ltr; text-align: left; background-color: #263238; color: #eceff1; border-radius: 10px; padding: 1em;">
+                                        <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 0.5em;">Program 2: Row-major order</div>
+                                        <pre style="font-family: 'Fira Code', monospace; white-space: pre-wrap;">
+                int data[128][128];
+                // Each row is stored in one page
+
+                for (i = 0; i < 128; i++)
+                    for (j = 0; j < 128; j++)
+                        data[i][j] = 0;
+                // 128 page faults
+                                        </pre>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        <div class="explanation-box" style="margin-top: 1.5em;">
+                            <h3 style="color: #1565c0;">הסבר:</h3>
+                            <p>
+                                שפות כמו C ו־C++ מאחסנות מערכים דו־ממדיים בסידור של <strong>שורות קודם (row-major)</strong>, כלומר כל שורה של המערך מאוחסנת ברצף בזיכרון (ובמקרה שלנו – בדף אחד).
+                            </p>
+                            <ul style="margin-right: 1.5em;">
+                                <li>
+                                    <strong>בתוכנית 1 (עמודות קודם):</strong> הלולאה החיצונית רצה על העמודות <code>j</code>, והפנימית על השורות <code>i</code>.
+                                    כל גישה ל־<code>data[i][j]</code> קופצת לשורה אחרת – ולכן נטענת שורה שונה (דף שונה) בכל גישה → <strong>שגיאת דף בכל גישה</strong> → 128 × 128 = <strong>16,384 שגיאות דף</strong>.
+                                </li>
+                                <li>
+                                    <strong>בתוכנית 2 (שורות קודם):</strong> כל שורה נטענת פעם אחת בלבד, ואז כל הגישות הבאות הם בתוך אותו דף → <strong>128 שגיאות דף בלבד</strong>.
+                                </li>
+                            </ul>
+
+                            <p style="margin-top: 1em;">
+                                <strong>מסקנה:</strong> <u>סדר הלולאות</u> חשוב מאוד לשמירה על יעילות בזיכרון. תמיד עדיף לסרוק את המטריצה לפי סדר השורות – בהתאם לאופן שבו היא מאוחסנת בזיכרון (row-major).
+                            </p>
+                        <div style="display: flex; justify-content: center; gap: 3em; margin: 2em 0; flex-wrap: wrap;">
+                            <!-- טבלת מטריצה: Column-major -->
+                            <div style="text-align: center;">
+                                <div style="font-weight: bold; margin-bottom: 0.5em;">Column-major (תוכנית 1)</div>
+                                <svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- טבלת 5x5 -->
+                                    <g>
+                                        <!-- שורות -->
+                                        <g>
+                                            <rect x="20" y="20" width="28" height="28" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+                                            <rect x="20" y="48" width="28" height="28" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+                                            <rect x="20" y="76" width="28" height="28" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+                                            <rect x="20" y="104" width="28" height="28" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+                                            <rect x="20" y="132" width="28" height="28" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+                                        </g>
+                                        <!-- עמודות -->
+                                        <g>
+                                            <rect x="48" y="20" width="28" height="28" fill="#fffde7" stroke="#fbc02d" stroke-width="1.5"/>
+                                            <rect x="48" y="48" width="28" height="28" fill="#fffde7" stroke="#fbc02d" stroke-width="1.5"/>
+                                            <rect x="48" y="76" width="28" height="28" fill="#fffde7" stroke="#fbc02d" stroke-width="1.5"/>
+                                            <rect x="48" y="104" width="28" height="28" fill="#fffde7" stroke="#fbc02d" stroke-width="1.5"/>
+                                            <rect x="48" y="132" width="28" height="28" fill="#fffde7" stroke="#fbc02d" stroke-width="1.5"/>
+                                        </g>
+                                        <g>
+                                            <rect x="76" y="20" width="28" height="28" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5"/>
+                                            <rect x="76" y="48" width="28" height="28" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5"/>
+                                            <rect x="76" y="76" width="28" height="28" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5"/>
+                                            <rect x="76" y="104" width="28" height="28" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5"/>
+                                            <rect x="76" y="132" width="28" height="28" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5"/>
+                                        </g>
+                                        <g>
+                                            <rect x="104" y="20" width="28" height="28" fill="#ffebee" stroke="#d32f2f" stroke-width="1.5"/>
+                                            <rect x="104" y="48" width="28" height="28" fill="#ffebee" stroke="#d32f2f" stroke-width="1.5"/>
+                                            <rect x="104" y="76" width="28" height="28" fill="#ffebee" stroke="#d32f2f" stroke-width="1.5"/>
+                                            <rect x="104" y="104" width="28" height="28" fill="#ffebee" stroke="#d32f2f" stroke-width="1.5"/>
+                                            <rect x="104" y="132" width="28" height="28" fill="#ffebee" stroke="#d32f2f" stroke-width="1.5"/>
+                                        </g>
+                                        <g>
+                                            <rect x="132" y="20" width="28" height="28" fill="#ede7f6" stroke="#7e57c2" stroke-width="1.5"/>
+                                            <rect x="132" y="48" width="28" height="28" fill="#ede7f6" stroke="#7e57c2" stroke-width="1.5"/>
+                                            <rect x="132" y="76" width="28" height="28" fill="#ede7f6" stroke="#7e57c2" stroke-width="1.5"/>
+                                            <rect x="132" y="104" width="28" height="28" fill="#ede7f6" stroke="#7e57c2" stroke-width="1.5"/>
+                                            <rect x="132" y="132" width="28" height="28" fill="#ede7f6" stroke="#7e57c2" stroke-width="1.5"/>
+                                        </g>
+                                    </g>
+                                    <!-- חץ: מעבר בין שורות (i) -->
+                                    <g>
+                                        <line x1="34" y1="34" x2="34" y2="146" stroke="#1976d2" stroke-width="3" marker-end="url(#arrow1)"/>
+                                        <marker id="arrow1" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                                            <path d="M0,0 L0,10 L10,5 z" fill="#1976d2"/>
+                                        </marker>
+                                        <text x="10" y="90" fill="#1976d2" font-size="13" font-family="Heebo, sans-serif" transform="rotate(-90 10,90)">i</text>
+                                    </g>
+                                    <!-- חץ: מעבר לעמודה הבאה (j) -->
+                                    <g>
+                                        <line x1="34" y1="146" x2="62" y2="146" stroke="#fbc02d" stroke-width="3" marker-end="url(#arrow2)"/>
+                                        <marker id="arrow2" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                                            <path d="M0,0 L0,10 L10,5 z" fill="#fbc02d"/>
+                                        </marker>
+                                        <text x="48" y="160" fill="#fbc02d" font-size="13" font-family="Heebo, sans-serif">j++</text>
+                                    </g>
+                                </svg>
+                                <div style="font-size: 0.95em; color: #888; margin-top: 0.5em;">
+                                    כל גישה קופצת לשורה אחרת (דף אחר) – הרבה שגיאות דף
+                                </div>
+                            </div>
+                            <!-- טבלת מטריצה: Row-major -->
+                            <div style="text-align: center;">
+                                <div style="font-weight: bold; margin-bottom: 0.5em;">Row-major (תוכנית 2)</div>
+                                <svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- טבלת 5x5 -->
+                                    <g>
+                                        <!-- שורות -->
+                                        <g>
+                                            <rect x="20" y="20" width="28" height="28" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+                                            <rect x="48" y="20" width="28" height="28" fill="#fffde7" stroke="#fbc02d" stroke-width="1.5"/>
+                                            <rect x="76" y="20" width="28" height="28" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5"/>
+                                            <rect x="104" y="20" width="28" height="28" fill="#ffebee" stroke="#d32f2f" stroke-width="1.5"/>
+                                            <rect x="132" y="20" width="28" height="28" fill="#ede7f6" stroke="#7e57c2" stroke-width="1.5"/>
+                                        </g>
+                                        <g>
+                                            <rect x="20" y="48" width="28" height="28" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+                                            <rect x="48" y="48" width="28" height="28" fill="#fffde7" stroke="#fbc02d" stroke-width="1.5"/>
+                                            <rect x="76" y="48" width="28" height="28" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5"/>
+                                            <rect x="104" y="48" width="28" height="28" fill="#ffebee" stroke="#d32f2f" stroke-width="1.5"/>
+                                            <rect x="132" y="48" width="28" height="28" fill="#ede7f6" stroke="#7e57c2" stroke-width="1.5"/>
+                                        </g>
+                                        <g>
+                                            <rect x="20" y="76" width="28" height="28" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+                                            <rect x="48" y="76" width="28" height="28" fill="#fffde7" stroke="#fbc02d" stroke-width="1.5"/>
+                                            <rect x="76" y="76" width="28" height="28" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5"/>
+                                            <rect x="104" y="76" width="28" height="28" fill="#ffebee" stroke="#d32f2f" stroke-width="1.5"/>
+                                            <rect x="132" y="76" width="28" height="28" fill="#ede7f6" stroke="#7e57c2" stroke-width="1.5"/>
+                                        </g>
+                                        <g>
+                                            <rect x="20" y="104" width="28" height="28" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+                                            <rect x="48" y="104" width="28" height="28" fill="#fffde7" stroke="#fbc02d" stroke-width="1.5"/>
+                                            <rect x="76" y="104" width="28" height="28" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5"/>
+                                            <rect x="104" y="104" width="28" height="28" fill="#ffebee" stroke="#d32f2f" stroke-width="1.5"/>
+                                            <rect x="132" y="104" width="28" height="28" fill="#ede7f6" stroke="#7e57c2" stroke-width="1.5"/>
+                                        </g>
+                                        <g>
+                                            <rect x="20" y="132" width="28" height="28" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+                                            <rect x="48" y="132" width="28" height="28" fill="#fffde7" stroke="#fbc02d" stroke-width="1.5"/>
+                                            <rect x="76" y="132" width="28" height="28" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5"/>
+                                            <rect x="104" y="132" width="28" height="28" fill="#ffebee" stroke="#d32f2f" stroke-width="1.5"/>
+                                            <rect x="132" y="132" width="28" height="28" fill="#ede7f6" stroke="#7e57c2" stroke-width="1.5"/>
+                                        </g>
+                                    </g>
+                                    <!-- חץ: מעבר בין עמודות (j) -->
+                                    <g>
+                                        <line x1="34" y1="34" x2="146" y2="34" stroke="#43a047" stroke-width="3" marker-end="url(#arrow3)"/>
+                                        <marker id="arrow3" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                                            <path d="M0,0 L0,10 L10,5 z" fill="#43a047"/>
+                                        </marker>
+                                        <text x="90" y="20" fill="#43a047" font-size="13" font-family="Heebo, sans-serif">j</text>
+                                    </g>
+                                    <!-- חץ: מעבר לשורה הבאה (i) -->
+                                    <g>
+                                        <line x1="146" y1="34" x2="146" y2="62" stroke="#1976d2" stroke-width="3" marker-end="url(#arrow4)"/>
+                                        <marker id="arrow4" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                                            <path d="M0,0 L0,10 L10,5 z" fill="#1976d2"/>
+                                        </marker>
+                                        <text x="160" y="48" fill="#1976d2" font-size="13" font-family="Heebo, sans-serif">i++</text>
+                                    </g>
+                                </svg>
+                                <div style="font-size: 0.95em; color: #888; margin-top: 0.5em;">
+                                    כל שורה נטענת פעם אחת – מעט שגיאות דף
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+
+              </div>
+
+            <footer class="page-footer"></footer>
+        <div>סיכום מערכות הפעלה - זיכרון וירטואלי</div>
+    </footer>
+</body>
+</html>
