@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מבוא לדיסק וזיכרון - מערכות אחסון המוני</title>
+    <link rel="stylesheet" href="style/base.css">
+</head>
+<body>
+    <!-- סרגל ניווט צף -->
+    <div class="nav-sidebar">
+        <div class="nav-sidebar-title">תוכן העניינים</div>
+        <ul class="nav-main-menu">
+            <li class="nav-category">
+                <a href="javascript:void(0)" class="category-title">📦 מבוא לדיסק וזיכרון</a>
+                <ul class="nav-submenu">
+                    <li><a href="#hardware-overview">איך עובד הזיכרון בחומרה</a></li>
+                    <li><a href="#memory-types">סוגי זיכרון</a></li>
+                    <li><a href="#comparison">השוואה וזמני גישה</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="back-home">
+            <a href="index.html">🏠 חזרה לדף הבית</a>
+        </div>
+    </div>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🖥️ חומרה ומערכות הפעלה - דף סיכום</h1>
+            <div class="subtitle">Hardware & Operating Systems Summary</div>
+        </div>
+        
+
+  
+        <!-- מבוא לאחסון וזיכרון -->
+        <div class="content-section">
+            <h2>📦 מבוא לאחסון וזיכרון</h2>
+                 <p class="intro">
+                    בזיכרון מחשב, החומרה מתייחסת לרכיבים הפיזיים שאחראים על אחסון ושליפת הנתונים:
+                    זיכרון <strong>RAM</strong> ו־<strong>Cache</strong> שומרים מידע בשימוש מיידי של המעבד, לאפשר גישה מהירה במיוחד.
+                    כונני <strong>HDD</strong> ו־<strong>SSD</strong> מיועדים לאחסון קבוע של קבצים ותוכנות, גם כאשר המחשב כבוי, אך הם איטיים יותר מבחינת זמן גישה.
+                </p>
+            <ul>
+            <div class="concept-row">
+                <div class="concept-item">
+                    <strong>זיכרון עבודה (RAM):</strong>
+                    <p>
+                        כמו שולחן עבודה גדול שבו המחשב שומר תוכניות ונתונים בזמן שהוא פועל. הגישה אליו מהירה מאוד, אבל כשהמחשב נכבה – כל מה ששמור בו נמחק.
+                    </p>
+                </div>
+                <div class="concept-item">
+                    <strong>מטמון (Cache):</strong>
+                    <p>
+                        זיכרון קטן ויקר שממוקם ממש ליד המעבד. הוא שומר עותקים של נתונים שהמעבד משתמש בהם הכי הרבה, כדי להקטין עוד יותר את זמן הגישה.
+                    </p>
+                </div>
+                <div class="concept-item">
+                    <strong>אחסון קשיח (HDD):</strong>
+                    <p>
+                        דיסקים מתכתיים מסתובבים וראשי קריאה/כתיבה. מתאים לשמירת כמויות גדולות של מידע לזמן ארוך. זול לנפח, אך איטי ורגיש לזעזועים.
+                    </p>
+                </div>
+                <div class="concept-item">
+                    <strong>כונן פלאש (SSD):</strong>
+                    <p>
+                        מבוסס שבבי זיכרון פלאש ללא חלקים נעים. מהיר הרבה יותר מ‑HDD, עמיד יותר וצריכת חשמל נמוכה, אבל יקר יותר לכל גיגה בייט.
+                    </p>
+                </div>
+            </div>
+            </ul>
+            <div class="visual-diagram">
+                <svg width="600" height="400" viewBox="0 0 600 400">
+                    <!-- Memory Hierarchy Pyramid -->
+                    <defs>
+                        <linearGradient id="cacheGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#ee5a52;stop-opacity:1" />
+                        </linearGradient>
+                        <linearGradient id="ramGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#4ecdc4;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#44a08d;stop-opacity:1" />
+                        </linearGradient>
+                        <linearGradient id="storageGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#45b7d1;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#96c93d;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- Cache Level -->
+                    <polygon points="200,50 400,50 380,120 220,120" fill="url(#cacheGrad)"/>
+                    <text x="300" y="80" text-anchor="middle" fill="white" font-size="14" font-weight="bold">⚡ Cache</text>
+                    <text x="300" y="95" text-anchor="middle" fill="white" font-size="12">מהיר + יקר</text>
+                    <text x="300" y="110" text-anchor="middle" fill="white" font-size="10">קטן (KB-MB)</text>
+                    
+                    <!-- RAM Level -->
+                    <polygon points="150,130 450,130 420,200 180,200" fill="url(#ramGrad)"/>
+                    <text x="300" y="160" text-anchor="middle" fill="white" font-size="14" font-weight="bold">🧠 RAM</text>
+                    <text x="300" y="175" text-anchor="middle" fill="white" font-size="12">בינוני</text>
+                    <text x="300" y="190" text-anchor="middle" fill="white" font-size="10">בינוני (GB)</text>
+                    
+                    <!-- Storage Level -->
+                    <polygon points="100,210 500,210 460,280 140,280" fill="url(#storageGrad)"/>
+                    <text x="300" y="240" text-anchor="middle" fill="white" font-size="14" font-weight="bold">💽 Storage</text>
+                    <text x="300" y="255" text-anchor="middle" fill="white" font-size="12">איטי + זול</text>
+                    <text x="300" y="270" text-anchor="middle" fill="white" font-size="10">גדול (TB)</text>
+                    
+                    <!-- Speed indicators -->
+                    <text x="500" y="85" fill="#ff6b6b" font-size="24">🚀</text>
+                    <text x="500" y="165" fill="#4ecdc4" font-size="20">🏃</text>
+                    <text x="500" y="245" fill="#45b7d1" font-size="16">🐌</text>
+                    
+                    <!-- Cost indicators -->
+                    <text x="80" y="85" fill="#ff6b6b" font-size="24">💰💰💰</text>
+                    <text x="80" y="165" fill="#4ecdc4" font-size="20">💰💰</text>
+                    <text x="80" y="245" fill="#45b7d1" font-size="16">💰</text>
+                </svg>
+                    <figcaption class="diagram-caption">
+                    איור: היררכיית הזיכרון במחשב – ככל שעולים בפירמידה, הזיכרון מהיר ויקר יותר אך קטן בנפח.
+                    </figcaption>
+            </div>
+            <div class="concept-row">
+                <div class="concept-item">
+                    <h4>🧩 Blocks לוגיים</h4>
+                    <p>
+                        הדיסק נתפס כמערך חד־ממדי של יחידות העברה (logical blocks), כל יחידה היא הגודל הקטן ביותר לקריאה/כתיבה.
+                    </p>
+                </div>
+                <div class="concept-item">
+                    <h4>🔗 מיפוי רציף</h4>
+                    <p>
+                        ה־blocks ממופים לסקטורים של הדיסק באופן רציף, מתחיל בסקטור 0 של ה־track החיצוני ביותר.
+                    </p>
+                </div>
+                <div class="concept-item">
+                    <h4>🎯 סדר צילינדרים</h4>
+                    <p>
+                        אחרי סיום צילינדר חיצוני עוברים לפנימי, ועוברים בסדר חיצוני → פנימי בכל צילינדר.
+                    </p>
+                </div>
+            </div>
+          
+        
+
+        <!-- השוואת HDD vs SSD -->
+        <div class="storage-comparison">
+            <h2>⚔️ השוואה: HDD מול SSD</h2>
+           
+            <div class="comparison-row" style="display: flex; gap: 30px; justify-content: center; align-items: stretch; flex-wrap: wrap;">
+            <div style="background: rgba(52, 73, 94, 0.8); padding: 20px; border-radius: 10px; color: white; width: 320px; box-sizing: border-box; display: flex; flex-direction: column; height: 100%;">
+                <h3>💿 Hard Disk Drive (HDD)</h3>
+                <div class="svg-container" style="text-align: center;">
+                <svg width="200" height="150" viewBox="0 0 200 150">
+                    <!-- HDD Representation -->
+                    <circle cx="100" cy="75" r="60" fill="#34495e" stroke="#2c3e50" stroke-width="3"/>
+                    <circle cx="100" cy="75" r="45" fill="#2c3e50"/>
+                    <circle cx="100" cy="75" r="30" fill="#34495e"/>
+                    <circle cx="100" cy="75" r="15" fill="#2c3e50"/>
+                    <circle cx="100" cy="75" r="5" fill="#e74c3c"/>
+                    
+                    <!-- Read/Write Head -->
+                    <rect x="85" y="35" width="30" height="8" fill="#f39c12" rx="2"/>
+                    <line x1="100" y1="43" x2="100" y2="55" stroke="#f39c12" stroke-width="2"/>
+                </svg>
+                </div>
+                <ul style="font-size: 12px; line-height: 1.4;">
+                <li>💰 זול יותר ($0.015-0.02/GB)</li>
+                <li>🐌 איטי (~10ms access time)</li>
+                <li>🔊 רועש (מאווררים)</li>
+                <li>⚡ צריכה גבוהה (20W)</li>
+                <li>📱 כבד (~700g)</li>
+                <li>🌡️ רגיש לטמפרטורה</li>
+                </ul>
+                <div style="margin-top: 10px; font-size: 13px; color: #d0d6db; margin-bottom: 0;">
+                <strong>איך זה עובד?</strong>
+                <br>
+                דיסק קשיח מורכב מדיסקים מתכתיים שמסתובבים במהירות, וראש קריאה/כתיבה שנע פיזית מעליהם כדי לגשת לנתונים. כל פעולה דורשת תזוזה מכנית, ולכן הגישה איטית יחסית ורגישה לזעזועים.
+                </div>
+            </div>
+            
+            <div style="background: rgba(46, 204, 113, 0.8); padding: 20px; border-radius: 10px; color: white; width: 320px; box-sizing: border-box; display: flex; flex-direction: column; height: 100%;">
+                <h3>⚡ Solid State Drive (SSD)</h3>
+                <div class="svg-container" style="text-align: center;">
+                <svg width="200" height="150" viewBox="0 0 200 150">
+                    <!-- SSD Representation -->
+                    <rect x="50" y="50" width="100" height="50" fill="#2ecc71" rx="5"/>
+                    <rect x="60" y="60" width="15" height="10" fill="#27ae60"/>
+                    <rect x="80" y="60" width="15" height="10" fill="#27ae60"/>
+                    <rect x="100" y="60" width="15" height="10" fill="#27ae60"/>
+                    <rect x="120" y="60" width="15" height="10" fill="#27ae60"/>
+                    <rect x="60" y="75" width="15" height="10" fill="#27ae60"/>
+                    <rect x="80" y="75" width="15" height="10" fill="#27ae60"/>
+                    <rect x="100" y="75" width="15" height="10" fill="#27ae60"/>
+                    <rect x="120" y="75" width="15" height="10" fill="#27ae60"/>
+                    
+                    <!-- Data flow lines -->
+                    <line x1="50" y1="110" x2="150" y2="110" stroke="#f1c40f" stroke-width="2"/>
+                    <circle cx="70" cy="110" r="2" fill="#f1c40f"/>
+                    <circle cx="100" cy="110" r="2" fill="#f1c40f"/>
+                    <circle cx="130" cy="110" r="2" fill="#f1c40f"/>
+                </svg>
+                </div>
+                <ul style="font-size: 12px; line-height: 1.4;">
+                <li>💎 יקר יותר ($0.09/GB)</li>
+                <li>🚀 מהיר מאוד (&lt;0.1ms) </li>
+                <li>🔇 שקט (אין חלקים נעים)</li>
+                <li>🔋 חיסכון בחשמל (10-15%)</li>
+                <li>🪶 קל משקל</li>
+                <li>🌡️ עמיד בטמפרטורות</li>
+                </ul>
+                <div style="margin-top: 10px; font-size: 13px; color: #d0d6db; margin-bottom: 0;">
+                <strong>איך זה עובד?</strong>
+                <br>
+                כונן SSD מבוסס על שבבי זיכרון אלקטרוניים (Flash) ללא חלקים נעים. הנתונים נכתבים ונקראים ישירות מהשבבים, מה שמאפשר מהירות גבוהה, עמידות לזעזועים ופעולה שקטה.
+                </div>
+            </div>
+           
+        </div>
+    </div>
+    </div>
+        <!-- כרטיסיית הסבר עם תרגום לעברית -->
+        <!-- כרטיסיית הסבר עם תרגום לעברית - נושא עצמאי -->
+        <div class="content-section">
+            <h2>📖 הסבר על ביצועי דיסק קשיח</h2>
+            <div class="concept-row">
+                <div class="concept-item">
+                    <h4>מה משפיע על ביצועי דיסק קשיח?</h4>
+                    <ul>
+                        <li><strong>זמן גישה (Access Time):</strong>
+                            <ul>
+                                <li>⏱️ <b>זמן Seek ממוצע</b> – הזמן שנדרש לראש הקריאה/כתיבה להגיע למיקום הנכון.</li>
+                                <li>🔄 <b>השהיית סיבוב ממוצעת</b> – הזמן הממוצע עד שהסקטור הרצוי יגיע תחת ראש הקריאה.</li>
+                            </ul>
+                        </li>
+                        <li><strong>זמן I/O ממוצע:</strong>
+                            <ul>
+                                <li>זמן גישה ממוצע</li>
+                                <li>⏬ <b>זמן העברה</b> = גודל נתונים / קצב העברה</li>
+                                <li>⚙️ <b>תקורת בקר</b> – עיכוב נוסף שנגרם מעיבוד בבקר הדיסק</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="concept-item">
+                    <h4>דוגמה לחישוב</h4>
+                    <p>
+                        העברת בלוק בגודל <b>4KB</b> מדיסק במהירות <b>7200RPM</b>,<br>
+                        עם זמן Seek ממוצע של <b>5ms</b>, קצב העברה של <b>1Gbps</b>, ותקורת בקר של <b>0.1ms</b>:
+                    </p>
+                    <ul>
+                        <li>השהיית סיבוב ממוצעת: <b>4.16ms</b> (חצי מסיבוב של 7200 סיבובים לדקה)</li>
+                        <li>זמן גישה כולל: <b>5ms + 4.16ms = 9.16ms</b></li>
+                        <li>זמן העברה: <b>4KB ÷ 1Gbps ≈ 0.031ms</b></li>
+                        <li>סה"כ זמן I/O: <b>9.16ms + 0.1ms + 0.031ms ≈ 9.291ms</b></li>
+                    </ul>
+                    <div style="margin-top:8px;">
+                        <strong>תוצאה סופית: <u>כ-9.291ms</u></strong>
+                    </div>
+                </div>
+            </div>
+            <div class="disk-steps-graphics" style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; margin-top: 40px;">
+                <h3>🔬 המחשה: שלבי גישה לנתון בדיסק קשיח</h3>
+
+                
+                <svg width="850" height="600" xmlns="http://www.w3.org/2000/svg" class="visual-diagram" >
+                    <!-- כותרת כללית -->
+                    <text x="400" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#2c3e50">שלבי גישה לנתונים בכונן קשיח</text>
+                    
+                    
+                    
+                    <!-- שלב 1: ראש במנוחה -->
+                    <g transform="translate(50, 80)">
+                        <!-- מסגרת -->
+                        <rect x="0" y="0" width="300" height="200" fill="none" stroke="#bdc3c7" stroke-width="2" rx="10"/>
+                        <!-- כותרת -->
+                        <text x="150" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#3498db">שלב 1: ראש במנוחה</text>
+                        
+                        <!-- דיסק -->
+                        <circle cx="150" cy="120" r="70" fill="#ecf0f1" stroke="#95a5a6" stroke-width="3"/>
+                        <!-- מסלולים -->
+                        <circle cx="150" cy="120" r="55" fill="none" stroke="#bdc3c7" stroke-width="1"/>
+                        <circle cx="150" cy="120" r="40" fill="none" stroke="#bdc3c7" stroke-width="1"/>
+                        <circle cx="150" cy="120" r="25" fill="none" stroke="#bdc3c7" stroke-width="1"/>
+                        <!-- מרכז הדיסק -->
+                        <circle cx="150" cy="120" r="8" fill="#7f8c8d"/>
+                        
+                        <!-- סקטורים -->
+                        <line x1="150" y1="50" x2="150" y2="190" stroke="#95a5a6" stroke-width="1"/>
+                        <line x1="80" y1="120" x2="220" y2="120" stroke="#95a5a6" stroke-width="1"/>
+                        
+                        <!-- ראש הקריאה - במיקום מרוחק -->
+                        <rect x="90" y="45" width="8" height="15" fill="#e74c3c" rx="2"/>
+                        <line x1="94" y1="60" x2="94" y2="80" stroke="#e74c3c" stroke-width="3"/>
+                        <text x="94" y="40" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#e74c3c">ראש קריאה</text>
+                        
+                        <!-- סקטור יעד -->
+                        <circle cx="185" cy="155" r="5" fill="#f39c12" stroke="#e67e22" stroke-width="2"/>
+                        <text x="200" y="160" font-family="Arial, sans-serif" font-size="9" fill="#f39c12">יעד</text>
+                        
+                        <text x="150" y="225" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#7f8c8d">הראש נמצא במיקום מרוחק</text>
+                    </g>
+                    
+                    <!-- שלב 2: תנועת ראש -->
+                    <g transform="translate(450, 80)">
+                        <!-- מסגרת -->
+                        <rect x="0" y="0" width="300" height="200" fill="none" stroke="#bdc3c7" stroke-width="2" rx="10"/>
+                        <!-- כותרת -->
+                        <text x="150" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#e74c3c">שלב 2: Seek - תנועת ראש</text>
+                        
+                        <!-- דיסק -->
+                        <circle cx="150" cy="120" r="70" fill="#ecf0f1" stroke="#95a5a6" stroke-width="3"/>
+                        <!-- מסלולים -->
+                        <circle cx="150" cy="120" r="55" fill="none" stroke="#bdc3c7" stroke-width="1"/>
+                        <circle cx="150" cy="120" r="40" fill="none" stroke="#bdc3c7" stroke-width="1"/>
+                        <circle cx="150" cy="120" r="25" fill="none" stroke="#bdc3c7" stroke-width="1"/>
+                        <!-- מרכז הדיסק -->
+                        <circle cx="150" cy="120" r="8" fill="#7f8c8d"/>
+                        
+                        <!-- סקטורים -->
+                        <line x1="150" y1="50" x2="150" y2="190" stroke="#95a5a6" stroke-width="1"/>
+                        <line x1="80" y1="120" x2="220" y2="120" stroke="#95a5a6" stroke-width="1"/>
+                        
+                        <!-- ראש הקריאה - בתנועה למטה -->
+                        <rect x="175" y="90" width="8" height="15" fill="#e74c3c" rx="2"/>
+                        <line x1="179" y1="105" x2="179" y2="130" stroke="#e74c3c" stroke-width="3"/>
+                        <text x="179" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#e74c3c">ראש קריאה</text>
+                        
+                        <!-- חץ תנועה אנכית -->
+                        
+                        <!-- סקטור יעד -->
+                        <circle cx="185" cy="155" r="5" fill="#f39c12" stroke="#e67e22" stroke-width="2"/>
+                        <text x="200" y="160" font-family="Arial, sans-serif" font-size="9" fill="#f39c12">יעד</text>
+                        
+                        <text x="150" y="225" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#7f8c8d">הראש נע רדיאלית למסלול הנכון</text>
+                        
+                        <!-- הגדרת חץ -->
+                        <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#e74c3c"/>
+                        </marker>
+                        </defs>
+                    </g>
+                    
+                    <!-- שורה שנייה -->
+                    
+                    <!-- שלב 3: סיבוב דיסק -->
+                    <g transform="translate(50, 320)">
+                        <!-- מסגרת -->
+                        <rect x="0" y="0" width="300" height="200" fill="none" stroke="#bdc3c7" stroke-width="2" rx="10"/>
+                        <!-- כותרת -->
+                        <text x="150" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#f39c12">שלב 3: סיבוב הדיסק</text>
+                        
+                        <!-- דיסק -->
+                        <circle cx="150" cy="120" r="70" fill="#ecf0f1" stroke="#95a5a6" stroke-width="3"/>
+                        <!-- מסלולים -->
+                        <circle cx="150" cy="120" r="55" fill="none" stroke="#bdc3c7" stroke-width="1"/>
+                        <circle cx="150" cy="120" r="40" fill="none" stroke="#bdc3c7" stroke-width="1"/>
+                        <circle cx="150" cy="120" r="25" fill="none" stroke="#bdc3c7" stroke-width="1"/>
+                        <!-- מרכז הדיסק -->
+                        <circle cx="150" cy="120" r="8" fill="#7f8c8d"/>
+                        
+                        <!-- סקטורים מסובבים - מראה תנועה -->
+                        <line x1="150" y1="50" x2="150" y2="190" stroke="#95a5a6" stroke-width="1" transform="rotate(15 150 120)"/>
+                        <line x1="80" y1="120" x2="220" y2="120" stroke="#95a5a6" stroke-width="1" transform="rotate(15 150 120)"/>
+                        <line x1="150" y1="50" x2="150" y2="190" stroke="#bdc3c7" stroke-width="1" stroke-dasharray="3,3" transform="rotate(-15 150 120)"/>
+                        <line x1="80" y1="120" x2="220" y2="120" stroke="#bdc3c7" stroke-width="1" stroke-dasharray="3,3" transform="rotate(-15 150 120)"/>
+                        
+                        <!-- ראש הקריאה - במיקום נכון -->
+                        <rect x="175" y="115" width="8" height="15" fill="#e74c3c" rx="2"/>
+                        <line x1="179" y1="130" x2="179" y2="150" stroke="#e74c3c" stroke-width="3"/>
+                        <text x="179" y="110" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#e74c3c">ראש קריאה</text>
+                        
+                        <!-- סקטור יעד מתקרב לראש -->
+                        <circle cx="190" cy="140" r="5" fill="#f39c12" stroke="#e67e22" stroke-width="2"/>
+                        <text x="205" y="145" font-family="Arial, sans-serif" font-size="9" fill="#f39c12">יעד</text>
+                        
+                        <!-- חץ סיבוב מובהק יותר -->
+                        <path d="M 200 70 A 40 40 0 0 1 230 110" fill="none" stroke="#f39c12" stroke-width="4" marker-end="url(#arrowhead2)"/>
+                        <text x="220" y="85" font-family="Arial, sans-serif" font-size="10" fill="#f39c12">סיבוב</text>
+                        
+                        <text x="150" y="225" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#7f8c8d">הדיסק מסתובב עד שהיעד מגיע</text>
+                        
+                        <!-- הגדרת חץ סיבוב -->
+                        <defs>
+                        <marker id="arrowhead2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#f39c12"/>
+                        </marker>
+                        </defs>
+                    </g>
+                    
+                    <!-- שלב 4: קריאת נתונים -->
+                    <g transform="translate(450, 320)">
+                        <!-- מסגרת -->
+                        <rect x="0" y="0" width="300" height="200" fill="none" stroke="#bdc3c7" stroke-width="2" rx="10"/>
+                        <!-- כותרת -->
+                        <text x="150" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#27ae60">שלב 4: קריאת נתונים</text>
+                        
+                        <!-- דיסק -->
+                        <circle cx="150" cy="120" r="70" fill="#ecf0f1" stroke="#95a5a6" stroke-width="3"/>
+                        <!-- מסלולים -->
+                        <circle cx="150" cy="120" r="55" fill="none" stroke="#bdc3c7" stroke-width="1"/>
+                        <circle cx="150" cy="120" r="40" fill="none" stroke="#bdc3c7" stroke-width="1"/>
+                        <circle cx="150" cy="120" r="25" fill="none" stroke="#bdc3c7" stroke-width="1"/>
+                        <!-- מרכז הדיסק -->
+                        <circle cx="150" cy="120" r="8" fill="#7f8c8d"/>
+                        
+                        <!-- סקטורים -->
+                        <line x1="150" y1="50" x2="150" y2="190" stroke="#95a5a6" stroke-width="1" transform="rotate(45 150 120)"/>
+                        <line x1="80" y1="120" x2="220" y2="120" stroke="#95a5a6" stroke-width="1" transform="rotate(45 150 120)"/>
+                        
+                        <!-- ראש הקריאה - קורא -->
+                        <rect x="175" y="115" width="8" height="15" fill="#27ae60" rx="2"/>
+                        <line x1="179" y1="130" x2="179" y2="150" stroke="#27ae60" stroke-width="3"/>
+                        <text x="179" y="110" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#27ae60">ראש קריאה</text>
+                        
+                        <!-- סקטור יעד - מתחת לראש -->
+                        <circle cx="179" cy="155" r="6" fill="#27ae60" stroke="#229954" stroke-width="2"/>
+                        <text x="195" y="160" font-family="Arial, sans-serif" font-size="9" fill="#27ae60">נתונים</text>
+                        
+                        <!-- קווי נתונים -->
+                        <path d="M 179 150 L 190 140" stroke="#27ae60" stroke-width="2"/>
+                        <path d="M 179 150 L 200 135" stroke="#27ae60" stroke-width="2"/>
+                        <path d="M 179 150 L 210 130" stroke="#27ae60" stroke-width="2"/>
+                        <text x="215" y="135" font-family="Arial, sans-serif" font-size="8" fill="#27ae60">010110...</text>
+                        
+                        <text x="150" y="225" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#7f8c8d">קריאת הנתונים מהסקטור</text>
+                    </g>
+                    
+                    <!-- הסבר כללי -->
+                    <text x="400" y="570" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#7f8c8d">זמן גישה = Seek Time + Rotational Latency + Transfer Time</text>
+                </svg>
+                <div style="max-width: 640px; margin: 40px auto; background: linear-gradient(135deg, #4b3c77, #1e2a78); padding: 28px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); font-family: 'Arial', sans-serif; color: #ecf0f1; direction: rtl; text-align: right;">
+                    <h3 style="margin-bottom: 20px; color: #ffffff;">📀 שלבי גישה לנתונים בדיסק קשיח</h3>
+                    <ol style="padding-right: 20px; line-height: 1.9;">
+                        <li><strong>הראש במנוחה:</strong> ראש הקריאה/כתיבה לא נמצא עדיין מעל הסקטור הרצוי.</li>
+                        <li><strong>פעולת Seek:</strong> מנגנון מכני מזיז את הראש למיקום של הסקטור.</li>
+                        <li><strong>השהיית סיבוב:</strong> הדיסק מסתובב עד שהסקטור מתחת לראש הקריאה.</li>
+                        <li><strong>קריאת נתונים:</strong> הנתונים מועברים לאחר שהראש נמצא במקום הנכון.</li>
+                    </ol>
+
+                    <div style="margin-top: 32px; text-align: center;">
+                        <svg width="100%" height="40">
+                            <text x="50%" y="28" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#bdc3c7">
+                                זמן גישה = Seek Time + Rotational Latency + Transfer Time
+                            </text>
+                        </svg>
+                    </div>
+                </div>
+               
+                
+            </div>
+
+      
+    </div>
+</body>
+</html>
+
+
