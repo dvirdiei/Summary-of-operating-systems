@@ -116,4 +116,14 @@ function toggleContent(button) {
                 document.querySelector(`[data-graph="${id}"]`).textContent = 'הצג גרף ▼';
             }
         }
- 
+(function loadGoatCounter() {
+  if (window.goatcounterLoaded) return;          // הגנה מכפל טעינה
+  window.goatcounterLoaded = true;
+
+  const s = document.createElement('script');
+  s.setAttribute('data-goatcounter', 'https://dvird.goatcounter.com/count');
+  s.src = 'https://gc.zgo.at/count.js';          // פרוטוקול מפורש
+  s.async = true;
+
+  (document.head || document.body).appendChild(s);
+})();
