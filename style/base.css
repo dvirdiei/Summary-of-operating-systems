@@ -1048,4 +1048,10 @@
     box-shadow: 0 8px 28px rgba(59, 130, 246, 0.15);
     color: #0ea5e9;
 }
-
+.image-container svg {
+  width: 100%;
+  height: auto;
+  max-width: 900px; /* או כל גודל מקסימום שתבחר */
+  display: block;
+  margin: 0 auto;
+}
