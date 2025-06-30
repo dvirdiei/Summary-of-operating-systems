@@ -90,6 +90,81 @@ function checkZoomChange() {
     
     // בדיקה ראשונית
     checkZoomChange();
+
+    // === כפתור אימוג'י (🔍) לפתיחה/סגירה של סרגל צד ===
+    if (!document.getElementById('sidebar-toggle-btn')) {
+        // הוספת סגנון לאנימציה של הכפתור (אם לא קיים)
+        if (!document.getElementById('sidebar-toggle-anim-style')) {
+            const style = document.createElement('style');
+            style.id = 'sidebar-toggle-anim-style';
+            style.innerHTML = `
+            @keyframes magnifier-glow {
+                 0% { box-shadow: 0 2px 12px rgba(0,0,0,0.10), 0 0 0px 0px #FFD700; }
+                30% { box-s hadow: 0 2px 12px rgba(0,0,0,0.10), 0 0 24px 12px #FFD700; }
+                60% { box-shadow: 0 2px 12px rgba(0,0,0,0.10), 0 0 32px 18px #FFD700; }
+                80% { box-shadow: 0 2px 12px rgba(0,0,0,0.10), 0 0 24px 12px #FFD700; }
+                100% { box-shadow: 0 2px 12px rgba(0,0,0,0.10), 0 0 0px 0px #FFD700; }
+            }
+            #sidebar-toggle-btn.animate-magnifier {
+                animation: magnifier-glow 1.2s cubic-bezier(.4,0,.2,1);
+            }
+            `;
+            document.head.appendChild(style);
+        }
+        const sidebarToggleBtn = document.createElement('button');
+        sidebarToggleBtn.innerHTML = '🔍';
+        sidebarToggleBtn.setAttribute('aria-label', 'הצג/הסתר תוכן עניינים');
+        sidebarToggleBtn.id = 'sidebar-toggle-btn';
+        // מיקום שמאל-מרכז, עיצוב בסיסי בלבד
+        sidebarToggleBtn.style.position = 'fixed';
+        sidebarToggleBtn.style.right = '20px';
+        sidebarToggleBtn.style.top = '20%';
+        sidebarToggleBtn.style.transform = 'translateY(-50%)';
+        sidebarToggleBtn.style.zIndex = '1001';
+        sidebarToggleBtn.style.background = '#1e293b';
+        sidebarToggleBtn.style.border = '2px solid #334155';
+        sidebarToggleBtn.style.borderRadius = '50%';
+        sidebarToggleBtn.style.width = '50px';
+        sidebarToggleBtn.style.height = '50px';
+        sidebarToggleBtn.style.fontSize = '2rem';
+        sidebarToggleBtn.style.boxShadow = '0 2px 12px rgba(0,0,0,0.10)';
+        sidebarToggleBtn.style.cursor = 'pointer';
+        sidebarToggleBtn.style.display = 'flex';
+        sidebarToggleBtn.style.alignItems = 'center';
+        sidebarToggleBtn.style.justifyContent = 'center';
+        sidebarToggleBtn.style.outline = 'none';
+        document.body.appendChild(sidebarToggleBtn);
+
+        const sidebar = document.querySelector('.nav-sidebar');
+        if (sidebar) {
+            // ודא שהסרגל ממוקם בצד ימין ותופס רק חלק מהמסך
+            sidebar.style.position = 'fixed';
+            sidebar.style.right = '0';
+            sidebar.style.left = 'unset';
+            sidebar.style.top = '25%';
+            sidebar.style.height = '*';
+            sidebar.style.width = '20'; // לדוג' 320px, אפשר לשנות לפי הצורך
+            sidebar.style.maxWidth = '90vw';
+            sidebar.style.transition = 'transform 0.35s cubic-bezier(.4,0,.2,1)';
+            sidebar.style.transform = 'translateX(110%)'; // מוסתר כברירת מחדל (ימינה)
+        }
+
+        let sidebarOpen = false;
+        sidebarToggleBtn.addEventListener('click', function () {
+            // אנימציה לכפתור
+            sidebarToggleBtn.classList.remove('animate-magnifier');
+            // טריגר רה-פלואו כדי לאפשר הפעלה מחדש של האנימציה
+            void sidebarToggleBtn.offsetWidth;
+            sidebarToggleBtn.classList.add('animate-magnifier');
+            if (!sidebar) return;
+            sidebarOpen = !sidebarOpen;
+            if (sidebarOpen) {
+                sidebar.style.transform = 'translateX(0)';
+            } else {
+                sidebar.style.transform = 'translateX(120%)';
+            }
+        });
+    }
 });
 
 // פונקציה להצגה/הסתרה של תוכן מתרחב
