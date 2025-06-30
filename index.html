@@ -219,20 +219,21 @@
                     <h3>12. מערכת קלט/פלט</h3>
                 </a>
             </div>
+                <!-- כפתור חיפוש צף -->
+            <button id="floating-search-btn" class="floating-search-btn" aria-label="חיפוש באתר" title="חיפוש באתר" style="display:flex;">
+            🔍
+            </button>
+            <!-- מודאל חיפוש (נטען פעם אחת) -->
+            <div class="search-modal" tabindex="-1">
+            <div class="search-modal-content">
+                <button class="close-search-modal" aria-label="סגור חיפוש">✖</button>
+                <input type="text" class="search-input" placeholder="חפש נושא, מונח או כותרת..." dir="rtl" autofocus />
+                <div class="search-results"></div>
+            </div>
+            </div>
         </div>
     </div>
-    <!-- כפתור חיפוש צף -->
-<button id="floating-search-btn" class="floating-search-btn" aria-label="חיפוש באתר" title="חיפוש באתר" style="display:flex;">
-  🔍
-</button>
-<!-- מודאל חיפוש (נטען פעם אחת) -->
-<div class="search-modal" tabindex="-1">
-  <div class="search-modal-content">
-    <button class="close-search-modal" aria-label="סגור חיפוש">✖</button>
-    <input type="text" class="search-input" placeholder="חפש נושא, מונח או כותרת..." dir="rtl" autofocus />
-    <div class="search-results"></div>
-  </div>
-</div>
+
 <script>
 (function(){
   // אל תוסיף שוב אם כבר קיים
