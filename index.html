@@ -236,7 +236,6 @@
 
 <script>
 (function(){
-  // אל תוסיף שוב אם כבר קיים
   if (window._searchModalInit) return; window._searchModalInit = true;
   const searchBtn = document.getElementById('floating-search-btn');
   const searchModal = document.querySelector('.search-modal');
@@ -248,14 +247,12 @@
 
   function openSearchModal() {
     searchModal.classList.add('open');
-    searchModal.style.display = 'flex';
     input.value = '';
     results.innerHTML = '';
     setTimeout(()=>input.focus(), 100);
   }
   function closeSearchModal() {
     searchModal.classList.remove('open');
-    searchModal.style.display = 'none';
   }
   searchBtn.onclick = function(e) {
     if (e.detail === 2) return;
