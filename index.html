@@ -221,5 +221,73 @@
             </div>
         </div>
     </div>
+    <!-- כפתור חיפוש צף -->
+<button id="floating-search-btn" class="floating-search-btn" aria-label="חיפוש באתר" title="חיפוש באתר" style="display:flex;">
+  🔍
+</button>
+<!-- מודאל חיפוש (נטען פעם אחת) -->
+<div class="search-modal" tabindex="-1">
+  <div class="search-modal-content">
+    <button class="close-search-modal" aria-label="סגור חיפוש">✖</button>
+    <input type="text" class="search-input" placeholder="חפש נושא, מונח או כותרת..." dir="rtl" autofocus />
+    <div class="search-results"></div>
+  </div>
+</div>
+<script>
+(function(){
+  // אל תוסיף שוב אם כבר קיים
+  if (window._searchModalInit) return; window._searchModalInit = true;
+  const searchBtn = document.getElementById('floating-search-btn');
+  const searchModal = document.querySelector('.search-modal');
+  const closeBtn = document.querySelector('.close-search-modal');
+  const input = document.querySelector('.search-input');
+  const results = document.querySelector('.search-results');
+  let searchData = [];
+  fetch('search-index.json').then(r => r.json()).then(data => { searchData = data; });
+
+  function openSearchModal() {
+    searchModal.classList.add('open');
+    searchModal.style.display = 'flex';
+    input.value = '';
+    results.innerHTML = '';
+    setTimeout(()=>input.focus(), 100);
+  }
+  function closeSearchModal() {
+    searchModal.classList.remove('open');
+    searchModal.style.display = 'none';
+  }
+  searchBtn.onclick = function(e) {
+    if (e.detail === 2) return;
+    openSearchModal();
+  };
+  searchBtn.ondblclick = function() { closeSearchModal(); };
+  closeBtn.onclick = closeSearchModal;
+  searchModal.onclick = e => { if (e.target === searchModal) closeSearchModal(); };
+  input.oninput = function() {
+    const q = this.value.trim();
+    if (!q) { results.innerHTML = ''; return; }
+    const ql = q.toLowerCase();
+    const matches = searchData.filter(item =>
+      (item.title && item.title.toLowerCase().includes(ql)) ||
+      (item.summary && item.summary.toLowerCase().includes(ql))
+    ).slice(0, 20);
+    results.innerHTML = matches.length ? matches.map(item =>
+      `<a href="${item.url}" class="search-result-item" onclick="document.querySelector('.search-modal').classList.remove('open')">
+        <div class="result-title">${item.title}</div>
+        <div class="result-summary">${item.summary}</div>
+      </a>`
+    ).join('') : '<div class="no-results">לא נמצאו תוצאות.</div>';
+  };
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      openSearchModal();
+    }
+    if (e.key === "Escape" && searchModal.classList.contains('open')) {
+      closeSearchModal();
+    }
+  });
+})();
+</script>
 </body>
 </html>
