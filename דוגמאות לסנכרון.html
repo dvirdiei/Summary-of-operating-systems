@@ -1693,80 +1693,9 @@ monitor fair_rw_monitor {
                             </div>
                         </div>
 
-                        <div class="expandable-section">
-                            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">פתרון #2: מספרי מושבים זוגיים/אי-זוגיים <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
-                            <div class="collapsible-content">
-                                <p>
-                                    פתרון זה מפר את תנאי ההחזק וחכה על ידי דרישה שפילוסוף ירים את שני המזלגות יחד או לא ירים כלל.
-                                </p>
-
-                                <div class="code-example">
-                                    <pre><code>/* קוד הפילוסוף i (פתרון זוגי/אי-זוגי) */
-            do {
-                think();  // חושב
-                
-                if (i % 2 == 0) {  // פילוסופים זוגיים
-                    wait(fork[i]);
-                    wait(fork[(i+1) % 5]);
-                } else {  // פילוסופים אי-זוגיים
-                    wait(fork[(i+1) % 5]);
-                    wait(fork[i]);
-                }
-                
-                eat();  // אוכל
-                
-                signal(fork[i]);
-                signal(fork[(i+1) % 5]);
-            } while (true);</code></pre>
-                                </div>
-
-                                <div class="image-container">
-                                    <div class="concept-image">
-                                        <svg width="400" height="300" viewBox="0 0 400 300">
-                                            <!-- Background -->
-                                            <rect x="0" y="0" width="400" height="300" fill="#f8f9fa" rx="15"/>
-                                            
-                                            <!-- Table -->
-                                            <circle cx="200" cy="150" r="80" fill="#8B4513" stroke="#664229" stroke-width="5"/>
-                                            
-                                            <!-- Philosophers -->
-                                            <circle cx="200" cy="50" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
-                                            <text x="200" y="55" font-size="14" text-anchor="middle" fill="white">P0</text>
-                                            <text x="200" y="20" font-size="12" text-anchor="middle" fill="white">זוגי</text>
-                                            
-                                            <circle cx="284" cy="98" r="30" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
-                                            <text x="284" y="103" font-size="14" text-anchor="middle" fill="white">P1</text>
-                                            <text x="310" y="80" font-size="12" text-anchor="middle" fill="white">אי-זוגי</text>
-                                            
-                                            <circle cx="254" cy="214" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
-                                            <text x="254" y="219" font-size="14" text-anchor="middle" fill="white">P2</text>
-                                            <text x="280" y="238" font-size="12" text-anchor="middle" fill="white">זוגי</text>
-                                            
-                                            <circle cx="146" cy="214" r="30" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
-                                            <text x="146" y="219" font-size="14" text-anchor="middle" fill="white">P3</text>
-                                            <text x="120" y="238" font-size="12" text-anchor="middle" fill="white">אי-זוגי</text>
-                                            
-                                            <circle cx="116" cy="98" r="30" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
-                                            <text x="116" y="103" font-size="14" text-anchor="middle" fill="white">P4</text>
-                                            <text x="90" y="80" font-size="12" text-anchor="middle" fill="white">זוגי</text>
-                                        </svg>
-                                        <figcaption>פתרון זוגי/אי-זוגי: סדר הרמת המזלגות תלוי במספר הפילוסוף</figcaption>
-                                    </div>
-                                </div>
-
-                                <div class="info-box">
-                                    <h3>יתרונות וחסרונות:</h3>
-                                    <ul>
-                                        <li><strong>יתרון:</strong> פתרון פשוט שמונע קיפאון.</li>
-                                        <li><strong>יתרון:</strong> מבטיח גישה הוגנת יותר מהפתרון הא-סימטרי.</li>
-                                        <li><strong>חיסרון:</strong> עדיין קיים פוטנציאל לרעב במקרים מסוימים.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
 
                         <div class="expandable-section">
-                            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">פתרון #3: משאב מוניטור <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">פתרון #2:  מוניטור <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
                             <div class="collapsible-content">
                                 <p>
                                     הפתרון הזה משתמש במוניטור לניהול גישה לשולחן האוכל, ומבטיח שלא ייתכן קיפאון.
@@ -1864,7 +1793,7 @@ monitor fair_rw_monitor {
                         </div>
 
                         <div class="expandable-section">
-                            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">פתרון #4: מלצר <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">פתרון #3: מלצר <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
                             <div class="collapsible-content">
                                 <p>
                                     פתרון המלצר משתמש בשחקן נוסף (מלצר) שאחראי לחלוקת המזלגות. פילוסוף יכול לאכול רק כשהמלצר מעניק לו אישור.
