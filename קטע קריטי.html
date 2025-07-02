@@ -34,6 +34,7 @@
                 <li><a href="#software-solution-1">פתרון תוכנה 1 - משתנה תור</a></li>
                 <li><a href="#software-solution-2">פתרון תוכנה 2 - משתני דגל</a></li>
                 <li><a href="#software-solution-3">פתרון תוכנה 3 - שילוב</a></li>
+                <li><a href="#peterson-solution">פתרון פטרסון (Peterson)</a></li>
             </ul>
             </li>
             
@@ -86,7 +87,7 @@
             </div>
 
             <div class="image-container">
-                <div class="concept-image">
+                
                     <svg width="100%" height="250" viewBox="0 0 700 250" xmlns="http://www.w3.org/2000/svg">
                         <!-- Process 1 -->
                         <rect x="50" y="30" width="120" height="180" fill="#e74c3c" rx="10" opacity="0.8"/>
@@ -126,7 +127,7 @@
                         <text x="350" y="220" font-size="14" text-anchor="middle" fill="#666">גישה בו-זמנית למשאב</text>
                     </svg>
                     <div class="image-caption">דוגמה לקונפליקט בין תהליכים הניגשים למשאב משותף</div>
-                </div>
+                
             </div>
         </div>
 
@@ -227,7 +228,7 @@
             <p>בעיית קטע קריטי היא הבעיה המרכזית בתכנות מערכות רב-תהליכיות. הבעיה מתמקדת בצורך לוודא שכאשר תהליך אחד מבצע קטע קריטי, אף תהליך אחר לא יכול לבצע קטע קריטי שלו באותו זמן.</p>
 
             <div class="image-container">
-                <div class="concept-image">
+                
                     <svg width="100%" height="300" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
                         <!-- Process structure diagram -->
                         <rect x="50" y="50" width="600" height="200" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="15"/>
@@ -284,7 +285,7 @@
                         <text x="350" y="210" font-size="14" text-anchor="middle" fill="#666" font-style="italic">לולאה אינסופית</text>
                     </svg>
                     <div class="image-caption">מבנה תהליך כללי עם קטע קריטי - ארבעת החלקים העיקריים</div>
-                </div>
+                
             </div>
 
             <div class="feature-box">
@@ -405,7 +406,7 @@
             <p>הפתרון הפשוט ביותר לבעיית קטע קריטי במערכת יחיד-מעבד הוא למנוע פסיקות (interrupts) בזמן ביצוע קטע קריטי. כיוון שלא יתרחש context switch, התהליך יוכל להשלים את הקטע קריטי שלו ללא הפרעה.</p>
 
             <div class="image-container">
-                <div class="concept-image">
+                
                     <svg width="100%" height="250" viewBox="0 0 700 250" xmlns="http://www.w3.org/2000/svg">
                         <!-- Timeline -->
                         <line x1="50" y1="200" x2="650" y2="200" stroke="#333" stroke-width="3"/>
@@ -444,7 +445,7 @@
                         <text x="320" y="220" font-size="12" text-anchor="middle" fill="#666">פסיקות חסומות</text>
                     </svg>
                     <div class="image-caption">פתרון פסיקות - חסימת פסיקות בזמן ביצוע קטע קריטי</div>
-                </div>
+                
             </div>
 
             <div class="info-box">
@@ -502,7 +503,7 @@
             <p>הפתרון הראשון משתמש במשתנה משותף "turn" שמציין איזה תהליך רשאי להיכנס לקטע קריטי. זהו הפתרון הפשוט ביותר אך הוא סובל מבעיות משמעותיות.</p>
 
             <div class="image-container">
-                <div class="concept-image">
+                
                     <svg width="100%" height="300" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
                         <!-- Process 0 code -->
                         <rect x="50" y="50" width="280" height="200" fill="#e8f4fd" stroke="#3498db" stroke-width="2" rx="10"/>
@@ -545,7 +546,7 @@
                         <text x="350" y="287" font-size="14" text-anchor="middle" fill="white">int turn = 0;</text>
                     </svg>
                     <div class="image-caption">פתרון 1 - משתמש במשתנה turn לתיאום בין שני תהליכים</div>
-                </div>
+                
             </div>
 
             <div class="info-box">
@@ -622,7 +623,7 @@
             <p>הפתרון השני משתמש במערך של דגלים שמציין אילו תהליכים מעוניינים להיכנס לקטע קריטי. הפתרון מפרק את הבעיה לשני שלבים: הצהרת כוונות ובדיקת היתכנות.</p>
 
             <div class="image-container">
-            <div class="concept-image">
+            
                 <svg width="100%" height="300" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
                 <!-- Process 0 code -->
                 <rect x="50" y="50" width="280" height="200" fill="#e8f4fd" stroke="#3498db" stroke-width="2" rx="10"/>
@@ -666,7 +667,7 @@
                 </svg>
                 <div class="image-caption">פתרון 2 - משתמש במערך flag להצהרה על כוונות</div>
             </div>
-            </div>
+            
 
             <div class="info-box">
             <h3>אופן הפעולה:</h3>   
@@ -741,145 +742,404 @@
 
         <!-- פתרון תוכנה 3 -->
         <div class="content-section" id="software-solution-3">
-            <h2>💻 פתרון תוכנה 3 - שילוב דגלים ותור</h2>
-            <p>הפתרון השלישי מנסה לשלב את היתרונות של שני הפתרונות הקודמים. הוא משתמש הן במשתני דגל והן במשתנה תור, אך עדיין אינו מספק פתרון מלא.</p>
+            <h2>💻 פתרון תוכנה 3 - משתני דגלים </h2>
+            <p>במקום להצהיר על כוונות מראש ואז לבדוק (שיכול ליצור קיפאון), הפתרון בודק קודם ורק אז מצהיר. זה אמור למנוע את הקיפאון שנוצר בפתרון הקודם.</p>
 
             <div class="image-container">
-            <div class="concept-image">
                 <svg width="100%" height="350" viewBox="0 0 700 350" xmlns="http://www.w3.org/2000/svg">
-                <!-- Process 0 code -->
-                <rect x="50" y="50" width="280" height="250" fill="#e8f4fd" stroke="#3498db" stroke-width="2" rx="10"/>
-                <text x="190" y="35" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">תהליך P0</text>
-                
-                <rect x="70" y="70" width="240" height="30" fill="#f39c12" rx="5"/>
-                <text x="190" y="90" font-size="14" text-anchor="middle" fill="white">flag[0] = true;</text>
-                
-                <rect x="70" y="110" width="240" height="30" fill="#f39c12" rx="5"/>
-                <text x="190" y="130" font-size="14" text-anchor="middle" fill="white">turn = 1;</text>
-                
-                <rect x="70" y="150" width="240" height="30" fill="#f39c12" rx="5"/>
-                <text x="190" y="170" font-size="14" text-anchor="middle" fill="white">while (flag[1] && turn == 1);</text>
-                <text x="320" y="170" font-size="12" fill="#666">// קטע כניסה</text>
-                
-                <rect x="70" y="190" width="240" height="30" fill="#e74c3c" rx="5"/>
-                <text x="190" y="210" font-size="14" text-anchor="middle" fill="white">CRITICAL SECTION</text>
-                
-                <rect x="70" y="230" width="240" height="30" fill="#27ae60" rx="5"/>
-                <text x="190" y="250" font-size="14" text-anchor="middle" fill="white">flag[0] = false;</text>
-                <text x="320" y="250" font-size="12" fill="#666">// קטע יציאה</text>
-                
-                <!-- Process 1 code -->
-                <rect x="370" y="50" width="280" height="250" fill="#fdf2e8" stroke="#e67e22" stroke-width="2" rx="10"/>
-                <text x="510" y="35" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">תהליך P1</text>
-                
-                <rect x="390" y="70" width="240" height="30" fill="#f39c12" rx="5"/>
-                <text x="510" y="90" font-size="14" text-anchor="middle" fill="white">flag[1] = true;</text>
-                
-                <rect x="390" y="110" width="240" height="30" fill="#f39c12" rx="5"/>
-                <text x="510" y="130" font-size="14" text-anchor="middle" fill="white">turn = 0;</text>
-                
-                <rect x="390" y="150" width="240" height="30" fill="#f39c12" rx="5"/>
-                <text x="510" y="170" font-size="14" text-anchor="middle" fill="white">while (flag[0] && turn == 0);</text>
-                <text x="640" y="170" font-size="12" fill="#666">// קטע כניסה</text>
-                
-                <rect x="390" y="190" width="240" height="30" fill="#e74c3c" rx="5"/>
-                <text x="510" y="210" font-size="14" text-anchor="middle" fill="white">CRITICAL SECTION</text>
-                
-                <rect x="390" y="230" width="240" height="30" fill="#27ae60" rx="5"/>
-                <text x="510" y="250" font-size="14" text-anchor="middle" fill="white">flag[1] = false;</text>
-                <text x="640" y="250" font-size="12" fill="#666">// קטע יציאה</text>
-                
-                <!-- Shared variables -->
-                <rect x="200" y="320" width="140" height="25" fill="#2c3e50" rx="5"/>
-                <text x="270" y="337" font-size="14" text-anchor="middle" fill="white">boolean flag[2] = {false, false};</text>
-                
-                <rect x="360" y="320" width="100" height="25" fill="#2c3e50" rx="5"/>
-                <text x="410" y="337" font-size="14" text-anchor="middle" fill="white">int turn = 0;</text>
+                    <!-- Process 0 code -->
+                    <rect x="50" y="50" width="280" height="250" fill="#e8f4fd" stroke="#3498db" stroke-width="2" rx="10"/>
+                    <text x="190" y="35" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">תהליך P0</text>
+                    
+                    <rect x="70" y="70" width="240" height="30" fill="#f39c12" rx="5"/>
+                    <text x="190" y="90" font-size="14" text-anchor="middle" fill="white">while (flag[1]);</text>
+                    <text x="320" y="90" font-size="12" fill="#666">// בדיקה ראשונה</text>
+                    
+                    <rect x="70" y="110" width="240" height="30" fill="#f39c12" rx="5"/>
+                    <text x="190" y="130" font-size="14" text-anchor="middle" fill="white">flag[0] = true;</text>
+                    <text x="320" y="130" font-size="12" fill="#666">// הצהרת כוונות</text>
+                    
+                    <rect x="70" y="150" width="240" height="30" fill="#e74c3c" rx="5"/>
+                    <text x="190" y="170" font-size="14" text-anchor="middle" fill="white">CRITICAL SECTION</text>
+                    
+                    <rect x="70" y="190" width="240" height="30" fill="#27ae60" rx="5"/>
+                    <text x="190" y="210" font-size="14" text-anchor="middle" fill="white">flag[0] = false;</text>
+                    <text x="320" y="210" font-size="12" fill="#666">// קטע יציאה</text>
+                    
+                    <rect x="70" y="230" width="240" height="30" fill="#9b59b6" rx="5"/>
+                    <text x="190" y="250" font-size="14" text-anchor="middle" fill="white">REMAINDER SECTION</text>
+                    
+                    <!-- Process 1 code -->
+                    <rect x="370" y="50" width="280" height="250" fill="#fdf2e8" stroke="#e67e22" stroke-width="2" rx="10"/>
+                    <text x="510" y="35" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">תהליך P1</text>
+                    
+                    <rect x="390" y="70" width="240" height="30" fill="#f39c12" rx="5"/>
+                    <text x="510" y="90" font-size="14" text-anchor="middle" fill="white">while (flag[0]);</text>
+                    <text x="640" y="90" font-size="12" fill="#666">// בדיקה ראשונה</text>
+                    
+                    <rect x="390" y="110" width="240" height="30" fill="#f39c12" rx="5"/>
+                    <text x="510" y="130" font-size="14" text-anchor="middle" fill="white">flag[1] = true;</text>
+                    <text x="640" y="130" font-size="12" fill="#666">// הצהרת כוונות</text>
+                    
+                    <rect x="390" y="150" width="240" height="30" fill="#e74c3c" rx="5"/>
+                    <text x="510" y="170" font-size="14" text-anchor="middle" fill="white">CRITICAL SECTION</text>
+                    
+                    <rect x="390" y="190" width="240" height="30" fill="#27ae60" rx="5"/>
+                    <text x="510" y="210" font-size="14" text-anchor="middle" fill="white">flag[1] = false;</text>
+                    <text x="640" y="210" font-size="12" fill="#666">// קטע יציאה</text>
+                    
+                    <rect x="390" y="230" width="240" height="30" fill="#9b59b6" rx="5"/>
+                    <text x="510" y="250" font-size="14" text-anchor="middle" fill="white">REMAINDER SECTION</text>
+                    
+                    <!-- Shared variable -->
+                    <rect x="250" y="320" width="200" height="25" fill="#2c3e50" rx="5"/>
+                    <text x="350" y="337" font-size="14" text-anchor="middle" fill="white">boolean flag[2] = {false, false};</text>
                 </svg>
-                <div class="image-caption">פתרון 3 - שילוב של דגלים ומשתנה תור</div>
+               
+
+          
+            <div class="expandable-section">
+                <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">
+                    קוד פסאודו של פתרון 3 <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button>
+                </h3>
+                <div class="collapsible-content">
+                    <pre class="code-block" dir="ltr" style="font-family: 'Fira Code', monospace;">
+            Shared Variables (משתנים משותפים):
+           </div> flag: array {i, j} of boolean;
+            flag[i] = flag[j] = false; // מסמן מי רוצה להיכנס
+            turn: {i, j};
+            initially turn = i;
+
+            Process Pi
+                while (true) {
+                    flag[i] = true;
+                    while (flag[j]) {
+                        if (turn == j) {
+                            flag[i] = false;
+                            while (turn == j); // do no-op
+                            flag[i] = true;
+                        }
+                    }
+                    /* critical section */
+                    turn = j;
+                    flag[i] = false;
+                    /* remainder section */
+                }
+                    </pre>
+                </div>
             </div>
+
+
+            <div class="expandable-section">
+                <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">הערכת פתרון 3 <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                <div class="collapsible-content">
+                    <div class="concept-grid">
+                        <div class="concept-row">
+                            <div class="concept-item" style="background-color: #477560;">
+                                <h3>❌ הדדיות גומלין</h3>
+                                <p><strong>לא מקיים:</strong> אין, נניח i רוצה להיכנס, הוא בודק, מוצא שj לא רוצה ונכנס ובדיוק נגמר לו זמן המעבד
+ועכשיו תור j, j עושה את אותה הבדיקה ורואה שi לא רוצה להיכנס, ועכשיו יש לנו שני תהליכים בקטע
+קוד קריטי..</p>
+                            </div>
+                            <div class="concept-item" style="background-color: #241113;">
+                                <h3>❌ התקדמות</h3>
+                                <p><strong>לא מקיים:</strong>אין, סביר להניח שכן תהיה התקדמות בסוף אבל היא לא תלויה בזמן סופי אלא במזל של
+                                    בדיקת הwhile.</p>
+                            </div>
+                        </div>
+                        <div class="concept-row">
+                            <div class="concept-item" style="background-color: #241113;">
+                                <h3>❌ המתנה חסומה</h3>
+                                <p><strong>לא מקיים:</strong>אותה סיבה כמו בהתקדמות</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="warning-box">
+                        <h3>דוגמה לבעיה - הפרת המתנה חסומה:</h3>
+                        <p>נניח ש-P0 רוצה להיכנס ו-turn=1. P0 יוריד את flag[0], ימתין ל-turn=0, וירים שוב את flag[0]. אבל אם P1 ימשיך לרוץ במקביל ויחזור על התהליך, P0 עלול להיכנס למצב של המתנה ממושכת.</p>
+                    </div>
+
+                    <div class="feature-box">
+                        <h3>שיפורים לעומת פתרונים קודמים:</h3>
+                        <div class="feature-list">
+                            <li><strong>שבירת קיפאון:</strong> משתנה turn מונע קיפאון שהיה בפתרון 2</li>
+                            <li><strong>גמישות:</strong> לא מחייב חילופים קבועים כמו בפתרון 1</li>
+                            <li><strong>מנגנון ויתור:</strong> תהליך יכול לוותר זמנית על הבקשה שלו</li>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h3>למה לא מקיים המתנה חסומה:</h3>
+                        <p>הבעיה העיקרית היא שהתהליך הממתין עלול להיכנס למצב של "התעוררות-שינה" חוזרת, שבה הוא מרים ומוריד את הדגל שלו שוב ושוב בגלל התהליך השני שרץ במקביל. זה יכול לגרום להמתנה ממושכת שאינה חסומה.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>    
+
+        <!-- פתרון פטרסון -->
+        <div class="content-section" id="peterson-solution">
+            <h2>🔄 פתרון פטרסון (Peterson's Solution)</h2>
+            <p>פתרון פטרסון הוא אלגוריתם אלגנטי לפתרון בעיית הקטע הקריטי עבור שני תהליכים. הפתרון משלב רעיונות משני הפתרונות הקודמים (דגלים ותור) באופן שמבטיח עמידה בכל שלושת הדרישות.</p>
+
+            <div class="image-container">
+                
+                    <svg width="100%" height="350" viewBox="0 0 700 350" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Process 0 code -->
+                        <rect x="50" y="50" width="280" height="250" fill="#e8f4fd" stroke="#3498db" stroke-width="2" rx="10"/>
+                        <text x="190" y="35" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">תהליך P0</text>
+                        
+                        <rect x="70" y="70" width="240" height="30" fill="#f39c12" rx="5"/>
+                        <text x="190" y="90" font-size="14" text-anchor="middle" fill="white">flag[0] = true;</text>
+                        
+                        <rect x="70" y="110" width="240" height="30" fill="#f39c12" rx="5"/>
+                        <text x="190" y="130" font-size="14" text-anchor="middle" fill="white">turn = 1;</text>
+                        
+                        <rect x="70" y="150" width="240" height="30" fill="#f39c12" rx="5"/>
+                        <text x="190" y="170" font-size="14" text-anchor="middle" fill="white">while (flag[1] && turn == 1);</text>
+                        <text x="400" y="170" font-size="12" fill="#666">// קטע כניסה</text>
+                        
+                        <rect x="70" y="190" width="240" height="30" fill="#e74c3c" rx="5"/>
+                        <text x="190" y="210" font-size="14" text-anchor="middle" fill="white">/* קטע קריטי */</text>
+                        
+                        <rect x="70" y="230" width="240" height="30" fill="#27ae60" rx="5"/>
+                        <text x="190" y="250" font-size="14" text-anchor="middle" fill="white">flag[0] = false;</text>
+                        <text x="400" y="250" font-size="12" fill="#666">// קטע יציאה</text>
+                        
+                        <!-- Process 1 code -->
+                        <rect x="370" y="50" width="280" height="250" fill="#fdf2e8" stroke="#e67e22" stroke-width="2" rx="10"/>
+                        <text x="510" y="35" font-size="16" text-anchor="middle" fill="#2c3e50" font-weight="bold">תהליך P1</text>
+                        
+                        <rect x="390" y="70" width="240" height="30" fill="#f39c12" rx="5"/>
+                        <text x="510" y="90" font-size="14" text-anchor="middle" fill="white">flag[1] = true;</text>
+                        
+                        <rect x="390" y="110" width="240" height="30" fill="#f39c12" rx="5"/>
+                        <text x="510" y="130" font-size="14" text-anchor="middle" fill="white">turn = 0;</text>
+                        
+                        <rect x="390" y="150" width="240" height="30" fill="#f39c12" rx="5"/>
+                        <text x="510" y="170" font-size="14" text-anchor="middle" fill="white">while (flag[0] && turn == 0);</text>
+                        <text x="700" y="170" font-size="12" fill="#666">// קטע כניסה</text>
+                        
+                        <rect x="390" y="190" width="240" height="30" fill="#e74c3c" rx="5"/>
+                        <text x="510" y="210" font-size="14" text-anchor="middle" fill="white">/* קטע קריטי */</text>
+                        
+                        <rect x="390" y="230" width="240" height="30" fill="#27ae60" rx="5"/>
+                        <text x="510" y="250" font-size="14" text-anchor="middle" fill="white">flag[1] = false;</text>
+                        <text x="700" y="250" font-size="12" fill="#666">// קטע יציאה</text>
+                        
+                        <!-- Shared variables -->
+                        <rect x="200" y="320" width="140" height="25" fill="#2c3e50" rx="5"/>
+                        <text x="270" y="337" font-size="14" text-anchor="middle" fill="white">boolean flag[2] = {false, false};</text>
+                        
+                        <rect x="360" y="320" width="100" height="25" fill="#2c3e50" rx="5"/>
+                        <text x="410" y="337" font-size="14" text-anchor="middle" fill="white">int turn = 0;</text>
+                    </svg>
+                    <div class="image-caption">פתרון פטרסון - שילוב אופטימלי של דגלים ומשתנה תור</div>
+                
             </div>
 
             <div class="info-box">
-            <h3>אופן הפעולה:</h3>
-            <ul>
-                <li><strong>משתנים משותפים:</strong> מערך flag ומשתנה turn</li>
-                <li><strong>הצהרת כוונות:</strong> תהליך Pi מציב flag[i] = true</li>
-                <li><strong>מתן זכות קדימה:</strong> תהליך Pi מציב turn = j (התהליך האחר)</li>
-                <li><strong>בדיקת תנאי כניסה:</strong> תהליך נכנס רק אם התהליך השני לא רוצה להיכנס או אם התור שלו</li>
-                <li><strong>יציאה מקטע קריטי:</strong> תהליך משחרר את הדגל שלו (flag[i] = false)</li>
-            </ul>
-            </div>
-            <div class="expandable-section">
-            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">
-                קוד פסאודו של פתרון 3 <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button>
-            </h3>
-            <div class="collapsible-content">
-                <pre class="code-block" dir="ltr" style="font-family: 'Fira Code', monospace;">
-    Shared Variables (משתנים משותפים):
-    flag: array {i, j} of boolean;
-    flag[i] = flag[j] = false; // מסמן מי רוצה להיכנס
-    turn: {i, j}
-    initially turn = i;
-
-    flag[i] = true → Pi ready to enter its critical section
-
-    Process Pi
-        while (true) {
-        flag[i] = true;
-        turn = j;
-        while (flag[j] && turn == j); // do no-op (אל תעשה כלום)
-        critical section (קטע קריטי)
-        flag[i] = false;
-        remainder section (קטע לא קריטי, לא מעניין אותנו)
-        }
-                </pre>
-            </div>
-            </div>
-
-            <div class="expandable-section">
-            <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">הערכת פתרון 3 <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
-            <div class="collapsible-content">
-                <div class="concept-grid">
-                <div class="concept-row">
-                    <div class="concept-item" style="background-color: #241113;">
-                    <h3>⚠️ למה כל מצב יכול לקרות?</h3>
-                    <ul>
-                        <li><strong>אין הדדיות גומלין:</strong> אם שני התהליכים מציבים <code>flag[i]=true</code> ו-<code>turn</code> כמעט בו-זמנית, ייתכן ששניהם יראו שהתנאי ב-while לא מתקיים וייכנסו יחד לקטע קריטי.</li>
-                        <li><strong>אין התקדמות:</strong> אם תהליך אחד כל הזמן משנה את <code>turn</code> לפני שהשני מספיק להיכנס, השני עלול להיתקע בהמתנה.</li>
-                        <li><strong>אין המתנה חסומה:</strong> תהליך יכול להמשיך להמתין אם התהליך השני ממשיך להיכנס שוב ושוב לקטע קריטי, כי אין הגבלה על מספר הפעמים שזה קורה.</li>
-                    </ul>
-                    </div>
-                </div>
-                <div class="concept-row">
-                    <div class="concept-item" style="background-color: #241113;">
-                    <h3>❌ הדדיות גומלין</h3>
-                    <p><strong>לא מקיים:</strong> ייתכן מצב ששני תהליכים יהיו בקטע קריטי יחד.</p>
-                    </div>
-                    <div class="concept-item" style="background-color: #241113;">
-                    <h3>❌ התקדמות</h3>
-                    <p><strong>לא מקיים:</strong> אין הבטחה שתהליך יוכל להיכנס לקטע קריטי כאשר הוא רוצה.</p>
-                    </div>
-                </div>
-                <div class="concept-row">
-                    <div class="concept-item" style="background-color: #241113;">
-                    <h3>❌ המתנה חסומה</h3>
-                    <p><strong>לא מקיים:</strong> אין גבול למספר הפעמים שתהליך יחכה.</p>
-                    </div>
-                </div>
-                </div>
-
-                <div class="warning-box">
-                <h3>בעיות עיקריות:</h3>
+                <h3>עקרונות הפתרון:</h3>
                 <ul>
-                    <li>אין הדדיות גומלין – ייתכן ששני תהליכים בקטע קריטי יחד.</li>
-                    <li>אין התקדמות – תהליך עלול להיתקע בהמתנה.</li>
-                    <li>אין המתנה חסומה – תהליך עלול להמתין ללא גבול.</li>
+                    <li><strong>הצהרת כוונות:</strong> כל תהליך מציב flag[i] = true כדי להצהיר על רצונו להיכנס</li>
+                    <li><strong>ויתור על התור:</strong> כל תהליך מציב את turn לטובת התהליך האחר</li>
+                    <li><strong>תנאי כניסה:</strong> תהליך נכנס רק אם התהליך השני לא רוצה להיכנס או אם התור שלו</li>
+                    <li><strong>שחרור:</strong> תהליך משחרר את הדגל שלו ביציאה מהקטע הקריטי</li>
                 </ul>
+            </div>
+
+            <div class="expandable-section">
+                <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">
+                    קוד פסאודו של פתרון פטרסון <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button>
+                </h3>
+                <div class="collapsible-content">
+                    <pre class="code-block" dir="ltr" style="font-family: 'Fira Code', monospace;">
+        while (true){
+            flag[i] = true;
+            turn = j;
+            while (flag[j] && turn == j);
+            /* critical section */ 
+            flag[i] = false;
+            /* remainder section */ 
+        }
+                    </pre>
                 </div>
             </div>
+
+            <div class="image-container">
+                
+                    <svg width="100%" height="350" viewBox="0 0 700 350" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Background -->
+                        <rect x="50" y="20" width="600" height="310" fill="#f8f9fa" stroke="#3498db" stroke-width="2" rx="10"/>
+                        <text x="350" y="50" font-size="20" text-anchor="middle" fill="#2c3e50" font-weight="bold">מצבי ריצה בפתרון פטרסון</text>
+
+                        <!-- Timeline -->
+                        <line x1="120" y1="280" x2="580" y2="280" stroke="#333" stroke-width="2"/>
+                        <text x="600" y="285" font-size="14" fill="#666">זמן</text>
+
+                        <!-- State 1: Both want to enter -->
+                        <rect x="150" y="70" width="400" height="80" fill="#f5f5f5" rx="8" stroke="#ddd" stroke-width="2"/>
+                        <text x="500" y="95" font-size="14" fill="#333">מצב 1: שני תהליכים רוצים להיכנס</text>
+                        <text x="500" y="120" font-size="12" fill="#666">P0: flag[0]=true, turn=1</text>
+                        <text x="500" y="140" font-size="12" fill="#666">P1: flag[1]=true, turn=0</text>
+
+                        <!-- State 2: One process enters -->
+                        <rect x="150" y="170" width="400" height="80" fill="#e8f4fd" rx="8" stroke="#3498db" stroke-width="2"/>
+                        <text x="500" y="195" font-size="14" fill="#333">מצב 2: רק תהליך אחד נכנס</text>
+                        <text x="500" y="220" font-size="12" fill="#666">turn=0: לכן P0 נכנס, P1 ממתין</text>
+                        <text x="500" y="240" font-size="12" fill="#666">P0: while(flag[1] && turn==1) ← תנאי לא מתקיים!</text>
+
+                        <!-- State markers -->
+                        <circle cx="180" cy="280" r="5" fill="#3498db"/>
+                        <text x="180" y="295" font-size="12" text-anchor="middle" fill="#333">תחילת ריצה</text>
+                        <circle cx="350" cy="280" r="5" fill="#e74c3c"/>
+                        <text x="350" y="295" font-size="12" text-anchor="middle" fill="#333">מצב תחרות</text>
+                        <circle cx="520" cy="280" r="5" fill="#27ae60"/>
+                        <text x="520" y="295" font-size="12" text-anchor="middle" fill="#333">הכרעה</text>
+
+                       
+                    </svg>
+                    <div class="image-caption">דוגמה למהלך פתרון פטרסון במצב של תחרות בין שני תהליכים</div>
+                
+            </div>
+
+            <div class="expandable-section">
+                <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">הערכת פתרון פטרסון <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button></h3>
+                <div class="collapsible-content">
+                    <div class="concept-grid">
+                        <div class="concept-row">
+                            <div class="concept-item" style="background-color: #477560;">
+                                <h3>✅ הדדיות גומלין</h3>
+                                <p><strong>מקיים:</strong> לא ייתכן ששני תהליכים יהיו בקטע קריטי יחד, כי משתנה turn מבטיח שרק אחד ייכנס בכל רגע.</p>
+                            </div>
+                            <div class="concept-item" style="background-color: #477560;">
+                                <h3>✅ התקדמות</h3>
+                                <p><strong>מקיים:</strong> אם תהליך אחד לא רוצה להיכנס (flag[j]=false), התהליך השני יכול להיכנס. אם שניהם רוצים להיכנס, turn יכריע מי ייכנס.</p>
+                            </div>
+                        </div>
+                        <div class="concept-row">
+                            <div class="concept-item" style="background-color: #477560;">
+                                <h3>✅ המתנה חסומה</h3>
+                                <p><strong>מקיים:</strong> תהליך יכול להיות מנוע מלהיכנס לקטע הקריטי שלו לכל היותר פעם אחת לאחר שהוא ביקש להיכנס.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-box">
+                        <h3>תכונות ייחודיות של פתרון פטרסון:</h3>
+                        <div class="feature-list">
+                            <li><strong>שילוב מנצח:</strong> הפתרון משלב את היתרונות של דגלים ומשתנה תור</li>
+                            <li><strong>פשטות:</strong> מימוש פשוט יחסית ליישום עם תכונות חזקות</li>
+                            <li><strong>שבירת שוויון:</strong> מנגנון מובנה לשבירת מצב שוויון כאשר שני תהליכים רוצים להיכנס יחד</li>
+                            <li><strong>הוגנות:</strong> מבטיח שתהליך לא יחכה לנצח</li>
+                        </div>
+                    </div>
+
+                    <div class="warning-box">
+                        <h3>מגבלות הפתרון:</h3>
+                        <ul>
+                            <li><strong>רק שני תהליכים:</strong> הפתרון מוגבל לשני תהליכים בלבד</li>
+                            <li><strong>המתנה פעילה:</strong> התהליך הממתין צורך משאבי מעבד</li>
+                            <li><strong>רגישות לארכיטקטורה:</strong> עלול לדרוש מחסומי זיכרון במעבדים מודרניים</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h3>הוכחת נכונות:</h3>
+                        <p><strong>מניעה הדדית:</strong> נניח ששני תהליכים Pi ו-Pj נמצאים בקטע הקריטי בו-זמנית. זה אומר ש:</p>
+                        <ul>
+                            <li>התנאי while(flag[j] && turn == j) לא מתקיים עבור Pi</li>
+                            <li>התנאי while(flag[i] && turn == i) לא מתקיים עבור Pj</li>
+                        </ul>
+                        <p>אבל זה אומר שאחד מהבאים נכון:</p>
+                        <ul>
+                            <li>flag[j] = false - סתירה כי Pj בקטע קריטי</li>
+                            <li>turn ≠ j - כלומר turn = i</li>
+                        </ul>
+                        <p>ובדומה, אחד מהבאים נכון:</p>
+                        <ul>
+                            <li>flag[i] = false - סתירה כי Pi בקטע קריטי</li>
+                            <li>turn ≠ i - כלומר turn = j</li>
+                        </ul>
+                        <p>אבל turn לא יכול להיות שווה גם ל-i וגם ל-j בו-זמנית, לכן הגענו לסתירה!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="expandable-section">
+                <h3 onclick="toggleContent(this.querySelector('.toggle-btn'))">
+                    מימוש מעשי של פתרון פטרסון <button class="toggle-btn" onclick="toggleContent(this); event.stopPropagation();">▼</button>
+                </h3>
+                <div class="collapsible-content">
+                    <pre class="code-block" dir="ltr" style="font-family: 'Fira Code', monospace;">
+        // מימוש ב-C של פתרון פטרסון
+        #include <stdbool.h>
+        #include <stdio.h>
+        #include <pthread.h>
+
+        // משתנים משותפים
+        bool flag[2] = {false, false};
+        int turn = 0;
+        int counter = 0;  // משתנה לבדיקה
+
+        // כניסה לקטע קריטי
+        void enter_critical(int process) {
+            int other = 1 - process;  // התהליך השני
+            
+            flag[process] = true;  // סימון רצון להיכנס
+            turn = other;          // ויתור על התור
+            
+            // המתנה עד שניתן להיכנס
+            while (flag[other] && turn == other) {
+                // המתנה פעילה
+            }
+        }
+
+        // יציאה מקטע קריטי
+        void exit_critical(int process) {
+            flag[process] = false;  // שחרור הדגל
+        }
+
+        // פונקציית תהליך
+        void* process_function(void* arg) {
+            int process_id = *((int*)arg);
+            
+            for (int i = 0; i < 100000; i++) {
+                enter_critical(process_id);
+                
+                // קטע קריטי
+                counter++;
+                
+                exit_critical(process_id);
+            }
+            
+            return NULL;
+        }
+
+        int main() {
+            pthread_t threads[2];
+            int ids[2] = {0, 1};
+            
+            // יצירת שני תהליכונים
+            pthread_create(&threads[0], NULL, process_function, &ids[0]);
+            pthread_create(&threads[1], NULL, process_function, &ids[1]);
+            
+            // המתנה לסיום התהליכונים
+            pthread_join(threads[0], NULL);
+            pthread_join(threads[1], NULL);
+            
+            // הערך הצפוי הוא 200000
+            printf("Counter value: %d\n", counter);
+            
+            return 0;
+        }
+                    </pre>
+                </div>
             </div>
         </div>
+
+        
 
         <!-- פתרון פיטרסון -->
         <div class="content-section" id="modern-architecture">
@@ -1351,7 +1611,7 @@
             <h2>⚖️ השוואה: מיוטקס מול מאותת</h2>
             
             <div class="image-container">
-            <div class="concept-image">
+            
                 <svg width="100%" height="300" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
                 <!-- Comparison Visual -->
                 <rect x="50" y="20" width="600" height="260" fill="#d4dada" stroke="#2e82bd" stroke-width="2" rx="15"/>
@@ -1407,30 +1667,30 @@
                 </svg>
                 <div class="image-caption">השוואה חזותית בין מיוטקס למאותת - גישת תהליכים וצריכת משאבים</div>
             </div>
-            </div>
+            
 
             <div class="info-box">
             <h3>הבדלים מרכזיים:</h3>
                 <div class="feature-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <div class="feature-item">
-                    <div class="feature-icon">🔒</div>
-                    <div class="feature-title">מיוטקס</div>
-                    <div class="feature-desc">מאפשר גישה לתהליך אחד בלבד</div>
+                        <div class="feature-icon">🔒</div>
+                        <div class="feature-title">מיוטקס</div>
+                        <div class="feature-desc">מאפשר גישה לתהליך אחד בלבד</div>
                     </div>
                     <div class="feature-item">
-                    <div class="feature-icon">🚦</div>
-                    <div class="feature-title">מאותת</div>
-                    <div class="feature-desc">יכול להרשות גישה למספר תהליכים</div>
+                        <div class="feature-icon">🚦</div>
+                        <div class="feature-title">מאותת</div>
+                        <div class="feature-desc">יכול להרשות גישה למספר תהליכים</div>
                     </div>
                     <div class="feature-item">
-                    <div class="feature-icon">👤</div>
-                    <div class="feature-title">בעלות</div>
-                    <div class="feature-desc">במיוטקס: יש בעלות - רק מי שנעל יכול לשחרר</div>
+                        <div class="feature-icon">👤</div>
+                        <div class="feature-title">בעלות</div>
+                        <div class="feature-desc">במיוטקס: יש בעלות - רק מי שנעל יכול לשחרר</div>
                     </div>
-                    <div class="feature-item">
-                    <div class="feature-icon">👥</div>
-                    <div class="feature-title">שיתופיות</div>
-                    <div class="feature-desc">במאותת: אין בעלות - כל תהליך יכול לשחרר</div>
+                        <div class="feature-item">
+                        <div class="feature-icon">👥</div>
+                        <div class="feature-title">שיתופיות</div>
+                        <div class="feature-desc">במאותת: אין בעלות - כל תהליך יכול לשחרר</div>
                     </div>
                 </div>
             </div>
@@ -1547,7 +1807,7 @@
                 <p>למרות שמאותתים הם כלים חזקים לסנכרון תהליכים, הם עלולים לגרום למספר בעיות אם לא משתמשים בהם נכון.</p>
 
                 <div class="image-container">
-                    <div class="concept-image">
+                    
                         <svg width="100%" height="280" viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">
                             <!-- Background -->
                             <rect x="50" y="20" width="600" height="240" fill="#f8f9fa" stroke="#e74c3c" stroke-width="2" rx="10"/>
@@ -1575,7 +1835,7 @@
                             <text x="600" y="220" font-size="14" fill="#2c3e50">• סוג של קיפאון שבו תהליכים לא יכולים להמשיך בגלל תלות מעגלית</text>
                         </svg>
                         <div class="image-caption">בעיות נפוצות בשימוש במאותתים</div>
-                    </div>
+                    
                 </div>
 
                 <div class="info-box">
