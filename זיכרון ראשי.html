@@ -42,15 +42,22 @@
                     <li><a href="#memory-fragmentation">שיברור זיכרון</a></li>
                 </ul>
             </li>
-            <!-- קטגוריה: דפדוף (Paging) -->
+            <!-- קטגוריה: דפדוף בסיסי (Basic Paging) -->
             <li class="nav-category">
-                <a href="#paging" class="category-title">📄 דפדוף (Paging)</a>
+                <a href="#paging" class="category-title">📄 דפדוף בסיסי</a>
                 <ul class="nav-submenu">
                     <li><a href="#paging">שיטת דפדוף</a></li>
                     <li><a href="#address-structure">מבנה כתובת בדפדוף</a></li>
                     <li><a href="#page-table-base-register">PTBR</a></li>
                     <li><a href="#page-table-length-register">PTLR</a></li>
                     <li><a href="#two-memory-accesses">גישה כפולה לזיכרון &amp; TLB</a></li>
+                </ul>
+            </li>
+
+            <!-- קטגוריה: דפדוף מתקדם (Advanced Paging) -->
+            <li class="nav-category">
+                <a href="#paging-protection" class="category-title">🔒 דפדוף מתקדם</a>
+                <ul class="nav-submenu">
                     <li><a href="#paging-protection">הגנה בדפדוף</a></li>
                     <li><a href="#page-table-size">חישוב גודל טבלת דפים</a></li>
                     <li><a href="#shared-code">קוד משותף</a></li>
@@ -1290,7 +1297,7 @@
                             </defs>
 
                             <!-- Hebrew text at top -->
-                            <text x="450" y="25" font-size="14" fill="#3b82f6" text-anchor="middle" font-family="Arial">.יש מהנת דוגמא של EAT, דוגמאות יש שעות במשתנים</text>
+                            <text x="450" y="25" font-size="14" fill="#3b82f6" text-anchor="middle" font-family="Arial">דוגמא לשימוש ב TLB  אם יש פגיעה ובלי פגיעה</text>
 
                             <!-- Main rectangle frame -->
                             <rect x="180" y="60" width="500" height="350" fill="none" stroke="#3b82f6" stroke-width="2"/>
